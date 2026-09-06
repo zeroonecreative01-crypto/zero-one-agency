@@ -56,6 +56,20 @@ const PROJECTS = [
   }
 ];
 
+const CLIENT_LOGOS = [
+  { src: '/clients/client-01.png', alt: 'Client logo 01' },
+  { src: '/clients/client-02.png', alt: 'Client logo 02' },
+  { src: '/clients/client-03.png', alt: 'Client logo 03' },
+  { src: '/clients/client-04.png', alt: 'Client logo 04' },
+  { src: '/clients/client-05.png', alt: 'Client logo 05' },
+  { src: '/clients/client-06.png', alt: 'Client logo 06' },
+  { src: '/clients/client-07.png', alt: 'Client logo 07' },
+  { src: '/clients/client-08.png', alt: 'Client logo 08' },
+  { src: '/clients/client-09.png', alt: 'Client logo 09' },
+  { src: '/clients/client-10.png', alt: 'Client logo 10' },
+  { src: '/clients/client-11.png', alt: 'Client logo 11' },
+];
+
 const SERVICES = [
   { num: '01', title: 'Brand Identity', desc: 'Crafting distinct visual and verbal systems that define how brands exist in the world. We build foundations designed for longevity and impact.' },
   { num: '02', title: 'Digital Platforms', desc: 'Designing high-performance websites and applications. We blend premium editorial aesthetics with seamless, conversion-driven user experiences.' },
@@ -202,6 +216,36 @@ const Logo = ({ onClick, className = "h-10" }: { onClick?: () => void, className
 // 3. PAGE COMPONENTS
 // ============================================================================
 
+
+const ClientMarquee = () => {
+  const logos = [...CLIENT_LOGOS, ...CLIENT_LOGOS];
+  return (
+    <section className="py-20 md:py-28 px-6 md:px-12 lg:px-24 overflow-hidden border-y border-[#F7F5F0]/10 bg-[#111111]" aria-label="Selected clients">
+      <FadeIn>
+        <div className="flex items-end justify-between gap-8 mb-10 md:mb-14">
+          <div>
+            <p className="text-[#F14A0B] text-xs font-mono tracking-[0.2em] uppercase mb-3">01 — 11</p>
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tighter uppercase">Selected Clients</h2>
+          </div>
+          <p className="hidden md:block text-[#F7F5F0]/40 text-sm max-w-xs text-right leading-relaxed">
+            Brands, businesses and teams we’ve had the pleasure to create with.
+          </p>
+        </div>
+      </FadeIn>
+
+      <div className="client-marquee-mask">
+        <div className="client-marquee-track" aria-hidden="true">
+          {logos.map((logo, index) => (
+            <div className="client-marquee-item" key={`${logo.src}-${index}`}>
+              <img src={logo.src} alt={logo.alt} loading="lazy" draggable="false" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const Home = ({ navigate }: { navigate: (path: string) => void }) => (
   <div className="w-full">
     <SEO title="Creative Marketing Agency" description="We build brands, campaigns and digital experiences that make businesses impossible to ignore." />
@@ -236,6 +280,9 @@ const Home = ({ navigate }: { navigate: (path: string) => void }) => (
         </FadeIn>
       </div>
     </section>
+
+    {/* CLIENT LOGO MARQUEE */}
+    <ClientMarquee />
 
     {/* SELECTED WORK (EDITORIAL GRID) */}
     <section className="py-24 md:py-32 px-6 md:px-12 lg:px-24 bg-[#111111]">
