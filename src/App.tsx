@@ -56,20 +56,6 @@ const PROJECTS = [
   }
 ];
 
-const CLIENT_LOGOS = [
-  { src: '/clients/client-01.png', alt: 'Client logo 01' },
-  { src: '/clients/client-02.png', alt: 'Client logo 02' },
-  { src: '/clients/client-03.png', alt: 'Client logo 03' },
-  { src: '/clients/client-04.png', alt: 'Client logo 04' },
-  { src: '/clients/client-05.png', alt: 'Client logo 05' },
-  { src: '/clients/client-06.png', alt: 'Client logo 06' },
-  { src: '/clients/client-07.png', alt: 'Client logo 07' },
-  { src: '/clients/client-08.png', alt: 'Client logo 08' },
-  { src: '/clients/client-09.png', alt: 'Client logo 09' },
-  { src: '/clients/client-10.png', alt: 'Client logo 10' },
-  { src: '/clients/client-11.png', alt: 'Client logo 11' },
-];
-
 const SERVICES = [
   { num: '01', title: 'Brand Identity', desc: 'Crafting distinct visual and verbal systems that define how brands exist in the world. We build foundations designed for longevity and impact.' },
   { num: '02', title: 'Digital Platforms', desc: 'Designing high-performance websites and applications. We blend premium editorial aesthetics with seamless, conversion-driven user experiences.' },
@@ -82,6 +68,18 @@ const STATS = [
   { value: '[XXX]', label: 'Global Projects' },
   { value: '[XX]', label: 'Industry Awards' }
 ];
+
+// Client logos are discovered automatically from src/assets/clients/.
+// Add/remove image files there and the marquee updates on the next build.
+const clientLogoModules = import.meta.glob('./assets/clients/*.{png,jpg,jpeg,webp,svg}', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+}) as Record<string, string>;
+
+const CLIENT_LOGOS = Object.entries(clientLogoModules)
+  .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }))
+  .map(([path, src], index) => ({ id: `${index}-${path}`, src }));
 
 // ============================================================================
 // 2. UTILITY COMPONENTS & HOOKS
@@ -216,30 +214,43 @@ const Logo = ({ onClick, className = "h-10" }: { onClick?: () => void, className
 // 3. PAGE COMPONENTS
 // ============================================================================
 
-
 const ClientMarquee = () => {
-  const logos = [...CLIENT_LOGOS, ...CLIENT_LOGOS];
-  return (
-    <section className="py-20 md:py-28 px-6 md:px-12 lg:px-24 overflow-hidden border-y border-[#F7F5F0]/10 bg-[#111111]" aria-label="Selected clients">
-      <FadeIn>
-        <div className="flex items-end justify-between gap-8 mb-10 md:mb-14">
-          <div>
-            <p className="text-[#F14A0B] text-xs font-mono tracking-[0.2em] uppercase mb-3">01 — 11</p>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tighter uppercase">Selected Clients</h2>
-          </div>
-          <p className="hidden md:block text-[#F7F5F0]/40 text-sm max-w-xs text-right leading-relaxed">
-            Brands, businesses and teams we’ve had the pleasure to create with.
-          </p>
-        </div>
-      </FadeIn>
+  if (!CLIENT_LOGOS.length) return null;
 
-      <div className="client-marquee-mask">
-        <div className="client-marquee-track" aria-hidden="true">
-          {logos.map((logo, index) => (
-            <div className="client-marquee-item" key={`${logo.src}-${index}`}>
-              <img src={logo.src} alt={logo.alt} loading="lazy" draggable="false" />
+  const renderGroup = (groupLabel: string) => (
+    <div className="client-marquee__group" aria-hidden={groupLabel === 'duplicate'}>
+      {CLIENT_LOGOS.map((client) => (
+        <div className="client-marquee__item" key={`${groupLabel}-${client.id}`}>
+          <img
+            src={client.src}
+            alt={groupLabel === 'duplicate' ? '' : 'ZERO ONE client'}
+            loading="lazy"
+            draggable={false}
+          />
+        </div>
+      ))}
+    </div>
+  );
+
+  return (
+    <section className="client-marquee-section" aria-label="Selected clients">
+      <div className="px-6 md:px-12 lg:px-24">
+        <FadeIn>
+          <div className="client-marquee__header">
+            <div className="flex items-center gap-4">
+              <span className="client-marquee__index">01</span>
+              <span className="client-marquee__rule" aria-hidden="true" />
+              <span className="client-marquee__eyebrow">Selected Clients</span>
             </div>
-          ))}
+            <span className="client-marquee__count">{String(CLIENT_LOGOS.length).padStart(2, '0')} Brands</span>
+          </div>
+        </FadeIn>
+      </div>
+
+      <div className="client-marquee" role="region" aria-label="Client logos">
+        <div className="client-marquee__track">
+          {renderGroup('primary')}
+          {renderGroup('duplicate')}
         </div>
       </div>
     </section>
@@ -281,7 +292,6 @@ const Home = ({ navigate }: { navigate: (path: string) => void }) => (
       </div>
     </section>
 
-    {/* CLIENT LOGO MARQUEE */}
     <ClientMarquee />
 
     {/* SELECTED WORK (EDITORIAL GRID) */}

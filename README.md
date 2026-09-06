@@ -41,6 +41,5 @@ Import the project and deploy. `netlify.toml` handles direct visits to nested ro
 
 Replace demo portfolio entries and Unsplash images with ZERO ONE's real case studies/assets. Replace placeholder statistics in `STATS` with verified numbers or remove the section. Add final legal/privacy copy when available.
 
-
-### Client Logos
-Client logos live in `public/clients/` and are rendered by the infinite RTL marquee on the Home page.
+## Client logos
+Client logos are loaded automatically from `src/assets/clients/`. Add or remove image files in that folder (PNG/JPG/JPEG/WebP/SVG) and commit the changes; Vite discovers them automatically on the next build. The marquee uses two identical groups so the animation loops continuously without a visual endpoint.

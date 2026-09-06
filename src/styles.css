@@ -12,72 +12,176 @@ body { margin: 0; background: #111111; color: #F7F5F0; }
 ::-webkit-scrollbar-thumb:hover { background: #F14A0B; }
 
 
-/* Client logo marquee */
-.client-marquee-mask {
-  width: 100%;
+/* ============================================================================
+   Client Logo Marquee
+   Logos live in src/assets/clients/ and are discovered automatically by Vite.
+   The track contains two identical groups, so -50% is a true seamless loop.
+============================================================================ */
+.client-marquee-section {
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
-  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  background: #111111;
+  border-top: 1px solid rgba(247, 245, 240, 0.08);
+  border-bottom: 1px solid rgba(247, 245, 240, 0.08);
+  padding: 2rem 0 3.5rem;
 }
 
-.client-marquee-track {
+.client-marquee__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0 0 1.25rem;
+}
+
+.client-marquee__index,
+.client-marquee__count,
+.client-marquee__eyebrow {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.client-marquee__index,
+.client-marquee__count {
+  color: rgba(247, 245, 240, 0.4);
+}
+
+.client-marquee__eyebrow {
+  color: rgba(247, 245, 240, 0.72);
+}
+
+.client-marquee__rule {
+  display: block;
+  width: 2.5rem;
+  height: 1px;
+  background: #F14A0B;
+}
+
+.client-marquee {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.client-marquee::before,
+.client-marquee::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: clamp(2rem, 9vw, 10rem);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.client-marquee::before {
+  left: 0;
+  background: linear-gradient(to right, #111111 0%, rgba(17, 17, 17, 0) 100%);
+}
+
+.client-marquee::after {
+  right: 0;
+  background: linear-gradient(to left, #111111 0%, rgba(17, 17, 17, 0) 100%);
+}
+
+.client-marquee__track {
   display: flex;
   width: max-content;
-  align-items: center;
-  gap: clamp(2.5rem, 6vw, 7rem);
-  animation: client-marquee 38s linear infinite;
+  animation: zero-one-client-marquee 48s linear infinite;
   will-change: transform;
 }
 
-.client-marquee-item {
-  flex: 0 0 180px;
-  width: 180px;
-  height: 72px;
+.client-marquee__group {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: clamp(3.5rem, 7vw, 8rem);
+  padding-right: clamp(3.5rem, 7vw, 8rem);
+}
+
+.client-marquee__item {
+  width: clamp(130px, 11vw, 210px);
+  height: clamp(72px, 8vw, 116px);
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 auto;
+  opacity: 0.82;
+  transition: opacity 220ms ease, transform 220ms ease;
 }
 
-.client-marquee-item img {
-  width: 180px;
-  height: 58px;
-  object-fit: contain;
-  object-position: center;
-  opacity: .68;
-  transition: opacity .35s ease, transform .35s ease;
-  user-select: none;
-}
-
-.client-marquee-item:hover img {
+.client-marquee__item:hover {
   opacity: 1;
-  transform: scale(1.04);
+  transform: translateY(-2px) scale(1.02);
 }
 
-@keyframes client-marquee {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(-50%, 0, 0); }
+.client-marquee__item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
-@media (max-width: 640px) {
-  .client-marquee-track {
-    gap: 2.5rem;
-    animation-duration: 30s;
+.client-marquee:hover .client-marquee__track {
+  animation-play-state: paused;
+}
+
+@keyframes zero-one-client-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
   }
-  .client-marquee-item,
-  .client-marquee-item img {
-    width: 140px;
+  to {
+    transform: translate3d(-50%, 0, 0);
   }
-  .client-marquee-item {
-    flex-basis: 140px;
-    height: 64px;
+}
+
+@media (max-width: 767px) {
+  .client-marquee-section {
+    padding: 1.5rem 0 2.5rem;
   }
-  .client-marquee-item img {
-    height: 50px;
+
+  .client-marquee__header {
+    padding-bottom: 1rem;
+  }
+
+  .client-marquee__count {
+    display: none;
+  }
+
+  .client-marquee__group {
+    gap: 3.25rem;
+    padding-right: 3.25rem;
+  }
+
+  .client-marquee__item {
+    width: 125px;
+    height: 74px;
+  }
+
+  .client-marquee__track {
+    animation-duration: 38s;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .client-marquee-track {
-    animation-play-state: paused;
+  .client-marquee__track {
+    animation: none;
+    transform: none;
+  }
+
+  .client-marquee__group {
+    padding-right: 2.5rem;
+  }
+
+  .client-marquee {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .client-marquee::-webkit-scrollbar {
+    display: none;
   }
 }
