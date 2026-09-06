@@ -63,12 +63,6 @@ const SERVICES = [
   { num: '04', title: 'Creative Strategy', desc: 'Positioning brands for the future. We analyze culture, market trends, and human behavior to find whitespace and strategic advantage.' }
 ];
 
-const STATS = [
-  { value: '[XX]', label: 'Years Experience' },
-  { value: '[XXX]', label: 'Global Projects' },
-  { value: '[XX]', label: 'Industry Awards' }
-];
-
 // Client logos are discovered automatically from src/assets/clients/.
 // Add/remove image files there and the marquee updates on the next build.
 const clientLogoModules = import.meta.glob('./assets/clients/*.{png,jpg,jpeg,webp,svg}', {
@@ -257,6 +251,193 @@ const ClientMarquee = () => {
   );
 };
 
+const ScrollPhoneShowcase = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [progress, setProgress] = useState(0);
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handleMotionPreference = () => setReducedMotion(mediaQuery.matches);
+    handleMotionPreference();
+    mediaQuery.addEventListener?.('change', handleMotionPreference);
+
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const section = sectionRef.current;
+      if (!section) return;
+      const rect = section.getBoundingClientRect();
+      const viewport = Math.max(window.innerHeight, 1);
+      const travel = Math.max(section.offsetHeight - viewport, 1);
+      const next = Math.min(1, Math.max(0, -rect.top / travel));
+      setProgress(next);
+    };
+
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      mediaQuery.removeEventListener?.('change', handleMotionPreference);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  const motion = reducedMotion ? 0.55 : progress;
+  const phoneY = 180 - motion * 420;
+  const phoneRotate = -10 + motion * 14;
+  const phoneScale = 0.84 + motion * 0.14;
+  const screenShift = 24 - motion * 72;
+  const headlineX = -20 + motion * 20;
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative min-h-[175vh] overflow-hidden bg-[#F7F5F0] text-[#111111]"
+      aria-label="ZERO ONE digital experience showcase"
+    >
+      <div className="sticky top-0 min-h-screen overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(241,74,11,0.54),transparent_22%),radial-gradient(circle_at_76%_70%,rgba(241,74,11,0.20),transparent_24%)]" />
+        <div className="absolute -left-40 top-1/2 h-[32rem] w-[32rem] -translate-y-1/2 rounded-full bg-[#F14A0B]/15 blur-3xl" />
+        <div className="absolute -right-56 -top-32 h-[38rem] w-[38rem] rounded-full bg-[#F14A0B]/20 blur-3xl" />
+
+        <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[1600px] items-center px-6 py-24 md:px-12 lg:px-20">
+          <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_360px_1fr] lg:gap-16">
+            <div className="order-2 lg:order-1">
+              <div className="mb-7 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.28em] text-[#F14A0B]">
+                <span className="font-mono">02</span>
+                <span className="h-px w-10 bg-[#F14A0B]/60" />
+                Digital Experience
+              </div>
+              <h2
+                className="max-w-2xl text-5xl font-bold uppercase leading-[0.88] tracking-[-0.06em] sm:text-6xl md:text-7xl lg:text-[5.6rem]"
+                style={{ transform: `translateX(${headlineX}px)` }}
+              >
+                The future of
+                <br />
+                <span className="text-[#F14A0B]">brand experience.</span>
+              </h2>
+              <p className="mt-8 max-w-lg text-base leading-7 text-[#111111]/65 md:text-lg">
+                We design digital experiences that turn attention into interaction — and interaction into something people remember.
+              </p>
+
+              <div className="mt-10 flex flex-wrap gap-x-10 gap-y-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#111111]/55">
+                <span>Strategy</span>
+                <span>UX / UI</span>
+                <span>Art Direction</span>
+                <span>Development</span>
+              </div>
+            </div>
+
+            <div className="order-1 flex justify-center lg:order-2">
+              <div className="relative h-[540px] w-[280px] sm:h-[650px] sm:w-[330px]">
+                <div
+                  className="absolute left-1/2 top-1/2 h-[510px] w-[270px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#F14A0B]/35 blur-[60px]"
+                  style={{ opacity: 0.4 + motion * 0.4, transform: `translate(-50%, -50%) scale(${0.7 + motion * 0.45})` }}
+                />
+                <div
+                  className="absolute left-1/2 top-1/2 origin-center will-change-transform"
+                  style={{ transform: `translate(-50%, calc(-50% + ${phoneY}px)) rotate(${phoneRotate}deg) scale(${phoneScale})` }}
+                >
+                  <div className="relative h-[510px] w-[258px] rounded-[42px] border-[6px] border-[#171717] bg-[#060606] p-[7px] shadow-[0_38px_95px_rgba(17,17,17,0.38)] sm:h-[620px] sm:w-[312px] sm:rounded-[50px]">
+                    <div className="absolute left-1/2 top-2 z-30 h-7 w-28 -translate-x-1/2 rounded-full bg-[#050505]" />
+                    <div className="relative h-full w-full overflow-hidden rounded-[33px] bg-[#F7F5F0] sm:rounded-[40px]">
+                      <div className="absolute inset-x-0 top-0 h-[52%] bg-[#F14A0B]" />
+                      <div className="absolute inset-x-0 bottom-0 h-[55%] bg-[#F7F5F0]" />
+
+                      <div
+                        className="absolute inset-x-0 top-0 px-5 pt-14 sm:px-6 sm:pt-16"
+                        style={{ transform: `translateY(${screenShift}px)` }}
+                      >
+                        <div className="flex items-center justify-between text-[9px] font-semibold uppercase tracking-[0.16em] text-white/80">
+                          <span>ZERO ONE</span>
+                          <span>09:41</span>
+                        </div>
+                        <div className="mt-16 sm:mt-20">
+                          <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/65">Creative / Digital</p>
+                          <p className="mt-2 text-[3.1rem] font-bold leading-[0.86] tracking-[-0.07em] text-white sm:text-[3.7rem]">
+                            Move<br />people.
+                          </p>
+                        </div>
+
+                        <div className="mt-8 space-y-3 sm:mt-10">
+                          <div className="rounded-[20px] bg-white/95 p-4 shadow-[0_15px_35px_rgba(0,0,0,0.12)]">
+                            <div className="flex items-start justify-between gap-3">
+                              <div>
+                                <p className="text-[8px] font-semibold uppercase tracking-[0.15em] text-[#111111]/40">Featured</p>
+                                <p className="mt-1 text-lg font-bold tracking-tight">Digital launch</p>
+                              </div>
+                              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#111111] text-sm text-white">↗</span>
+                            </div>
+                            <div className="mt-5 grid grid-cols-3 gap-2">
+                              <span className="h-12 rounded-lg bg-[#111111]/10" />
+                              <span className="h-12 rounded-lg bg-[#F14A0B]" />
+                              <span className="h-12 rounded-lg bg-[#111111]" />
+                            </div>
+                          </div>
+
+                          <div className="rounded-[20px] bg-[#111111] p-4 text-white">
+                            <p className="text-[8px] font-semibold uppercase tracking-[0.15em] text-white/40">Signal / 01</p>
+                            <div className="mt-4 flex items-end justify-between">
+                              <span className="text-3xl font-bold tracking-[-0.05em]">Clear.</span>
+                              <span className="h-10 w-10 rounded-full border border-white/15 bg-[#F14A0B]" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="absolute inset-x-0 bottom-0 px-5 pb-6 sm:px-6 sm:pb-7">
+                        <div className="flex items-center justify-between text-[8px] font-semibold uppercase tracking-[0.16em] text-[#111111]/40">
+                          <span>Scroll</span>
+                          <span className="font-mono text-[#F14A0B]">{String(Math.round(motion * 100)).padStart(2, '0')}</span>
+                        </div>
+                        <div className="mt-2 h-px w-full bg-[#111111]/10">
+                          <div className="h-px bg-[#F14A0B] transition-[width] duration-150" style={{ width: `${Math.max(8, motion * 100)}%` }} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="order-3 lg:text-right">
+              <div className="space-y-8 lg:ml-auto lg:max-w-sm">
+                {[
+                  ['01', 'Immersive', 'Interfaces that give brands a physical feeling on screen.'],
+                  ['02', 'Intentional', 'Every transition, hierarchy, and interaction earns its place.'],
+                  ['03', 'Memorable', 'Built to make the right impression long after the scroll.'],
+                ].map(([num, title, copy]) => (
+                  <div key={num} className="border-t border-[#111111]/15 pt-5">
+                    <div className="flex items-start justify-between gap-5 lg:flex-row-reverse">
+                      <span className="font-mono text-xs text-[#F14A0B]">{num}</span>
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold uppercase tracking-tight">{title}</h3>
+                        <p className="mt-2 text-sm leading-6 text-[#111111]/55">{copy}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-12 hidden items-center justify-end gap-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#111111]/35 lg:flex">
+                <span>Scroll to explore</span>
+                <span className="h-px w-12 bg-[#111111]/20" />
+                <span className="font-mono text-[#F14A0B]">{String(Math.round(motion * 100)).padStart(2, '0')}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const Home = ({ navigate }: { navigate: (path: string) => void }) => (
   <div className="w-full">
     <SEO title="Creative Marketing Agency" description="We build brands, campaigns and digital experiences that make businesses impossible to ignore." />
@@ -345,16 +526,19 @@ const Home = ({ navigate }: { navigate: (path: string) => void }) => (
           <span className="text-[#F14A0B]">We make better signals.</span>
         </h2>
         
-        <div className="mt-20 md:mt-32 pt-12 border-t border-[#111111]/10 flex flex-col sm:flex-row gap-12 justify-between max-w-6xl">
-           {STATS.map((stat, i) => (
-             <div key={i}>
-               <p className="text-5xl md:text-6xl font-bold text-[#F14A0B] mb-4 tracking-tighter">{stat.value}</p>
-               <p className="font-semibold tracking-widest uppercase text-xs md:text-sm text-[#111111]/70">{stat.label}</p>
-             </div>
-           ))}
+        <div className="mt-16 md:mt-20 pt-10 border-t border-[#111111]/10 flex flex-col md:flex-row gap-8 md:items-end md:justify-between max-w-6xl">
+          <p className="max-w-2xl text-base md:text-xl font-light leading-relaxed text-[#111111]/65">
+            Strategy, identity, content and digital — one clear point of view, built to move people.
+          </p>
+          <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#111111]/50">
+            <span className="h-2 w-2 rounded-full bg-[#F14A0B]" />
+            Clarity over noise
+          </div>
         </div>
        </FadeIn>
     </section>
+
+    <ScrollPhoneShowcase />
   </div>
 );
 
