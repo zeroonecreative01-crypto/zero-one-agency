@@ -1,0 +1,742 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { ArrowRight, ArrowUpRight, Menu, X, CheckCircle2, MessageCircle } from 'lucide-react';
+
+// ============================================================================
+// 1. CONFIGURATION & DATA (CENTRALIZED FOR EASY EDITING)
+// ============================================================================
+
+const SITE_CONFIG = {
+  name: 'ZERO ONE',
+  whatsapp: '+201556764804',
+  whatsappUrl: 'https://wa.me/201556764804',
+  social: {
+    linkedin: 'https://www.linkedin.com/in/zeroonemarkating/',
+    instagram: 'https://www.instagram.com/zeroone.ai.creative/',
+    facebook: 'https://www.facebook.com/zeroone.ai.creative',
+    threads: 'https://www.threads.com/@zeroone.ai.creative',
+    tiktok: 'https://www.tiktok.com/@zeroone.creative',
+    x: 'https://x.com/zerooneaicrea',
+    snapchat: 'zeroonecreative',
+  },
+  logoPath: '/ONE.png',
+};
+
+const PROJECTS = [
+  {
+    id: 'p1',
+    title: 'Aura Skincare',
+    category: 'Brand Identity & E-commerce',
+    image: 'https://images.unsplash.com/photo-1629198688000-71f23e745b6e?q=80&w=1600&auto=format&fit=crop',
+    year: '2025',
+    featured: true // Makes it span full width in the grid
+  },
+  {
+    id: 'p2',
+    title: 'Nexus Automotive',
+    category: 'Global Campaign',
+    image: 'https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=1600&auto=format&fit=crop',
+    year: '2025',
+    featured: false
+  },
+  {
+    id: 'p3',
+    title: 'Lumina Tech',
+    category: 'Digital Product',
+    image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1600&auto=format&fit=crop',
+    year: '2024',
+    featured: false
+  },
+  {
+    id: 'p4',
+    title: 'Kineo Architecture',
+    category: 'Editorial Website',
+    image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1600&auto=format&fit=crop',
+    year: '2026',
+    featured: true
+  }
+];
+
+const SERVICES = [
+  { num: '01', title: 'Brand Identity', desc: 'Crafting distinct visual and verbal systems that define how brands exist in the world. We build foundations designed for longevity and impact.' },
+  { num: '02', title: 'Digital Platforms', desc: 'Designing high-performance websites and applications. We blend premium editorial aesthetics with seamless, conversion-driven user experiences.' },
+  { num: '03', title: 'Campaign & Content', desc: 'Developing narrative-driven campaigns that capture attention. From creative direction and copywriting to full-scale production.' },
+  { num: '04', title: 'Creative Strategy', desc: 'Positioning brands for the future. We analyze culture, market trends, and human behavior to find whitespace and strategic advantage.' }
+];
+
+const STATS = [
+  { value: '[XX]', label: 'Years Experience' },
+  { value: '[XXX]', label: 'Global Projects' },
+  { value: '[XX]', label: 'Industry Awards' }
+];
+
+// ============================================================================
+// 2. UTILITY COMPONENTS & HOOKS
+// ============================================================================
+
+// Custom lightweight router for client-side navigation without external deps (Updated to avoid History API restrictions)
+const normalizePath = (value: string) => {
+  const path = value.replace(/\/+$/, '');
+  return path || '/';
+};
+
+const useRouter = () => {
+  const [path, setPath] = useState(() => normalizePath(window.location.pathname));
+
+  useEffect(() => {
+    const handlePopState = () => setPath(normalizePath(window.location.pathname));
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const navigate = (newPath: string) => {
+    const next = normalizePath(newPath);
+    if (next !== window.location.pathname) {
+      window.history.pushState({}, '', next);
+      setPath(next);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return { path, navigate };
+};
+
+// SEO Meta tag manager
+const SEO = ({ title, description }: { title: string; description: string }) => {
+  useEffect(() => {
+    document.title = `${title} | ${SITE_CONFIG.name}`;
+    
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.setAttribute('name', 'description');
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute('content', description);
+  }, [title, description]);
+  return null;
+};
+
+// Accessible & Responsive Scroll Reveal
+const FadeIn = ({ children, delay = 0, className = "" }: { children: React.ReactNode, delay?: number, className?: string }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
+    
+    if (mediaQuery.matches) {
+      setIsVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={`transition-all duration-700 ease-out ${
+        prefersReducedMotion ? '' : isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+      } ${className}`}
+      style={{ transitionDelay: prefersReducedMotion ? '0ms' : `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+};
+
+// Reusable Button Component
+const Button = ({ children, primary = false, onClick, type = "button", disabled = false, className = "" }: any) => {
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={`group relative inline-flex items-center justify-center px-8 py-4 overflow-hidden rounded-full font-medium tracking-wide transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F14A0B] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111] disabled:opacity-50 disabled:cursor-not-allowed
+      ${primary 
+        ? 'bg-[#F14A0B] text-[#111111] hover:bg-[#F7F5F0]' 
+        : 'border border-[#F7F5F0]/20 text-[#F7F5F0] hover:bg-[#F7F5F0] hover:text-[#111111]'
+      } ${className}`}
+    >
+      <span className="relative flex items-center gap-3">
+        {children}
+        <ArrowRight className={`w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 ${primary ? 'text-[#111111]' : ''}`} />
+      </span>
+    </button>
+  );
+};
+
+// Logo Component
+const Logo = ({ onClick, className = "h-10" }: { onClick?: () => void, className?: string }) => (
+  <button 
+    onClick={onClick}
+    className="hover:opacity-80 transition-opacity flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F14A0B]"
+    aria-label={`${SITE_CONFIG.name} Home`}
+  >
+    <img 
+      src={SITE_CONFIG.logoPath} 
+      alt={`${SITE_CONFIG.name} Logo`} 
+      className={`w-auto object-contain ${className}`}
+      onError={(e) => {
+        // Fallback if ONE.png is missing in production
+        e.currentTarget.style.display = 'none';
+        e.currentTarget.parentElement!.innerHTML = `<span class="text-xl font-bold tracking-tighter">${SITE_CONFIG.name}</span>`;
+      }}
+    />
+  </button>
+);
+
+// ============================================================================
+// 3. PAGE COMPONENTS
+// ============================================================================
+
+const Home = ({ navigate }: { navigate: (path: string) => void }) => (
+  <div className="w-full">
+    <SEO title="Creative Marketing Agency" description="We build brands, campaigns and digital experiences that make businesses impossible to ignore." />
+    
+    {/* HERO SECTION */}
+    <section className="min-h-screen flex flex-col justify-center pt-32 pb-16 px-6 md:px-12 lg:px-24">
+      <FadeIn delay={100}>
+        <p className="text-[#F7F5F0]/60 text-xs md:text-sm font-semibold tracking-[0.2em] uppercase mb-8">
+          Creative Agency — Est 2026
+        </p>
+      </FadeIn>
+      <FadeIn delay={200}>
+        <h1 className="text-[12vw] sm:text-7xl md:text-8xl lg:text-[10rem] leading-[0.85] font-bold tracking-tighter uppercase mb-12 max-w-[1200px]">
+          We Build <br />
+          Brands That <br />
+          <span className="flex items-center gap-4 lg:gap-8">
+            <span className="text-[#F14A0B]">Move</span>
+            <span className="h-[2px] md:h-[4px] lg:h-[6px] flex-grow bg-[#F14A0B] hidden sm:block mt-2 lg:mt-6 max-w-[200px] lg:max-w-[400px]"></span>
+          </span>
+          People.
+        </h1>
+      </FadeIn>
+      
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 mt-8 md:mt-20">
+        <FadeIn delay={400} className="max-w-2xl">
+          <p className="text-lg md:text-2xl text-[#F7F5F0]/80 font-light leading-relaxed">
+            We build brands, campaigns, and digital experiences that make businesses impossible to ignore.
+          </p>
+        </FadeIn>
+        <FadeIn delay={500}>
+          <Button primary onClick={() => navigate('/work')}>View Our Work</Button>
+        </FadeIn>
+      </div>
+    </section>
+
+    {/* SELECTED WORK (EDITORIAL GRID) */}
+    <section className="py-24 md:py-32 px-6 md:px-12 lg:px-24 bg-[#111111]">
+      <FadeIn>
+        <div className="flex justify-between items-end mb-16 md:mb-24 border-b border-[#F7F5F0]/10 pb-8">
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tighter">Selected Work</h2>
+          <p className="text-[#F14A0B] hidden md:block text-sm font-mono tracking-widest uppercase">01 — 04</p>
+        </div>
+      </FadeIn>
+
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 lg:gap-16">
+        {PROJECTS.map((project, index) => (
+          <div 
+            key={project.id} 
+            className={`group cursor-pointer ${project.featured ? 'md:col-span-12' : 'md:col-span-6'}`}
+            onClick={() => navigate('/work')}
+          >
+            <FadeIn delay={index * 100}>
+              <div className={`overflow-hidden bg-[#F7F5F0]/5 mb-6 ${project.featured ? 'aspect-[16/9] lg:aspect-[21/9]' : 'aspect-[4/5] md:aspect-[3/4]'}`}>
+                <img 
+                  src={project.image} 
+                  alt={project.title}
+                  loading="lazy"
+                  className="w-full h-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-105 filter grayscale group-hover:grayscale-0"
+                />
+              </div>
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-2xl md:text-3xl font-bold mb-2 tracking-tight transition-colors group-hover:text-[#F14A0B]">{project.title}</h3>
+                  <p className="text-[#F7F5F0]/60 text-sm tracking-wide uppercase font-medium">{project.category}</p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-[#F7F5F0]/40 font-mono text-sm hidden sm:block">{project.year}</span>
+                  <div className="w-10 h-10 rounded-full border border-[#F7F5F0]/20 flex items-center justify-center group-hover:bg-[#F14A0B] group-hover:border-[#F14A0B] group-hover:text-[#111111] transition-all duration-300">
+                    <ArrowUpRight className="w-4 h-4" />
+                  </div>
+                </div>
+              </div>
+            </FadeIn>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* STATEMENT SECTION */}
+    <section className="py-32 md:py-48 px-6 md:px-12 lg:px-24 bg-[#F7F5F0] text-[#111111]">
+       <FadeIn>
+        <h2 className="text-4xl md:text-6xl lg:text-[5.5rem] font-bold tracking-tighter leading-[0.95] max-w-6xl uppercase">
+          We don't make more noise. <br/>
+          <span className="text-[#F14A0B]">We make better signals.</span>
+        </h2>
+        
+        <div className="mt-20 md:mt-32 pt-12 border-t border-[#111111]/10 flex flex-col sm:flex-row gap-12 justify-between max-w-6xl">
+           {STATS.map((stat, i) => (
+             <div key={i}>
+               <p className="text-5xl md:text-6xl font-bold text-[#F14A0B] mb-4 tracking-tighter">{stat.value}</p>
+               <p className="font-semibold tracking-widest uppercase text-xs md:text-sm text-[#111111]/70">{stat.label}</p>
+             </div>
+           ))}
+        </div>
+       </FadeIn>
+    </section>
+  </div>
+);
+
+const Work = () => (
+  <div className="w-full pt-40 pb-24 px-6 md:px-12 lg:px-24">
+    <SEO title="Our Work" description="Explore our portfolio of premium brand identities and digital platforms." />
+    <FadeIn>
+      <h1 className="text-6xl md:text-8xl lg:text-[9rem] font-bold tracking-tighter uppercase leading-none mb-12">Our Work.</h1>
+      <p className="text-xl md:text-2xl text-[#F7F5F0]/70 max-w-2xl mb-24 font-light">
+        A selection of recent projects spanning digital platforms, brand identity, and creative strategy.
+      </p>
+    </FadeIn>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-y-24 gap-x-8 lg:gap-x-16">
+      {PROJECTS.map((project, index) => (
+        <FadeIn key={project.id} delay={index % 2 === 0 ? 0 : 200} className={`${index % 2 !== 0 ? 'md:mt-32' : ''}`}>
+          <div className="group cursor-pointer">
+             <div className="overflow-hidden bg-[#F7F5F0]/5 mb-6 aspect-[4/5] md:aspect-[3/4]">
+                <img 
+                  src={project.image} 
+                  alt={project.title}
+                  loading="lazy"
+                  className="w-full h-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-105 filter grayscale group-hover:grayscale-0"
+                />
+              </div>
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-3xl font-bold mb-2 tracking-tight transition-colors group-hover:text-[#F14A0B]">{project.title}</h3>
+                  <p className="text-[#F7F5F0]/60 tracking-wide uppercase text-sm font-medium">{project.category}</p>
+                </div>
+                <p className="text-[#F7F5F0]/40 font-mono text-sm">{project.year}</p>
+              </div>
+          </div>
+        </FadeIn>
+      ))}
+    </div>
+  </div>
+);
+
+const Services = () => (
+  <div className="w-full pt-40 pb-24 px-6 md:px-12 lg:px-24">
+    <SEO title="Services" description="Comprehensive creative solutions designed to elevate brands." />
+    <FadeIn>
+      <h1 className="text-6xl md:text-8xl lg:text-[9rem] font-bold tracking-tighter uppercase leading-none mb-12">Expertise.</h1>
+      <p className="text-xl md:text-2xl text-[#F7F5F0]/70 max-w-2xl mb-24 font-light">
+        We provide comprehensive creative solutions designed to elevate brands and drive measurable impact across every touchpoint.
+      </p>
+    </FadeIn>
+
+    <div className="max-w-6xl">
+      {SERVICES.map((service, index) => (
+        <FadeIn key={index} delay={index * 100}>
+          <div className="group border-t border-[#F7F5F0]/20 py-12 md:py-16 flex flex-col md:flex-row gap-6 md:gap-16 transition-colors duration-500 cursor-pointer">
+            <span className="text-xl md:text-2xl text-[#F7F5F0]/40 group-hover:text-[#F14A0B] font-mono shrink-0 transition-colors">
+              {service.num}
+            </span>
+            <div className="flex-grow">
+              <h3 className="text-3xl md:text-5xl font-bold mb-6 tracking-tight group-hover:text-[#F14A0B] transition-colors">{service.title}</h3>
+              <p className="text-lg md:text-xl text-[#F7F5F0]/60 max-w-2xl leading-relaxed font-light">{service.desc}</p>
+            </div>
+            <div className="md:ml-auto opacity-0 group-hover:opacity-100 transform -translate-x-4 group-hover:translate-x-0 transition-all duration-500 flex items-center hidden md:flex">
+               <ArrowRight className="w-10 h-10 text-[#F14A0B]" />
+            </div>
+          </div>
+        </FadeIn>
+      ))}
+      <div className="border-t border-[#F7F5F0]/20"></div>
+    </div>
+  </div>
+);
+
+const About = () => (
+  <div className="w-full pt-40 pb-24 px-6 md:px-12 lg:px-24">
+    <SEO title="About Us" description="We are a collective of designers, strategists, and technologists building brands and digital experiences with intention." />
+    <FadeIn>
+      <h1 className="text-6xl md:text-8xl lg:text-[9rem] font-bold tracking-tighter uppercase leading-none mb-12">About Us.</h1>
+    </FadeIn>
+
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 mt-16 md:mt-24">
+      <div className="lg:col-span-6 flex flex-col justify-center">
+        <FadeIn delay={200}>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tighter mb-8 leading-tight">
+            Design driven by intention. Built for scale.
+          </h2>
+          <div className="space-y-6 text-[#F7F5F0]/70 text-lg md:text-xl font-light leading-relaxed">
+            <p>
+              Founded on the belief that aesthetics and performance are not mutually exclusive. We build digital experiences and brand identities that feel inevitable—designed with extreme intention and executed with precision.
+            </p>
+            <p>
+              Our approach is highly collaborative, operating as an extension of our clients' teams rather than a traditional vendor. We favor honest communication, rigorous strategy, and impeccable craft over industry jargon.
+            </p>
+          </div>
+        </FadeIn>
+      </div>
+      <div className="lg:col-span-6">
+        <FadeIn delay={400}>
+           <div className="aspect-[4/5] bg-[#F7F5F0]/5 overflow-hidden relative">
+             <img 
+               src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1600&auto=format&fit=crop" 
+               alt="Studio Office"
+               loading="lazy"
+               className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-[1.5s]"
+             />
+             <div className="absolute inset-0 bg-black/10"></div>
+           </div>
+        </FadeIn>
+      </div>
+    </div>
+  </div>
+);
+
+const Contact = () => {
+  const [formData, setFormData] = useState({ name: '', email: '', company: '', type: '', message: '' });
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('submitting');
+    const text = [
+      'ZERO ONE Project Inquiry',
+      `Name: ${formData.name}`,
+      `Email: ${formData.email}`,
+      `Company: ${formData.company || 'Not provided'}`,
+      `Project Type: ${formData.type || 'Not provided'}`,
+      `Message: ${formData.message}`,
+    ].join('\n');
+    window.open(`${SITE_CONFIG.whatsappUrl}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+    setStatus('success');
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  return (
+    <div className="w-full pt-40 pb-24 px-6 md:px-12 lg:px-24 flex flex-col min-h-screen">
+      <SEO title="Contact" description="Ready to start a project? Get in touch with ZERO ONE." />
+      <FadeIn>
+        <h1 className="text-6xl md:text-8xl lg:text-[10rem] font-bold tracking-tighter uppercase leading-none mb-16">
+          Let's <br className="md:hidden" /><span className="text-[#F14A0B]">Make An Impact.</span>
+        </h1>
+      </FadeIn>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 mt-8">
+        {/* Contact Form */}
+        <div className="lg:col-span-7">
+          <FadeIn delay={200}>
+            {status === 'success' ? (
+              <div className="bg-[#F7F5F0]/5 border border-[#F7F5F0]/20 p-12 flex flex-col items-center justify-center text-center min-h-[400px]">
+                <CheckCircle2 className="w-16 h-16 text-[#F14A0B] mb-6" />
+                <h3 className="text-3xl font-bold mb-4 tracking-tight">Inquiry Received.</h3>
+                <p className="text-[#F7F5F0]/70 text-lg">Thank you for reaching out. Our team will review your message and get back to you within 24-48 hours.</p>
+                <Button className="mt-8" onClick={() => setStatus('idle')}>Send Another Message</Button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-2">
+                    <label htmlFor="name" className="text-sm font-semibold uppercase tracking-widest text-[#F7F5F0]/60">Name *</label>
+                    <input required type="text" id="name" name="name" value={formData.name} onChange={handleChange} 
+                      className="w-full bg-transparent border-b border-[#F7F5F0]/30 py-3 text-lg focus:border-[#F14A0B] focus:outline-none transition-colors placeholder:text-[#F7F5F0]/20" 
+                      placeholder="Jane Doe"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="email" className="text-sm font-semibold uppercase tracking-widest text-[#F7F5F0]/60">Email *</label>
+                    <input required type="email" id="email" name="email" value={formData.email} onChange={handleChange}
+                      className="w-full bg-transparent border-b border-[#F7F5F0]/30 py-3 text-lg focus:border-[#F14A0B] focus:outline-none transition-colors placeholder:text-[#F7F5F0]/20" 
+                      placeholder="jane@company.com"
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-2">
+                    <label htmlFor="company" className="text-sm font-semibold uppercase tracking-widest text-[#F7F5F0]/60">Company</label>
+                    <input type="text" id="company" name="company" value={formData.company} onChange={handleChange}
+                      className="w-full bg-transparent border-b border-[#F7F5F0]/30 py-3 text-lg focus:border-[#F14A0B] focus:outline-none transition-colors placeholder:text-[#F7F5F0]/20" 
+                      placeholder="Organization Name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="type" className="text-sm font-semibold uppercase tracking-widest text-[#F7F5F0]/60">Project Type</label>
+                    <select id="type" name="type" value={formData.type} onChange={handleChange}
+                      className="w-full bg-transparent border-b border-[#F7F5F0]/30 py-3 text-lg focus:border-[#F14A0B] focus:outline-none transition-colors appearance-none cursor-pointer" 
+                    >
+                      <option value="" disabled className="bg-[#111111] text-[#F7F5F0]/50">Select an option</option>
+                      <option value="brand" className="bg-[#111111]">Brand Identity</option>
+                      <option value="digital" className="bg-[#111111]">Digital Platform / Website</option>
+                      <option value="campaign" className="bg-[#111111]">Campaign & Content</option>
+                      <option value="other" className="bg-[#111111]">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="message" className="text-sm font-semibold uppercase tracking-widest text-[#F7F5F0]/60">Message *</label>
+                  <textarea required id="message" name="message" rows={4} value={formData.message} onChange={handleChange}
+                    className="w-full bg-transparent border-b border-[#F7F5F0]/30 py-3 text-lg focus:border-[#F14A0B] focus:outline-none transition-colors resize-none placeholder:text-[#F7F5F0]/20" 
+                    placeholder="Tell us about your project..."
+                  />
+                </div>
+
+                <Button type="submit" primary disabled={status === 'submitting'} className="w-full md:w-auto mt-4">
+                  {status === 'submitting' ? 'Sending...' : 'Submit Inquiry'}
+                </Button>
+              </form>
+            )}
+          </FadeIn>
+        </div>
+
+        {/* Contact Info Sidebar */}
+        <div className="lg:col-span-4 lg:col-start-9 flex flex-col gap-12 mt-12 lg:mt-0">
+          <FadeIn delay={400}>
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-[#F7F5F0]/60 mb-4">WhatsApp Business</h3>
+            <a href={SITE_CONFIG.whatsappUrl} target="_blank" rel="noreferrer" className="text-2xl md:text-3xl font-bold hover:text-[#F14A0B] transition-colors inline-flex items-center gap-3 break-all">
+              <MessageCircle className="w-7 h-7 shrink-0" />
+              {SITE_CONFIG.whatsapp}
+            </a>
+          </FadeIn>
+
+          <FadeIn delay={500}>
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-[#F7F5F0]/60 mb-6">Find ZERO ONE</h3>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+              {[
+                ['Instagram', SITE_CONFIG.social.instagram],
+                ['LinkedIn', SITE_CONFIG.social.linkedin],
+                ['Facebook', SITE_CONFIG.social.facebook],
+                ['Threads', SITE_CONFIG.social.threads],
+                ['TikTok', SITE_CONFIG.social.tiktok],
+                ['X', SITE_CONFIG.social.x],
+              ].map(([label, href]) => (
+                <a key={label} href={href} target="_blank" rel="noreferrer" className="text-[#F7F5F0]/70 hover:text-[#F14A0B] transition-colors text-sm font-medium flex items-center gap-2">
+                  {label}<ArrowUpRight size={14} />
+                </a>
+              ))}
+              <span className="text-[#F7F5F0]/50 text-sm font-medium">Snapchat: {SITE_CONFIG.social.snapchat}</span>
+            </div>
+          </FadeIn>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const NotFound = ({ navigate }: { navigate: (path: string) => void }) => (
+  <div className="w-full min-h-screen flex flex-col items-center justify-center text-center px-6">
+    <SEO title="404 Not Found" description="Page not found." />
+    <h1 className="text-9xl font-bold tracking-tighter text-[#F14A0B] mb-4">404</h1>
+    <h2 className="text-3xl font-bold mb-8">Page Not Found</h2>
+    <p className="text-[#F7F5F0]/60 mb-12 max-w-md">The page you are looking for doesn't exist or has been moved.</p>
+    <Button onClick={() => navigate('/')}>Return Home</Button>
+  </div>
+);
+
+// ============================================================================
+// 4. MAIN APP CONTAINER (LAYOUT & ROUTING)
+// ============================================================================
+
+export default function App() {
+  const { path, navigate } = useRouter();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Close menu on route change
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [path]);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMenuOpen) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = 'unset';
+    return () => { document.body.style.overflow = 'unset'; }
+  }, [isMenuOpen]);
+
+  const navLinks = [
+    { id: '/work', label: 'Work' },
+    { id: '/services', label: 'Services' },
+    { id: '/about', label: 'About' },
+  ];
+
+  const renderPage = () => {
+    switch (path) {
+      case '/': return <Home navigate={navigate} />;
+      case '/work': return <Work />;
+      case '/services': return <Services />;
+      case '/about': return <About />;
+      case '/contact': return <Contact />;
+      default: return <NotFound navigate={navigate} />;
+    }
+  };
+
+  return (
+    <>
+      <style>{`
+        /* Global Reset & Typography Polish */
+        :root { color-scheme: dark; }
+        ::selection { background-color: #F14A0B; color: #111111; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #111111; }
+        ::-webkit-scrollbar-thumb { background: #333; }
+        ::-webkit-scrollbar-thumb:hover { background: #F14A0B; }
+        html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+        body { background-color: #111111; color: #F7F5F0; }
+      `}</style>
+
+      <div className="min-h-screen font-sans flex flex-col relative">
+        
+        {/* TOP NAVIGATION */}
+        <nav className="fixed top-0 left-0 w-full z-50 bg-[#111111]/80 backdrop-blur-xl border-b border-[#F7F5F0]/5 transition-all duration-300">
+          <div className="flex items-center justify-between px-6 md:px-12 lg:px-24 h-20 md:h-24">
+            
+            <Logo onClick={() => navigate('/')} />
+
+            {/* Desktop Links */}
+            <div className="hidden md:flex items-center gap-12 absolute left-1/2 -translate-x-1/2">
+              {navLinks.map((link) => (
+                <button
+                  key={link.id}
+                  onClick={() => navigate(link.id)}
+                  className={`text-xs font-bold uppercase tracking-[0.15em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F14A0B] rounded-sm ${
+                    path === link.id ? 'text-[#F14A0B]' : 'text-[#F7F5F0]/80 hover:text-[#F7F5F0]'
+                  }`}
+                >
+                  {link.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Desktop CTA */}
+            <div className="hidden md:block">
+               <button 
+                  onClick={() => navigate('/contact')}
+                  className="px-6 py-3 bg-[#F7F5F0] hover:bg-[#F14A0B] text-[#111111] rounded-full text-xs font-bold uppercase tracking-[0.1em] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F14A0B] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111111]"
+               >
+                 Start a Project
+               </button>
+            </div>
+
+            {/* Mobile Menu Toggle */}
+            <button 
+              className="md:hidden text-[#F7F5F0] hover:text-[#F14A0B] transition-colors z-50 relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F14A0B]"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? "Close Menu" : "Open Menu"}
+            >
+              {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+          </div>
+        </nav>
+
+        {/* MOBILE FULLSCREEN MENU */}
+        <div 
+          className={`fixed inset-0 bg-[#111111] z-40 flex flex-col justify-center px-8 transition-all duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] md:hidden ${
+            isMenuOpen ? 'opacity-100 visible pointer-events-auto' : 'opacity-0 invisible pointer-events-none'
+          }`}
+        >
+          <div className="flex flex-col gap-8">
+            {[...navLinks, { id: '/contact', label: 'Contact' }].map((link, i) => (
+              <button
+                key={link.id}
+                onClick={() => navigate(link.id)}
+                style={{ transitionDelay: isMenuOpen ? `${i * 100}ms` : '0ms' }}
+                className={`text-5xl font-bold uppercase tracking-tighter text-left transition-all duration-500 transform ${
+                  isMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+                } ${path === link.id ? 'text-[#F14A0B]' : 'text-[#F7F5F0]'}`}
+              >
+                {link.label}
+              </button>
+            ))}
+          </div>
+          
+          <div 
+             className={`mt-16 pt-8 border-t border-[#F7F5F0]/10 flex flex-col gap-4 transition-all duration-700 delay-300 transform ${isMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
+          >
+             <p className="text-sm font-bold uppercase tracking-widest text-[#F14A0B]">Get in touch</p>
+             <a href={SITE_CONFIG.whatsappUrl} target="_blank" rel="noreferrer" className="text-xl font-light hover:text-[#F14A0B] transition-colors">WhatsApp — {SITE_CONFIG.whatsapp}</a>
+          </div>
+        </div>
+
+        {/* MAIN CONTENT AREA */}
+        <main className="flex-grow flex flex-col">
+          {renderPage()}
+        </main>
+
+        {/* FOOTER */}
+        <footer className="w-full bg-[#111111] pt-24 pb-12 px-6 md:px-12 lg:px-24">
+          {/* Pre-footer CTA */}
+          <div className="mb-24 pb-24 border-b border-[#F7F5F0]/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-10">
+             <h2 className="text-4xl md:text-6xl font-bold tracking-tighter uppercase">
+               Ready to <br className="hidden md:block"/> make your mark?
+             </h2>
+             <Button primary onClick={() => navigate('/contact')}>Let's Talk</Button>
+          </div>
+
+          <div className="flex flex-col lg:flex-row justify-between items-start gap-16 mb-24">
+            <div className="max-w-sm">
+              <Logo onClick={() => navigate('/')} className="h-12 mb-8 opacity-90" />
+              <p className="text-[#F7F5F0]/60 font-light leading-relaxed">
+                A creative marketing agency designing brands, campaigns, and digital platforms for the future.
+              </p>
+            </div>
+            
+            <div className="flex flex-wrap gap-16 md:gap-24">
+              <div className="flex flex-col gap-4">
+                <h4 className="font-bold text-[#F14A0B] uppercase tracking-widest text-xs mb-4">Sitemap</h4>
+                <button onClick={() => navigate('/')} className="text-[#F7F5F0]/70 hover:text-[#F7F5F0] transition-colors text-left text-sm font-medium">Home</button>
+                <button onClick={() => navigate('/work')} className="text-[#F7F5F0]/70 hover:text-[#F7F5F0] transition-colors text-left text-sm font-medium">Work</button>
+                <button onClick={() => navigate('/services')} className="text-[#F7F5F0]/70 hover:text-[#F7F5F0] transition-colors text-left text-sm font-medium">Services</button>
+                <button onClick={() => navigate('/about')} className="text-[#F7F5F0]/70 hover:text-[#F7F5F0] transition-colors text-left text-sm font-medium">About</button>
+                <button onClick={() => navigate('/contact')} className="text-[#F7F5F0]/70 hover:text-[#F7F5F0] transition-colors text-left text-sm font-medium">Contact</button>
+              </div>
+              <div className="flex flex-col gap-4">
+                <h4 className="font-bold text-[#F14A0B] uppercase tracking-widest text-xs mb-4">Social</h4>
+                <a href={SITE_CONFIG.social.instagram} target="_blank" rel="noreferrer" className="text-[#F7F5F0]/70 hover:text-[#F7F5F0] transition-colors flex items-center gap-2 text-sm font-medium">Instagram <ArrowUpRight size={14}/></a>
+                <a href={SITE_CONFIG.social.linkedin} target="_blank" rel="noreferrer" className="text-[#F7F5F0]/70 hover:text-[#F7F5F0] transition-colors flex items-center gap-2 text-sm font-medium">LinkedIn <ArrowUpRight size={14}/></a>
+                <a href={SITE_CONFIG.social.facebook} target="_blank" rel="noreferrer" className="text-[#F7F5F0]/70 hover:text-[#F7F5F0] transition-colors flex items-center gap-2 text-sm font-medium">Facebook <ArrowUpRight size={14}/></a>
+                <a href={SITE_CONFIG.social.threads} target="_blank" rel="noreferrer" className="text-[#F7F5F0]/70 hover:text-[#F7F5F0] transition-colors flex items-center gap-2 text-sm font-medium">Threads <ArrowUpRight size={14}/></a>
+                <a href={SITE_CONFIG.social.tiktok} target="_blank" rel="noreferrer" className="text-[#F7F5F0]/70 hover:text-[#F7F5F0] transition-colors flex items-center gap-2 text-sm font-medium">TikTok <ArrowUpRight size={14}/></a>
+                <a href={SITE_CONFIG.social.x} target="_blank" rel="noreferrer" className="text-[#F7F5F0]/70 hover:text-[#F7F5F0] transition-colors flex items-center gap-2 text-sm font-medium">X <ArrowUpRight size={14}/></a>
+                <span className="text-[#F7F5F0]/50 text-sm font-medium">Snapchat: {SITE_CONFIG.social.snapchat}</span>
+              </div>
+              <div className="flex flex-col gap-4">
+                 <h4 className="font-bold text-[#F14A0B] uppercase tracking-widest text-xs mb-4">Contact</h4>
+                 <a href={SITE_CONFIG.whatsappUrl} target="_blank" rel="noreferrer" className="text-[#F7F5F0]/70 hover:text-[#F7F5F0] transition-colors text-sm font-medium">WhatsApp</a>
+                 <span className="text-[#F7F5F0]/50 text-sm font-medium">{SITE_CONFIG.whatsapp}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-8 border-t border-[#F7F5F0]/10 text-xs font-semibold uppercase tracking-widest text-[#F7F5F0]/40">
+            <p>&copy; {new Date().getFullYear()} {SITE_CONFIG.name}. All rights reserved.</p>
+            <div className="flex gap-8">
+              <span>Privacy Policy</span>
+              <span>Terms of Service</span>
+            </div>
+          </div>
+        </footer>
+
+      </div>
+    </>
+  );
+}
