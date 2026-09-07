@@ -8,6 +8,7 @@ import RemotePricingSync from './components/RemotePricingSync';
 import './lib/leadsCapture';
 import './styles.css';
 import './site-polish.css';
+import './pricing-polish.css';
 
 function Root() {
   const [path, setPath] = useState(() => window.location.pathname.replace(/\/+$/, '') || '/');
