@@ -31,7 +31,12 @@ function cardMarkup(pkg: PricingPackage) {
     )
     .join('');
   const message = encodeURIComponent(`Hi ZERO ONE, I'm interested in the ${pkg.name} package. I'd like to discuss the next steps.`);
-  return `<article class="zero-one-package zero-one-package--${esc(pkg.tone)}"><span class="zero-one-package__glow" aria-hidden="true"></span>${pkg.popular ? '<span class="zero-one-package__popular">Most Popular</span>' : ''}<div class="zero-one-package__top"><span class="zero-one-package__name">${esc(pkg.name)}</span><span class="zero-one-package__tag">${esc(pkg.billing_label)}</span></div><div class="zero-one-package__price"><strong>${esc(pkg.price)}</strong><span>${esc(pkg.currency)} / ${esc(pkg.billing_label)}</span></div><div class="zero-one-package__rule"></div>${groups}<a class="zero-one-package__cta" href="${WHATSAPP}${message}" target="_blank" rel="noopener noreferrer">Start with ${esc(pkg.name)}</a></article>`;
+  const toneLabel = pkg.tone === 'premium' ? 'Premium' : pkg.tone === 'growth' ? 'Growth' : 'Starter';
+  return `<article class="zero-one-package zero-one-package--${esc(pkg.tone)}" data-package-name="${esc(pkg.name)}"><span class="zero-one-package__glow" aria-hidden="true"></span>${pkg.popular ? '<span class="zero-one-package__popular">Most Popular</span>' : ''}<div class="zero-one-package__signal"><span class="zero-one-package__signal-dot"></span><span>${toneLabel} package</span></div><div class="zero-one-package__top"><span class="zero-one-package__name">${esc(pkg.name)}</span><span class="zero-one-package__tag">${esc(pkg.billing_label)}</span></div><div class="zero-one-package__price"><strong>${esc(pkg.price)}</strong><span>${esc(pkg.currency)} / ${esc(pkg.billing_label)}</span></div><div class="zero-one-package__rule"></div>${groups}<a class="zero-one-package__cta" href="${WHATSAPP}${message}" target="_blank" rel="noopener noreferrer">Start with ${esc(pkg.name)}</a></article>`;
+}
+
+function publishPackageSignal(pkg: PricingPackage) {
+  window.dispatchEvent(new CustomEvent('zero-one:pricing-focus', { detail: { name: pkg.name, tone: pkg.tone, popular: pkg.popular } }));
 }
 
 function syncPricing(packages: PricingPackage[]) {
@@ -43,13 +48,13 @@ function syncPricing(packages: PricingPackage[]) {
   const sorted = [...packages].sort((a, b) => a.sort_order - b.sort_order);
   let activeIndex = 0;
 
-  const render = () => {
+  const render = (direction: 'next' | 'prev' | 'direct' = 'direct') => {
     const pkg = sorted[activeIndex];
     grid.innerHTML = `
       <div class="zero-one-pricing-carousel" role="region" aria-label="Pricing packages" aria-live="polite">
         <button type="button" class="zero-one-pricing-carousel__arrow zero-one-pricing-carousel__arrow--prev" data-pricing-prev aria-label="Previous package">←</button>
         <div class="zero-one-pricing-carousel__viewport">
-          <div class="zero-one-pricing-carousel__card">${cardMarkup(pkg)}</div>
+          <div class="zero-one-pricing-carousel__card" data-direction="${direction}">${cardMarkup(pkg)}</div>
         </div>
         <button type="button" class="zero-one-pricing-carousel__arrow zero-one-pricing-carousel__arrow--next" data-pricing-next aria-label="Next package">→</button>
       </div>
@@ -68,20 +73,44 @@ function syncPricing(packages: PricingPackage[]) {
       </div>
     `;
 
+    const packageCard = grid.querySelector('.zero-one-package') as HTMLElement | null;
+    packageCard?.addEventListener('mousemove', (event) => {
+      if (window.matchMedia('(pointer: coarse)').matches) return;
+      const rect = packageCard.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width - 0.5;
+      const y = (event.clientY - rect.top) / rect.height - 0.5;
+      packageCard.style.setProperty('--tilt-x', `${(-y * 3).toFixed(2)}deg`);
+      packageCard.style.setProperty('--tilt-y', `${(x * 3).toFixed(2)}deg`);
+      packageCard.style.setProperty('--spot-x', `${(x + 0.5) * 100}%`);
+      packageCard.style.setProperty('--spot-y', `${(y + 0.5) * 100}%`);
+    });
+    packageCard?.addEventListener('mouseleave', () => {
+      packageCard.style.setProperty('--tilt-x', '0deg');
+      packageCard.style.setProperty('--tilt-y', '0deg');
+      packageCard.style.setProperty('--spot-x', '50%');
+      packageCard.style.setProperty('--spot-y', '34%');
+    });
+    packageCard?.addEventListener('mouseenter', () => publishPackageSignal(pkg));
+
     const prev = grid.querySelector('[data-pricing-prev]');
     const next = grid.querySelector('[data-pricing-next]');
     prev?.addEventListener('click', () => {
       activeIndex = (activeIndex - 1 + sorted.length) % sorted.length;
-      render();
+      publishPackageSignal(sorted[activeIndex]);
+      render('prev');
     });
     next?.addEventListener('click', () => {
       activeIndex = (activeIndex + 1) % sorted.length;
-      render();
+      publishPackageSignal(sorted[activeIndex]);
+      render('next');
     });
     grid.querySelectorAll<HTMLElement>('[data-pricing-index]').forEach((button) => {
       button.addEventListener('click', () => {
-        activeIndex = Number(button.dataset.pricingIndex ?? 0);
-        render();
+        const nextIndex = Number(button.dataset.pricingIndex ?? 0);
+        const nextDirection = nextIndex >= activeIndex ? 'next' : 'prev';
+        activeIndex = nextIndex;
+        publishPackageSignal(sorted[activeIndex]);
+        render(nextDirection);
       });
     });
 
@@ -89,6 +118,7 @@ function syncPricing(packages: PricingPackage[]) {
   };
 
   grid.className = 'zero-one-pricing__grid zero-one-pricing__grid--carousel';
+  publishPackageSignal(sorted[0]);
   render();
   return true;
 }
