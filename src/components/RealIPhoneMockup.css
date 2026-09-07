@@ -1,0 +1,35 @@
+/* Real iPhone 16 Pro frame from the open-source Mockify device-mockup project. */
+.zero-one-real-phone-frame {
+  background-image: url('https://cdn.jsdelivr.net/gh/Mecury-Labs/mockify@main/packages/mockify-react/assets/devices/iPhone%2016%20Pro%20-%20Natural%20Titanium.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  width: min(312px, 82vw) !important;
+  height: auto !important;
+  aspect-ratio: 1350 / 2760;
+  filter: drop-shadow(0 38px 55px rgba(17, 17, 17, 0.34));
+}
+
+.zero-one-real-phone-screen {
+  position: absolute !important;
+  left: 5.4815% !important;
+  top: 2.5725% !important;
+  width: 88.963% !important;
+  height: 94.8188% !important;
+  border-radius: 14.7407% !important;
+  background: #f7f5f0 !important;
+}
+
+.zero-one-real-phone-frame > div:first-child {
+  display: none !important;
+}
+
+@media (max-width: 640px) {
+  .zero-one-real-phone-frame {
+    width: min(278px, 82vw) !important;
+  }
+}
