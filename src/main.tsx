@@ -13,7 +13,6 @@ import './site-polish.css';
 import './pricing-polish.css';
 import './components/FloatingIsland.css';
 import './components/FloatingIslandFix.css';
-import './components/RealIPhoneMockup.css';
 
 function Root() {
   const [path, setPath] = useState(() => window.location.pathname.replace(/\/+$/, '') || '/');
