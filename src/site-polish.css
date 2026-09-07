@@ -1,32 +1,176 @@
-/* ZERO ONE final visual polish */
+/* ZERO ONE — final visual redesign layer */
 .zero-one-nav-extra a[href^="mailto:"] { display: none !important; }
 
-/* Keep page rhythm consistent beneath the fixed navigation. */
-main { min-width: 0; }
-main > div { min-width: 0; }
+:root {
+  --zo-black: #111111;
+  --zo-paper: #f7f5f0;
+  --zo-orange: #f14a0b;
+  --zo-muted: rgba(247,245,240,.58);
+  --zo-line: rgba(247,245,240,.11);
+}
 
-/* Cleaner editorial image treatment. */
+html { scroll-behavior: smooth; }
+body { background: var(--zo-black); color: var(--zo-paper); }
+main, main > div { min-width: 0; }
 img { max-width: 100%; }
-
-/* Prevent long contact strings from creating horizontal overflow. */
 a, button, p, h1, h2, h3, h4, span { overflow-wrap: anywhere; }
 
-/* Pricing remains a strong visual anchor without touching its content. */
+/* Fixed navigation: quieter, tighter, more editorial. */
+header {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(17,17,17,.82) !important;
+  border-bottom: 1px solid rgba(247,245,240,.08);
+}
+header a, header button { transition: color .25s ease, opacity .25s ease, background-color .25s ease, border-color .25s ease, transform .25s ease; }
+header a:hover { color: var(--zo-orange) !important; }
+
+/* Home hero — stronger composition and controlled vertical rhythm. */
+main > div:first-child > section:first-of-type {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+main > div:first-child > section:first-of-type::before {
+  content: "01 / CREATIVE PARTNER";
+  position: absolute;
+  top: 50%;
+  right: -34px;
+  transform: rotate(90deg) translateY(-50%);
+  transform-origin: center;
+  color: rgba(247,245,240,.22);
+  font: 600 9px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .22em;
+  pointer-events: none;
+}
+main > div:first-child > section:first-of-type::after {
+  content: "";
+  position: absolute;
+  left: 6vw;
+  right: 6vw;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(247,245,240,.16), transparent);
+}
+
+/* Give the primary headline a more deliberate editorial scale. */
+main > div:first-child > section:first-of-type h1 {
+  max-width: 1180px;
+  letter-spacing: -.075em;
+}
+main > div:first-child > section:first-of-type h1 span:first-child { position: relative; }
+main > div:first-child > section:first-of-type h1 span:first-child::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -.08em;
+  width: 100%;
+  height: 2px;
+  background: var(--zo-orange);
+  transform: scaleX(.32);
+  transform-origin: left;
+  transition: transform .7s cubic-bezier(.2,.7,.2,1);
+}
+main > div:first-child > section:first-of-type:hover h1 span:first-child::after { transform: scaleX(1); }
+
+/* Client strip becomes a proper transition between hero and work. */
+.client-marquee-section {
+  border-top: 1px solid var(--zo-line);
+  border-bottom: 1px solid var(--zo-line);
+  background: #101010;
+}
+.client-marquee__header { padding-top: 18px; padding-bottom: 18px; }
+.client-marquee__eyebrow { letter-spacing: .18em; }
+.client-marquee__item { opacity: .58; transition: opacity .3s ease, transform .3s ease; }
+.client-marquee__item:hover { opacity: 1; transform: translateY(-2px); }
+
+/* Work section — cleaner grid and stronger project framing. */
+main > div:first-child > section:nth-of-type(3) { position: relative; }
+main > div:first-child > section:nth-of-type(3) > div:nth-child(1) h2 { letter-spacing: -.055em; }
+main > div:first-child > section:nth-of-type(3) .group > div:first-child {
+  position: relative;
+  border: 1px solid rgba(247,245,240,.08);
+  box-shadow: 0 18px 60px rgba(0,0,0,.16);
+  transition: border-color .35s ease, box-shadow .35s ease, transform .35s ease;
+}
+main > div:first-child > section:nth-of-type(3) .group:hover > div:first-child {
+  border-color: rgba(241,74,11,.45);
+  box-shadow: 0 24px 80px rgba(0,0,0,.3);
+}
+main > div:first-child > section:nth-of-type(3) .group h3 { letter-spacing: -.045em; }
+main > div:first-child > section:nth-of-type(3) .group .w-10 { flex: 0 0 auto; }
+
+/* Orange accent on project metadata. */
+main > div:first-child > section:nth-of-type(3) .group p { transition: color .25s ease; }
+main > div:first-child > section:nth-of-type(3) .group:hover p { color: rgba(247,245,240,.72); }
+
+/* Statement section — make it feel like a brand manifesto. */
+main > div:first-child > section:nth-of-type(4) {
+  position: relative;
+  overflow: hidden;
+}
+main > div:first-child > section:nth-of-type(4)::before {
+  content: "ZERO / ONE";
+  position: absolute;
+  top: 38px;
+  right: 6vw;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .28em;
+  opacity: .28;
+}
+main > div:first-child > section:nth-of-type(4) h2 { letter-spacing: -.065em; }
+
+/* Inner page rhythm. */
+main > div:not(:first-child) > div:first-child,
+main > div:not(:first-child) > section:first-child {
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Service rows get a premium interaction state. */
+main > div:not(:first-child) .group:hover { background: rgba(247,245,240,.035); }
+main > div:not(:first-child) .group { transition: background-color .3s ease, padding .3s ease; }
+
+/* Pricing anchor and cards. */
 .zero-one-pricing { scroll-margin-top: 96px; }
 .zero-one-pricing__intro p { max-width: 58ch; }
+.zero-one-package {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(247,245,240,.14) !important;
+  box-shadow: 0 24px 80px rgba(0,0,0,.16);
+  transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
+}
+.zero-one-package:hover { transform: translateY(-6px); border-color: rgba(241,74,11,.38) !important; box-shadow: 0 34px 100px rgba(0,0,0,.28); }
+.zero-one-package__cta { transition: transform .25s ease, box-shadow .25s ease; }
+.zero-one-package__cta:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0,0,0,.22); }
 
-/* Better small-screen breathing room. */
+/* Footer closure. */
+footer { border-top: 1px solid rgba(247,245,240,.1); }
+footer a { transition: color .25s ease, opacity .25s ease; }
+footer a:hover { color: var(--zo-orange) !important; }
+
+/* Accessibility / overflow. */
+:focus-visible { outline: 2px solid var(--zo-orange); outline-offset: 4px; }
+
 @media (max-width: 767px) {
   .zero-one-pricing { scroll-margin-top: 76px; }
   footer { overflow: hidden; }
+  main > div:first-child > section:first-of-type { min-height: 92svh; padding-top: 8rem; }
+  main > div:first-child > section:first-of-type::before { display: none; }
+  main > div:first-child > section:first-of-type h1 { letter-spacing: -.065em; }
+  main > div:first-child > section:nth-of-type(3) { padding-top: 5rem; padding-bottom: 5rem; }
+  main > div:first-child > section:nth-of-type(4) { padding-top: 6rem; padding-bottom: 6rem; }
+  main > div:first-child > section:nth-of-type(4)::before { top: 24px; right: 24px; }
 }
 
-/* Respect reduced-motion preferences globally. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
+    animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: .01ms !important;
   }
 }
