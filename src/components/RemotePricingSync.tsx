@@ -30,13 +30,53 @@ function cardMarkup(pkg: PricingPackage) {
           .join('')}</ul></div>`,
     )
     .join('');
+  const featureCount = pkg.groups.reduce((total, group) => total + group.items.length, 0);
   const message = encodeURIComponent(`Hi ZERO ONE, I'm interested in the ${pkg.name} package. I'd like to discuss the next steps.`);
   const toneLabel = pkg.tone === 'premium' ? 'Premium' : pkg.tone === 'growth' ? 'Growth' : 'Starter';
-  return `<article class="zero-one-package zero-one-package--${esc(pkg.tone)}" data-package-name="${esc(pkg.name)}"><span class="zero-one-package__glow" aria-hidden="true"></span>${pkg.popular ? '<span class="zero-one-package__popular">Most Popular</span>' : ''}<div class="zero-one-package__signal"><span class="zero-one-package__signal-dot"></span><span>${toneLabel} package</span></div><div class="zero-one-package__top"><span class="zero-one-package__name">${esc(pkg.name)}</span><span class="zero-one-package__tag">${esc(pkg.billing_label)}</span></div><div class="zero-one-package__price"><strong>${esc(pkg.price)}</strong><span>${esc(pkg.currency)} / ${esc(pkg.billing_label)}</span></div><div class="zero-one-package__rule"></div>${groups}<a class="zero-one-package__cta" href="${WHATSAPP}${message}" target="_blank" rel="noopener noreferrer">Start with ${esc(pkg.name)}</a></article>`;
+  return `<article class="zero-one-package zero-one-package--${esc(pkg.tone)}" data-package-name="${esc(pkg.name)}"><span class="zero-one-package__glow" aria-hidden="true"></span>${pkg.popular ? '<span class="zero-one-package__popular">Most Popular</span>' : ''}<div class="zero-one-package__signal"><span class="zero-one-package__signal-dot"></span><span>${toneLabel} package</span></div><div class="zero-one-package__top"><span class="zero-one-package__name">${esc(pkg.name)}</span><span class="zero-one-package__tag">${esc(pkg.billing_label)}</span></div><div class="zero-one-package__price"><strong>${esc(pkg.price)}</strong><span>${esc(pkg.currency)} / ${esc(pkg.billing_label)}</span></div><div class="zero-one-package__details-head"><span><b>${featureCount}</b> included items</span><button type="button" class="zero-one-package__details-toggle" aria-expanded="false" data-pricing-details-toggle><span class="zero-one-package__details-toggle-label">View what’s included</span><span class="zero-one-package__details-toggle-icon" aria-hidden="true">+</span></button></div><div class="zero-one-package__details" aria-hidden="true"><div class="zero-one-package__details-inner">${groups}</div></div><a class="zero-one-package__cta" href="${WHATSAPP}${message}" target="_blank" rel="noopener noreferrer">Start with ${esc(pkg.name)}</a></article>`;
 }
 
 function publishPackageSignal(pkg: PricingPackage) {
   window.dispatchEvent(new CustomEvent('zero-one:pricing-focus', { detail: { name: pkg.name, tone: pkg.tone, popular: pkg.popular } }));
+}
+
+function setupDetailToggle(grid: Element) {
+  const toggle = grid.querySelector<HTMLButtonElement>('[data-pricing-details-toggle]');
+  const details = grid.querySelector<HTMLElement>('.zero-one-package__details');
+  if (!toggle || !details) return;
+  toggle.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!open));
+    details.setAttribute('aria-hidden', String(open));
+    details.classList.toggle('is-open', !open);
+    const label = toggle.querySelector('.zero-one-package__details-toggle-label');
+    if (label) label.textContent = open ? 'View what’s included' : 'Hide details';
+  });
+}
+
+function setupCardTilt(grid: Element) {
+  const packageCard = grid.querySelector<HTMLElement>('.zero-one-package');
+  if (!packageCard || !window.matchMedia('(pointer: fine)').matches) return;
+  packageCard.addEventListener('mousemove', (event) => {
+    const rect = packageCard.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    packageCard.style.setProperty('--tilt-x', `${(-y * 3).toFixed(2)}deg`);
+    packageCard.style.setProperty('--tilt-y', `${(x * 3).toFixed(2)}deg`);
+    packageCard.style.setProperty('--spot-x', `${(x + 0.5) * 100}%`);
+    packageCard.style.setProperty('--spot-y', `${(y + 0.5) * 100}%`);
+  });
+  packageCard.addEventListener('mouseleave', () => {
+    packageCard.style.setProperty('--tilt-x', '0deg');
+    packageCard.style.setProperty('--tilt-y', '0deg');
+    packageCard.style.setProperty('--spot-x', '50%');
+    packageCard.style.setProperty('--spot-y', '34%');
+  });
+  packageCard.addEventListener('mouseenter', () => publishPackageSignal(packageCard.dataset.packageName ? packagesFallback(packageCard.dataset.packageName) : ({} as PricingPackage)));
+}
+
+function packagesFallback(name: string): PricingPackage {
+  return { id: '', name, price: '', currency: '', billing_label: '', tone: 'starter', popular: false, groups: [], sort_order: 0 };
 }
 
 function syncPricing(packages: PricingPackage[]) {
@@ -63,9 +103,7 @@ function syncPricing(packages: PricingPackage[]) {
           ${sorted
             .map(
               (item, index) =>
-                `<button type="button" role="tab" aria-selected="${index === activeIndex}" aria-label="View ${esc(item.name)} package" class="zero-one-pricing-carousel__dot${
-                  index === activeIndex ? ' is-active' : ''
-                }" data-pricing-index="${index}"><span>${String(index + 1).padStart(2, '0')}</span></button>`,
+                `<button type="button" role="tab" aria-selected="${index === activeIndex}" aria-label="View ${esc(item.name)} package" class="zero-one-pricing-carousel__dot${index === activeIndex ? ' is-active' : ''}" data-pricing-index="${index}"><span>${String(index + 1).padStart(2, '0')}</span></button>`,
             )
             .join('')}
         </div>
@@ -73,24 +111,8 @@ function syncPricing(packages: PricingPackage[]) {
       </div>
     `;
 
-    const packageCard = grid.querySelector('.zero-one-package') as HTMLElement | null;
-    packageCard?.addEventListener('mousemove', (event) => {
-      if (window.matchMedia('(pointer: coarse)').matches) return;
-      const rect = packageCard.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / rect.width - 0.5;
-      const y = (event.clientY - rect.top) / rect.height - 0.5;
-      packageCard.style.setProperty('--tilt-x', `${(-y * 3).toFixed(2)}deg`);
-      packageCard.style.setProperty('--tilt-y', `${(x * 3).toFixed(2)}deg`);
-      packageCard.style.setProperty('--spot-x', `${(x + 0.5) * 100}%`);
-      packageCard.style.setProperty('--spot-y', `${(y + 0.5) * 100}%`);
-    });
-    packageCard?.addEventListener('mouseleave', () => {
-      packageCard.style.setProperty('--tilt-x', '0deg');
-      packageCard.style.setProperty('--tilt-y', '0deg');
-      packageCard.style.setProperty('--spot-x', '50%');
-      packageCard.style.setProperty('--spot-y', '34%');
-    });
-    packageCard?.addEventListener('mouseenter', () => publishPackageSignal(pkg));
+    setupDetailToggle(grid);
+    setupCardTilt(grid);
 
     const prev = grid.querySelector('[data-pricing-prev]');
     const next = grid.querySelector('[data-pricing-next]');
@@ -132,21 +154,15 @@ export default function RemotePricingSync() {
     if (!supabaseUrl || !supabaseKey || (window.location.pathname !== '/' && window.location.pathname !== '')) return;
 
     let active = true;
-    fetch(`${supabaseUrl}/rest/v1/pricing_packages?select=id,name,price,currency,billing_label,tone,popular,groups,sort_order&order=sort_order.asc,created_at.desc`, {
-      headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` },
-    })
+    fetch(`${supabaseUrl}/rest/v1/pricing_packages?select=id,name,price,currency,billing_label,tone,popular,groups,sort_order&order=sort_order.asc,created_at.desc`, { headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` } })
       .then(async (response) => {
         if (!response.ok) throw new Error('Pricing request failed');
         return response.json() as Promise<PricingPackage[]>;
       })
-      .then((data) => {
-        if (active) setPackages(data);
-      })
+      .then((data) => { if (active) setPackages(data); })
       .catch(() => undefined);
 
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, []);
 
   useEffect(() => {
