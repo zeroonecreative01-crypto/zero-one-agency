@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import { AdminRoute, AuthProvider } from './auth/AuthProvider';
 import AdminAccessButton from './components/AdminAccessButton';
+import RemotePortfolioSync from './components/RemotePortfolioSync';
 import './lib/leadsCapture';
 import './styles.css';
 import './site-polish.css';
@@ -21,6 +22,7 @@ function Root() {
   return (
     <>
       <App />
+      <RemotePortfolioSync />
       <AdminAccessButton />
     </>
   );
