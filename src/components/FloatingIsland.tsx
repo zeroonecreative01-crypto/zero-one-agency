@@ -10,9 +10,9 @@ const NAV_ITEMS = [
 ];
 
 const WELCOME_MESSAGES = [
-  'Welcome to ZERO ONE — We build brands that move people.',
-  'Welcome to ZERO ONE — Creative built with intention.',
-  'Welcome to ZERO ONE — Ideas into impact.',
+  'Welcome to ZERO ONE — we build brands that move people.',
+  'Welcome to ZERO ONE — strategy, design, content and digital.',
+  'Welcome to ZERO ONE — creative built with intention.',
 ];
 
 function navigate(href: string) {
@@ -32,10 +32,11 @@ function navigate(href: string) {
 
 export default function FloatingIsland() {
   const [expanded, setExpanded] = useState(false);
+  const [message, setMessage] = useState<string>('ONE');
   const [welcome, setWelcome] = useState(false);
-  const [welcomeIndex, setWelcomeIndex] = useState(0);
   const [touchDevice, setTouchDevice] = useState(false);
   const hideTimer = useRef<number | null>(null);
+  const messageTimer = useRef<number | null>(null);
 
   useEffect(() => {
     document.body.classList.add('zero-one-island-ready');
@@ -46,16 +47,30 @@ export default function FloatingIsland() {
     coarse.addEventListener?.('change', update);
 
     const showTimer = window.setTimeout(() => {
-      setWelcomeIndex(Math.floor(Math.random() * WELCOME_MESSAGES.length));
+      setMessage('ONE');
       setWelcome(true);
-      window.setTimeout(() => setWelcome(false), 4200);
-    }, 650);
+      messageTimer.current = window.setTimeout(() => setWelcome(false), 4200);
+    }, 700);
+
+    const onPricingFocus = (event: Event) => {
+      const detail = (event as CustomEvent<{ name?: string; tone?: string }>).detail;
+      if (!detail?.name) return;
+      if (messageTimer.current) window.clearTimeout(messageTimer.current);
+      const tone = detail.tone ? `${detail.tone[0].toUpperCase()}${detail.tone.slice(1)}` : 'Package';
+      setMessage(`${tone} — ${detail.name}`);
+      setWelcome(true);
+      messageTimer.current = window.setTimeout(() => setWelcome(false), 1800);
+    };
+
+    window.addEventListener('zero-one:pricing-focus', onPricingFocus);
 
     return () => {
       document.body.classList.remove('zero-one-island-ready');
       window.clearTimeout(showTimer);
       coarse.removeEventListener?.('change', update);
+      window.removeEventListener('zero-one:pricing-focus', onPricingFocus);
       if (hideTimer.current) window.clearTimeout(hideTimer.current);
+      if (messageTimer.current) window.clearTimeout(messageTimer.current);
     };
   }, []);
 
@@ -103,9 +118,9 @@ export default function FloatingIsland() {
             setWelcome(false);
           }}
         >
-          <span className="zero-one-island__mark">ZERO ONE</span>
+          <span className="zero-one-island__mark">{welcome ? '' : message}</span>
           <span className="zero-one-island__status" aria-hidden="true" />
-          <span className="zero-one-island__welcome" aria-live="polite">{WELCOME_MESSAGES[welcomeIndex]}</span>
+          <span className="zero-one-island__welcome" aria-live="polite">{message}</span>
           <span className="zero-one-island__menu-icon">{expanded ? <X size={14} /> : <Menu size={14} />}</span>
         </button>
 
