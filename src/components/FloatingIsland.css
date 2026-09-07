@@ -1,3 +1,14 @@
+:root {
+  --zo-island-black: #090909;
+  --zo-island-paper: #f7f5f0;
+  --zo-island-orange: #f14a0b;
+}
+
+/* Replace the legacy full-width site header on public pages. */
+body.zero-one-island-ready > #root header {
+  display: none !important;
+}
+
 .zero-one-island-layer {
   position: fixed;
   top: max(12px, env(safe-area-inset-top));
@@ -14,31 +25,40 @@
   position: relative;
   width: var(--island-w);
   height: 44px;
+  overflow: hidden;
   border: 1px solid rgba(255,255,255,.10);
   border-radius: 999px;
-  background: rgba(10,10,10,.78);
-  box-shadow: 0 18px 55px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.07);
-  backdrop-filter: blur(24px) saturate(135%);
-  -webkit-backdrop-filter: blur(24px) saturate(135%);
-  overflow: hidden;
+  background: rgba(9,9,9,.76);
+  box-shadow: 0 18px 55px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.08);
+  backdrop-filter: blur(26px) saturate(140%);
+  -webkit-backdrop-filter: blur(26px) saturate(140%);
   pointer-events: auto;
-  transition: width 620ms cubic-bezier(.22,1,.36,1), height 620ms cubic-bezier(.22,1,.36,1), border-color 300ms ease, background-color 300ms ease, box-shadow 500ms ease;
+  transition: width 620ms cubic-bezier(.22,1,.36,1), border-color 300ms ease, background-color 300ms ease, box-shadow 500ms ease;
+}
+
+.zero-one-island::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  border: 1px solid rgba(255,255,255,.035);
+  pointer-events: none;
 }
 
 .zero-one-island.is-expanded,
 .zero-one-island.is-welcome {
   width: var(--expanded-w);
   border-color: rgba(255,255,255,.15);
-  background: rgba(10,10,10,.86);
-  box-shadow: 0 24px 80px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.09);
+  background: rgba(9,9,9,.86);
+  box-shadow: 0 24px 80px rgba(0,0,0,.40), inset 0 1px 0 rgba(255,255,255,.10);
 }
 
 .zero-one-island__shine {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(100deg, rgba(255,255,255,.07), transparent 22%, transparent 78%, rgba(241,74,11,.08));
-  opacity: .72;
+  background: linear-gradient(105deg, rgba(255,255,255,.09), transparent 20%, transparent 72%, rgba(241,74,11,.08));
+  opacity: .68;
   pointer-events: none;
 }
 
@@ -46,6 +66,7 @@
   position: absolute;
   inset: 0 auto 0 0;
   width: var(--island-w);
+  z-index: 3;
   display: flex;
   align-items: center;
   gap: 9px;
@@ -53,26 +74,22 @@
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: #f7f5f0;
+  color: var(--zo-island-paper);
   font: 700 10px/1 system-ui, sans-serif;
   letter-spacing: .16em;
   text-transform: uppercase;
   text-align: left;
   cursor: pointer;
-  z-index: 3;
 }
 
-.zero-one-island__mark {
-  color: #f7f5f0;
-  flex: 0 0 auto;
-}
+.zero-one-island__mark { flex: 0 0 auto; }
 
 .zero-one-island__status {
   width: 5px;
   height: 5px;
   flex: 0 0 auto;
   border-radius: 50%;
-  background: #f14a0b;
+  background: var(--zo-island-orange);
   box-shadow: 0 0 12px rgba(241,74,11,.55);
   transition: transform 300ms ease, opacity 300ms ease;
 }
@@ -82,12 +99,12 @@
   left: 44px;
   right: 30px;
   overflow: hidden;
-  color: rgba(247,245,240,.72);
+  color: rgba(247,245,240,.78);
   opacity: 0;
   transform: translateY(8px) scale(.98);
   white-space: nowrap;
   text-overflow: ellipsis;
-  letter-spacing: .11em;
+  letter-spacing: .10em;
   transition: opacity 280ms ease, transform 420ms cubic-bezier(.22,1,.36,1);
   pointer-events: none;
 }
@@ -99,28 +116,29 @@
 
 .zero-one-island__menu-icon {
   position: absolute;
-  right: 12px;
   top: 50%;
+  right: 11px;
   display: grid;
   place-items: center;
-  width: 20px;
-  height: 20px;
+  width: 21px;
+  height: 21px;
   transform: translateY(-50%);
   border-radius: 50%;
-  color: rgba(247,245,240,.48);
+  color: rgba(247,245,240,.45);
   opacity: 1;
   transition: opacity 250ms ease, background-color 250ms ease, color 250ms ease;
 }
 
-.zero-one-island:hover .zero-one-island__menu-icon { color: #f7f5f0; }
+.zero-one-island:hover .zero-one-island__menu-icon { color: var(--zo-island-paper); background: rgba(255,255,255,.06); }
 
 .zero-one-island__nav {
   position: absolute;
-  inset: 0 15px 0 150px;
+  inset: 0 12px 0 140px;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 3px;
+  gap: 2px;
   opacity: 0;
   transform: translateX(18px);
   transition: opacity 280ms ease 120ms, transform 620ms cubic-bezier(.22,1,.36,1) 40ms;
@@ -144,30 +162,31 @@
   background: transparent;
   color: rgba(247,245,240,.58);
   font: 600 9px/1 system-ui, sans-serif;
-  letter-spacing: .12em;
+  letter-spacing: .11em;
   text-transform: uppercase;
+  white-space: nowrap;
   opacity: 0;
   transform: translateY(5px);
   transition: color 220ms ease, background-color 220ms ease, border-color 220ms ease, opacity 420ms ease, transform 420ms cubic-bezier(.22,1,.36,1);
 }
 
 .zero-one-island.is-expanded .zero-one-island__nav-item { opacity: 1; transform: translateY(0); }
-.zero-one-island__nav-item:hover { color: #f7f5f0; background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.08); }
-.zero-one-island__nav-item:last-child { color: #f14a0b; }
-.zero-one-island__nav-item:last-child:hover { color: #111; background: #f14a0b; border-color: #f14a0b; }
+.zero-one-island__nav-item:hover { color: var(--zo-island-paper); background: rgba(255,255,255,.055); border-color: rgba(255,255,255,.08); }
+.zero-one-island__nav-item:last-child { color: var(--zo-island-orange); }
+.zero-one-island__nav-item:last-child:hover { color: var(--zo-island-black); background: var(--zo-island-orange); border-color: var(--zo-island-orange); }
 
 @media (max-width: 767px) {
   .zero-one-island-layer { top: max(10px, env(safe-area-inset-top)); }
   .zero-one-island {
     --island-w: 116px;
-    --expanded-w: calc(100vw - 24px);
+    --expanded-w: min(440px, calc(100vw - 16px));
     height: 42px;
   }
   .zero-one-island__core { width: var(--island-w); padding: 0 13px; }
-  .zero-one-island__nav { left: 132px; inset-right: 10px; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+  .zero-one-island__nav { left: 126px; right: 7px; overflow-x: auto; scrollbar-width: none; justify-content: flex-start; }
   .zero-one-island__nav::-webkit-scrollbar { display: none; }
   .zero-one-island__nav-item { min-height: 28px; padding: 0 8px; font-size: 8px; }
-  .zero-one-island__welcome { left: 40px; right: 34px; font-size: 8px; }
+  .zero-one-island__welcome { left: 40px; right: 31px; font-size: 8px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
