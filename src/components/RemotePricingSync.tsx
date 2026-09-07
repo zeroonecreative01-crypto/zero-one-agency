@@ -72,11 +72,12 @@ function setupCardTilt(grid: Element) {
     packageCard.style.setProperty('--spot-x', '50%');
     packageCard.style.setProperty('--spot-y', '34%');
   });
-  packageCard.addEventListener('mouseenter', () => publishPackageSignal(packageCard.dataset.packageName ? packagesFallback(packageCard.dataset.packageName) : ({} as PricingPackage)));
-}
-
-function packagesFallback(name: string): PricingPackage {
-  return { id: '', name, price: '', currency: '', billing_label: '', tone: 'starter', popular: false, groups: [], sort_order: 0 };
+  packageCard.addEventListener('mouseenter', () => {
+    const name = packageCard.dataset.packageName;
+    if (!name) return;
+    const tone = packageCard.classList.contains('zero-one-package--premium') ? 'premium' : packageCard.classList.contains('zero-one-package--growth') ? 'growth' : 'starter';
+    publishPackageSignal({ id: '', name, price: '', currency: '', billing_label: '', tone, popular: false, groups: [], sort_order: 0 });
+  });
 }
 
 function syncPricing(packages: PricingPackage[]) {
@@ -140,7 +141,6 @@ function syncPricing(packages: PricingPackage[]) {
   };
 
   grid.className = 'zero-one-pricing__grid zero-one-pricing__grid--carousel';
-  publishPackageSignal(sorted[0]);
   render();
   return true;
 }
