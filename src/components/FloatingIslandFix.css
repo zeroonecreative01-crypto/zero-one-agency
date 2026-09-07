@@ -1,0 +1,4 @@
+/* Prevent the legacy pricing helper from injecting a duplicate Pricing item into the Floating Island. */
+.zero-one-island .zero-one-nav-extra {
+  display: none !important;
+}
