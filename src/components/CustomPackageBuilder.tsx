@@ -1,0 +1,155 @@
+import { useEffect, useMemo, useState } from 'react';
+import './CustomPackageBuilder.css';
+
+type QtyKey = 'posts' | 'reels' | 'stories' | 'videos' | 'motion';
+type ToggleKey = 'strategy' | 'community' | 'reporting' | 'accountManager' | 'campaign' | 'ads' | 'brand' | 'landing' | 'website' | 'seo';
+
+type Selection = Record<QtyKey, number> & Record<ToggleKey, boolean>;
+
+const defaults: Selection = {
+  posts: 8, reels: 0, stories: 8, videos: 0, motion: 0,
+  strategy: false, community: false, reporting: false, accountManager: false,
+  campaign: false, ads: false, brand: false, landing: false, website: false, seo: false,
+};
+
+const quantityOptions: Array<{ key: QtyKey; label: string; min: number; max: number; step: number; unitPrice: number }> = [
+  { key: 'posts', label: 'Social posts', min: 0, max: 40, step: 4, unitPrice: 8 },
+  { key: 'stories', label: 'Story designs', min: 0, max: 40, step: 4, unitPrice: 5 },
+  { key: 'reels', label: 'Reels', min: 0, max: 12, step: 2, unitPrice: 28 },
+  { key: 'videos', label: 'Product / promo videos', min: 0, max: 6, step: 1, unitPrice: 85 },
+  { key: 'motion', label: 'Motion graphics', min: 0, max: 6, step: 1, unitPrice: 70 },
+];
+
+const toggleOptions: Array<{ key: ToggleKey; label: string; description: string; price: number; group: string }> = [
+  { key: 'strategy', label: 'Creative strategy', description: 'Monthly direction and content planning', price: 95, group: 'Strategy & Support' },
+  { key: 'community', label: 'Community management', description: 'Comments, messages and daily moderation', price: 110, group: 'Strategy & Support' },
+  { key: 'reporting', label: 'Monthly performance report', description: 'Insights, reporting and recommendations', price: 65, group: 'Strategy & Support' },
+  { key: 'accountManager', label: 'Dedicated account manager', description: 'A dedicated point of contact for your brand', price: 140, group: 'Strategy & Support' },
+  { key: 'campaign', label: 'Campaign design', description: 'Campaign visual direction, design and copy', price: 180, group: 'Design' },
+  { key: 'ads', label: 'Paid advertising', description: 'Campaign setup, targeting and optimization', price: 220, group: 'Design' },
+  { key: 'brand', label: 'Brand identity', description: 'Core visual identity system', price: 420, group: 'Design' },
+  { key: 'landing', label: 'Landing page', description: 'Conversion-focused landing page', price: 300, group: 'Digital' },
+  { key: 'website', label: 'Website', description: 'Full premium marketing website', price: 650, group: 'Digital' },
+  { key: 'seo', label: 'SEO foundation', description: 'Technical and on-page SEO setup', price: 180, group: 'Digital' },
+];
+
+const clamp = (value: number) => Math.min(2000, Math.max(250, Math.round(value / 5) * 5));
+
+function calculatePrice(selection: Selection) {
+  let price = 250;
+  quantityOptions.forEach((item) => {
+    const quantity = selection[item.key];
+    if (quantity <= 0) return;
+    const baseIncluded = item.key === 'posts' ? 8 : item.key === 'stories' ? 8 : 0;
+    const extra = Math.max(0, quantity - baseIncluded);
+    const volumeFactor = quantity > 24 ? 1.35 : quantity > 16 ? 1.18 : 1;
+    price += extra * item.unitPrice * volumeFactor;
+  });
+  toggleOptions.forEach((item) => {
+    if (selection[item.key]) price += item.price;
+  });
+  if (selection.website) price -= selection.landing ? 300 : 0;
+  if (selection.brand && selection.campaign) price -= 40;
+  return clamp(price);
+}
+
+function changeQuantity(setSelection: React.Dispatch<React.SetStateAction<Selection>>, item: (typeof quantityOptions)[number], direction: 1 | -1) {
+  setSelection((current) => ({ ...current, [item.key]: Math.min(item.max, Math.max(item.min, current[item.key] + item.step * direction)) }));
+}
+
+export default function CustomPackageBuilder() {
+  const [selection, setSelection] = useState<Selection>(defaults);
+  const [openGroup, setOpenGroup] = useState<string>('Content');
+  const price = useMemo(() => calculatePrice(selection), [selection]);
+  const atMax = price >= 2000;
+
+  useEffect(() => {
+    const section = document.getElementById('zero-one-custom-package');
+    if (!section) return;
+    section.querySelectorAll<HTMLElement>('[data-builder-action]').forEach((button) => {
+      button.onclick = () => {
+        const message = encodeURIComponent([
+          "Hi ZERO ONE, I'd like to build a custom package.",
+          `Estimated monthly investment: ${price} KWD`,
+          '',
+          `Social posts: ${selection.posts}`,
+          `Story designs: ${selection.stories}`,
+          `Reels: ${selection.reels}`,
+          `Product / promo videos: ${selection.videos}`,
+          `Motion graphics: ${selection.motion}`,
+          ...toggleOptions.filter((item) => selection[item.key]).map((item) => item.label),
+          '',
+          'I would like to discuss the final scope and next steps.'
+        ].join('\n'));
+        window.open(`https://wa.me/201556764804?text=${message}`, '_blank', 'noopener,noreferrer');
+      };
+    });
+  }, [price, selection]);
+
+  return (
+    <section id="zero-one-custom-package" className="zero-one-builder" aria-label="Build your custom package">
+      <div className="zero-one-builder__intro">
+        <div className="zero-one-builder__eyebrow"><span /> Custom Studio <span /></div>
+        <h2>Build It<br /><em>Your Way.</em></h2>
+        <p>Start at 250 KWD and shape your own monthly package. Choose what your brand actually needs — all the way up to 2,000 KWD.</p>
+      </div>
+
+      <div className="zero-one-builder__layout">
+        <div className="zero-one-builder__controls">
+          <div className="zero-one-builder__topline"><span>01 — CONFIGURE</span><span>250 — 2,000 KWD</span></div>
+
+          <BuilderGroup title="Content" number="01" open={openGroup === 'Content'} onToggle={() => setOpenGroup(openGroup === 'Content' ? '' : 'Content')}>
+            {quantityOptions.slice(0, 3).map((item) => <QuantityControl key={item.key} item={item} value={selection[item.key]} onChange={(direction) => changeQuantity(setSelection, item, direction)} />)}
+          </BuilderGroup>
+
+          <BuilderGroup title="Video" number="02" open={openGroup === 'Video'} onToggle={() => setOpenGroup(openGroup === 'Video' ? '' : 'Video')}>
+            {quantityOptions.slice(3).map((item) => <QuantityControl key={item.key} item={item} value={selection[item.key]} onChange={(direction) => changeQuantity(setSelection, item, direction)} />)}
+          </BuilderGroup>
+
+          <BuilderGroup title="Design" number="03" open={openGroup === 'Design'} onToggle={() => setOpenGroup(openGroup === 'Design' ? '' : 'Design')}>
+            {toggleOptions.filter((item) => item.group === 'Design').map((item) => <ToggleControl key={item.key} item={item} checked={selection[item.key]} disabled={atMax && !selection[item.key]} onToggle={() => setSelection((current) => ({ ...current, [item.key]: !current[item.key] }))} />)}
+          </BuilderGroup>
+
+          <BuilderGroup title="Digital" number="04" open={openGroup === 'Digital'} onToggle={() => setOpenGroup(openGroup === 'Digital' ? '' : 'Digital')}>
+            {toggleOptions.filter((item) => item.group === 'Digital').map((item) => <ToggleControl key={item.key} item={item} checked={selection[item.key]} disabled={(item.key === 'landing' && selection.website) || (atMax && !selection[item.key])} note={item.key === 'landing' && selection.website ? 'Included with Website' : undefined} onToggle={() => setSelection((current) => ({ ...current, [item.key]: !current[item.key] }))} />)}
+          </BuilderGroup>
+
+          <BuilderGroup title="Strategy & Support" number="05" open={openGroup === 'Strategy & Support'} onToggle={() => setOpenGroup(openGroup === 'Strategy & Support' ? '' : 'Strategy & Support')}>
+            {toggleOptions.filter((item) => item.group === 'Strategy & Support').map((item) => <ToggleControl key={item.key} item={item} checked={selection[item.key]} disabled={atMax && !selection[item.key]} onToggle={() => setSelection((current) => ({ ...current, [item.key]: !current[item.key] }))} />)}
+          </BuilderGroup>
+        </div>
+
+        <aside className="zero-one-builder__summary">
+          <div className="zero-one-builder__summary-head"><span>YOUR PACKAGE</span><span>LIVE ESTIMATE</span></div>
+          <div className="zero-one-builder__price"><strong>{price.toLocaleString()}</strong><span>KWD / MONTH</span></div>
+          <div className="zero-one-builder__meter"><span style={{ width: `${((price - 250) / 1750) * 100}%` }} /></div>
+          <div className="zero-one-builder__range"><span>250</span><span>{atMax ? 'MAXIMUM' : '2,000 KWD'}</span></div>
+          <div className="zero-one-builder__selected">
+            <Selected label={`${selection.posts} Social posts`} active={selection.posts > 0} />
+            <Selected label={`${selection.stories} Story designs`} active={selection.stories > 0} />
+            <Selected label={`${selection.reels} Reels`} active={selection.reels > 0} />
+            {toggleOptions.filter((item) => selection[item.key]).map((item) => <Selected key={item.key} label={item.label} active />)}
+          </div>
+          <button type="button" className="zero-one-builder__cta" data-builder-action>REQUEST MY PACKAGE <span>↗</span></button>
+          <p className="zero-one-builder__note">Final scope is confirmed with our team. Your estimate is based on the mix you selected.</p>
+        </aside>
+      </div>
+    </section>
+  );
+}
+
+function BuilderGroup({ title, number, open, onToggle, children }: { title: string; number: string; open: boolean; onToggle: () => void; children: React.ReactNode }) {
+  return <div className={`zero-one-builder__group${open ? ' is-open' : ''}`}><button type="button" className="zero-one-builder__group-head" onClick={onToggle}><span><small>{number}</small>{title}</span><b>{open ? '−' : '+'}</b></button><div className="zero-one-builder__group-body">{children}</div></div>;
+}
+
+function QuantityControl({ item, value, onChange }: { item: (typeof quantityOptions)[number]; value: number; onChange: (direction: 1 | -1) => void }) {
+  return <div className="zero-one-builder__control"><div><strong>{item.label}</strong><small>{item.key === 'posts' ? 'Choose your monthly volume' : 'Add to your monthly mix'}</small></div><div className="zero-one-builder__stepper"><button type="button" aria-label={`Decrease ${item.label}`} onClick={() => onChange(-1)} disabled={value <= item.min}>−</button><span>{value}</span><button type="button" aria-label={`Increase ${item.label}`} onClick={() => onChange(1)} disabled={value >= item.max}>+</button></div></div>;
+}
+
+function ToggleControl({ item, checked, disabled, note, onToggle }: { item: (typeof toggleOptions)[number]; checked: boolean; disabled?: boolean; note?: string; onToggle: () => void }) {
+  return <button type="button" className={`zero-one-builder__toggle${checked ? ' is-selected' : ''}`} onClick={onToggle} disabled={disabled}><span className="zero-one-builder__toggle-mark">{checked ? '✓' : '+'}</span><span><strong>{item.label}</strong><small>{note ?? item.description}</small></span><b>{checked ? 'SELECTED' : `+${item.price} KWD`}</b></button>;
+}
+
+function Selected({ label, active }: { label: string; active: boolean }) {
+  return <div className={`zero-one-builder__selected-item${active ? ' is-active' : ''}`}><span>{active ? '●' : '○'}</span>{label}</div>;
+}
