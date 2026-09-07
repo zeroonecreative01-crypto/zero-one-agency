@@ -11,6 +11,9 @@ body { margin: 0; background: #111111; color: #F7F5F0; }
 ::-webkit-scrollbar-thumb { background: #333333; }
 ::-webkit-scrollbar-thumb:hover { background: #F14A0B; }
 
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
 
 /* ============================================================================
    Client Logo Marquee
