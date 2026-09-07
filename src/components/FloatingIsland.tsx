@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import type { MouseEvent } from 'react';
 import { ArrowUpRight, Menu, X } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -101,7 +102,7 @@ export default function FloatingIsland() {
     navigate(href);
   };
 
-  const handleHome = (event: React.MouseEvent<HTMLSpanElement>) => {
+  const handleHome = (event: MouseEvent<HTMLSpanElement>) => {
     event.stopPropagation();
     setExpanded(false);
     setWelcome(false);
@@ -125,7 +126,7 @@ export default function FloatingIsland() {
             setWelcome(false);
           }}
         >
-          <span className="zero-one-island__mark" onClick={handleHome} role="link" tabIndex={0} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); handleHome(event as unknown as React.MouseEvent<HTMLSpanElement>); } }}>ZERO ONE</span>
+          <span className="zero-one-island__mark" onClick={handleHome}>ZERO ONE</span>
           <span className="zero-one-island__status" aria-hidden="true" />
           <span className="zero-one-island__welcome" aria-live="polite">{message}</span>
           <span className="zero-one-island__menu-icon">{expanded ? <X size={14} /> : <Menu size={14} />}</span>
