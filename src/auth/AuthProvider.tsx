@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
-import { Briefcase, LayoutDashboard, LogOut, Users } from 'lucide-react';
+import { Briefcase, LayoutDashboard, LogOut, Users, WalletCards } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import LeadsPanel from '../admin/LeadsPanel';
 import PortfolioPanel from '../admin/PortfolioPanel';
+import PricingPanel from '../admin/PricingPanel';
 
 interface AuthContextValue {
   session: Session | null;
@@ -17,13 +18,14 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-type AdminSection = 'overview' | 'leads' | 'portfolio';
+type AdminSection = 'overview' | 'leads' | 'portfolio' | 'pricing';
 type AdminNavItem = { id: AdminSection; label: string; icon: LucideIcon };
 
 const ADMIN_NAV: AdminNavItem[] = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
   { id: 'leads', label: 'Leads', icon: Users },
   { id: 'portfolio', label: 'Portfolio', icon: Briefcase },
+  { id: 'pricing', label: 'Pricing', icon: WalletCards },
 ];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -86,11 +88,12 @@ function AdminOverview({ user, onNavigate }: { user: User; onNavigate: (section:
   const cards = [
     { id: 'leads' as const, label: 'Leads', title: 'Manage inquiries.', copy: 'Review, qualify, and update incoming project opportunities.', icon: Users },
     { id: 'portfolio' as const, label: 'Portfolio', title: 'Manage work.', copy: 'Add, edit, feature, and reorder projects shown on the public site.', icon: Briefcase },
+    { id: 'pricing' as const, label: 'Pricing', title: 'Manage packages.', copy: 'Edit package prices, feature groups, included services, and display order.', icon: WalletCards },
   ];
 
   return (
     <section className="mt-10">
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {cards.map(({ id, label, title, copy, icon: Icon }) => (
           <button
             key={id}
@@ -148,6 +151,8 @@ export function AdminRoute() {
   const isAdmin = user.app_metadata?.role === 'admin';
   if (!isAdmin) return <AuthShell><div className="min-h-screen flex items-center justify-center px-6"><div className="w-full max-w-lg text-center border border-[#F7F5F0]/10 p-8 md:p-12"><p className="text-[#F14A0B] text-xs font-bold uppercase tracking-[0.2em] mb-4">403 / Forbidden</p><h1 className="text-3xl font-bold mb-4">Admin access required.</h1><p className="text-[#F7F5F0]/60 mb-8">Your account is authenticated, but it does not have the admin role.</p><button onClick={() => signOut()} className="rounded-full border border-[#F7F5F0]/20 px-6 py-3 text-sm font-semibold hover:bg-[#F7F5F0] hover:text-[#111111] transition-colors">Sign out</button></div></div></AuthShell>;
 
+  const sectionTitle = section === 'overview' ? 'Dashboard.' : section === 'leads' ? 'Leads.' : section === 'portfolio' ? 'Portfolio.' : 'Pricing.';
+
   return (
     <AuthShell>
       <div className="min-h-screen px-6 py-8 md:px-12 lg:px-16 md:py-10">
@@ -156,7 +161,7 @@ export function AdminRoute() {
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <p className="text-[#F14A0B] text-xs font-bold uppercase tracking-[0.2em] mb-3">ZERO ONE / Admin</p>
-                <h1 className="text-5xl md:text-7xl font-bold tracking-tighter">{section === 'overview' ? 'Dashboard.' : section === 'leads' ? 'Leads.' : 'Portfolio.'}</h1>
+                <h1 className="text-5xl md:text-7xl font-bold tracking-tighter">{sectionTitle}</h1>
               </div>
               <button onClick={() => signOut()} className="inline-flex items-center justify-center gap-2 rounded-full border border-[#F7F5F0]/20 px-5 py-3 text-sm font-semibold hover:bg-[#F7F5F0] hover:text-[#111111] transition-colors"><LogOut size={15} /> Sign out</button>
             </div>
@@ -181,6 +186,7 @@ export function AdminRoute() {
           {section === 'overview' && <AdminOverview user={user} onNavigate={setSection} />}
           {section === 'leads' && <LeadsPanel />}
           {section === 'portfolio' && <PortfolioPanel />}
+          {section === 'pricing' && <PricingPanel />}
         </div>
       </div>
     </AuthShell>
