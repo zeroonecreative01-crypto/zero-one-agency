@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import { AdminRoute, AuthProvider } from './auth/AuthProvider';
+import AdminAccessButton from './components/AdminAccessButton';
 import './styles.css';
 import './site-polish.css';
 
@@ -14,7 +15,14 @@ function Root() {
     return () => window.removeEventListener('popstate', handleNavigation);
   }, []);
 
-  return path === '/admin' ? <AdminRoute /> : <App />;
+  if (path === '/admin') return <AdminRoute />;
+
+  return (
+    <>
+      <App />
+      <AdminAccessButton />
+    </>
+  );
 }
 
 createRoot(document.getElementById('root')!).render(
