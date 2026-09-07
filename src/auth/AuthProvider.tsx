@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
-import { BriefcaseBusiness, LayoutDashboard, LogOut, Users } from 'lucide-react';
+import { Briefcase, LayoutDashboard, LogOut, Users } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import LeadsPanel from '../admin/LeadsPanel';
 import PortfolioPanel from '../admin/PortfolioPanel';
@@ -17,13 +18,12 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 type AdminSection = 'overview' | 'leads' | 'portfolio';
-
-type AdminNavItem = { id: AdminSection; label: string; icon: React.ComponentType<{ size?: number }> };
+type AdminNavItem = { id: AdminSection; label: string; icon: LucideIcon };
 
 const ADMIN_NAV: AdminNavItem[] = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
   { id: 'leads', label: 'Leads', icon: Users },
-  { id: 'portfolio', label: 'Portfolio', icon: BriefcaseBusiness },
+  { id: 'portfolio', label: 'Portfolio', icon: Briefcase },
 ];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -85,7 +85,7 @@ function AuthShell({ children }: { children: React.ReactNode }) {
 function AdminOverview({ user, onNavigate }: { user: User; onNavigate: (section: AdminSection) => void }) {
   const cards = [
     { id: 'leads' as const, label: 'Leads', title: 'Manage inquiries.', copy: 'Review, qualify, and update incoming project opportunities.', icon: Users },
-    { id: 'portfolio' as const, label: 'Portfolio', title: 'Manage work.', copy: 'Add, edit, feature, and reorder projects shown on the public site.', icon: BriefcaseBusiness },
+    { id: 'portfolio' as const, label: 'Portfolio', title: 'Manage work.', copy: 'Add, edit, feature, and reorder projects shown on the public site.', icon: Briefcase },
   ];
 
   return (
