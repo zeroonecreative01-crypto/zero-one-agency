@@ -1,0 +1,32 @@
+/* ZERO ONE final visual polish */
+.zero-one-nav-extra a[href^="mailto:"] { display: none !important; }
+
+/* Keep page rhythm consistent beneath the fixed navigation. */
+main { min-width: 0; }
+main > div { min-width: 0; }
+
+/* Cleaner editorial image treatment. */
+img { max-width: 100%; }
+
+/* Prevent long contact strings from creating horizontal overflow. */
+a, button, p, h1, h2, h3, h4, span { overflow-wrap: anywhere; }
+
+/* Pricing remains a strong visual anchor without touching its content. */
+.zero-one-pricing { scroll-margin-top: 96px; }
+.zero-one-pricing__intro p { max-width: 58ch; }
+
+/* Better small-screen breathing room. */
+@media (max-width: 767px) {
+  .zero-one-pricing { scroll-margin-top: 76px; }
+  footer { overflow: hidden; }
+}
+
+/* Respect reduced-motion preferences globally. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
