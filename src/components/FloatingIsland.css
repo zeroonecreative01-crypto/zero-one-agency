@@ -4,8 +4,8 @@
   --zo-island-orange: #f14a0b;
 }
 
-/* Replace the legacy full-width site header on public pages. */
-body.zero-one-island-ready > #root header {
+/* The public site uses the floating island as its only top navigation. */
+body.zero-one-island-ready #root nav.fixed.top-0.left-0.w-full {
   display: none !important;
 }
 
