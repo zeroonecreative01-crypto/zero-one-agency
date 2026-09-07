@@ -4,6 +4,7 @@ import App from './App';
 import { AdminRoute, AuthProvider } from './auth/AuthProvider';
 import AdminAccessButton from './components/AdminAccessButton';
 import RemotePortfolioSync from './components/RemotePortfolioSync';
+import RemotePricingSync from './components/RemotePricingSync';
 import './lib/leadsCapture';
 import './styles.css';
 import './site-polish.css';
@@ -23,6 +24,7 @@ function Root() {
     <>
       <App />
       <RemotePortfolioSync />
+      <RemotePricingSync />
       <AdminAccessButton />
     </>
   );
