@@ -198,6 +198,11 @@ footer a:hover { color: var(--zo-orange) !important; }
   }
   main > div:first-child > section:first-of-type h1 span:first-child::after { height: 1px; bottom: -.06em; }
 
+  /* Keep inner-page headings clear of the floating island. */
+  body.zero-one-island-ready #root main > div:not(:first-child) {
+    padding-top: 52px;
+  }
+
   /* More breathing room and cleaner text measure. */
   main > div:first-child > section:nth-of-type(3) {
     padding-top: 4.5rem;
