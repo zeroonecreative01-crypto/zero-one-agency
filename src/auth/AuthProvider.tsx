@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
-import { Briefcase, LayoutDashboard, LogOut, Users, WalletCards } from 'lucide-react';
+import { Briefcase, CreditCard, LayoutDashboard, LogOut, Users } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import LeadsPanel from '../admin/LeadsPanel';
@@ -25,7 +25,7 @@ const ADMIN_NAV: AdminNavItem[] = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
   { id: 'leads', label: 'Leads', icon: Users },
   { id: 'portfolio', label: 'Portfolio', icon: Briefcase },
-  { id: 'pricing', label: 'Pricing', icon: WalletCards },
+  { id: 'pricing', label: 'Pricing', icon: CreditCard },
 ];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -88,7 +88,7 @@ function AdminOverview({ user, onNavigate }: { user: User; onNavigate: (section:
   const cards = [
     { id: 'leads' as const, label: 'Leads', title: 'Manage inquiries.', copy: 'Review, qualify, and update incoming project opportunities.', icon: Users },
     { id: 'portfolio' as const, label: 'Portfolio', title: 'Manage work.', copy: 'Add, edit, feature, and reorder projects shown on the public site.', icon: Briefcase },
-    { id: 'pricing' as const, label: 'Pricing', title: 'Manage packages.', copy: 'Edit package prices, feature groups, included services, and display order.', icon: WalletCards },
+    { id: 'pricing' as const, label: 'Pricing', title: 'Manage packages.', copy: 'Edit package prices, feature groups, included services, and display order.', icon: CreditCard },
   ];
 
   return (
