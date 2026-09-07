@@ -21,7 +21,6 @@ function navigate(href: string) {
     window.setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 40);
     return;
   }
-
   window.history.pushState({}, '', href);
   window.dispatchEvent(new PopStateEvent('popstate'));
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -30,16 +29,13 @@ function navigate(href: string) {
 export default function FloatingIsland() {
   const [expanded, setExpanded] = useState(false);
   const [welcome, setWelcome] = useState(false);
-  const [welcomeIndex] = useState(() => Math.floor(Math.random() * WELCOME_MESSAGES.length));
+  const [welcomeIndex, setWelcomeIndex] = useState(0);
   const [touchDevice, setTouchDevice] = useState(false);
   const hideTimer = useRef<number | null>(null);
 
   useEffect(() => {
     document.body.classList.add('zero-one-island-ready');
-    return () => document.body.classList.remove('zero-one-island-ready');
-  }, []);
 
-  useEffect(() => {
     const coarse = window.matchMedia('(hover: none), (pointer: coarse)');
     const update = () => setTouchDevice(coarse.matches);
     update();
@@ -51,6 +47,7 @@ export default function FloatingIsland() {
     }, 650);
 
     return () => {
+      document.body.classList.remove('zero-one-island-ready');
       window.clearTimeout(showTimer);
       coarse.removeEventListener?.('change', update);
       if (hideTimer.current) window.clearTimeout(hideTimer.current);
