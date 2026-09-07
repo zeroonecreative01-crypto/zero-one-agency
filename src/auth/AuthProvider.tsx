@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
+import LeadsPanel from '../admin/LeadsPanel';
 
 interface AuthContextValue {
   session: Session | null;
@@ -107,5 +108,5 @@ export function AdminRoute() {
     return <AuthShell><div className="min-h-screen flex items-center justify-center px-6"><div className="w-full max-w-lg text-center border border-[#F7F5F0]/10 p-8 md:p-12"><p className="text-[#F14A0B] text-xs font-bold uppercase tracking-[0.2em] mb-4">403 / Forbidden</p><h1 className="text-3xl font-bold mb-4">Admin access required.</h1><p className="text-[#F7F5F0]/60 mb-8">Your account is authenticated, but it does not have the admin role.</p><button onClick={() => signOut()} className="rounded-full border border-[#F7F5F0]/20 px-6 py-3 text-sm font-semibold hover:bg-[#F7F5F0] hover:text-[#111111] transition-colors">Sign out</button></div></div></AuthShell>;
   }
 
-  return <AuthShell><div className="min-h-screen px-6 md:px-12 lg:px-24 py-32"><div className="max-w-5xl mx-auto"><div className="flex items-center justify-between border-b border-[#F7F5F0]/10 pb-8 mb-12"><div><p className="text-[#F14A0B] text-xs font-bold uppercase tracking-[0.2em] mb-3">ZERO ONE / Admin</p><h1 className="text-5xl md:text-7xl font-bold tracking-tighter">Dashboard.</h1></div><button onClick={() => signOut()} className="rounded-full border border-[#F7F5F0]/20 px-5 py-3 text-sm font-semibold hover:bg-[#F7F5F0] hover:text-[#111111] transition-colors">Sign out</button></div><div className="border border-[#F7F5F0]/10 p-8"><p className="text-[#F7F5F0]/50 text-xs uppercase tracking-widest mb-3">Authenticated as</p><p className="text-xl font-semibold">{user.email}</p><p className="text-[#F7F5F0]/50 text-sm mt-3">Supabase session is active and automatically refreshed by the auth client.</p></div></div></div></AuthShell>;
+  return <AuthShell><div className="min-h-screen px-6 md:px-12 lg:px-24 py-32"><div className="max-w-7xl mx-auto"><div className="flex items-center justify-between border-b border-[#F7F5F0]/10 pb-8"><div><p className="text-[#F14A0B] text-xs font-bold uppercase tracking-[0.2em] mb-3">ZERO ONE / Admin</p><h1 className="text-5xl md:text-7xl font-bold tracking-tighter">Dashboard.</h1></div><button onClick={() => signOut()} className="rounded-full border border-[#F7F5F0]/20 px-5 py-3 text-sm font-semibold hover:bg-[#F7F5F0] hover:text-[#111111] transition-colors">Sign out</button></div><div className="mt-8 border border-[#F7F5F0]/10 p-6"><p className="text-[#F7F5F0]/50 text-xs uppercase tracking-widest mb-2">Authenticated as</p><p className="text-lg font-semibold">{user.email}</p></div><LeadsPanel /></div></div></AuthShell>;
 }
