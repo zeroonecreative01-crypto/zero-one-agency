@@ -9,7 +9,11 @@ const NAV_ITEMS = [
   { label: 'Pricing', href: '/#zero-one-pricing' },
 ];
 
-const WELCOME_MESSAGES = ['Welcome to ZERO ONE.', 'Ideas into impact.', 'Creative, by design.'];
+const WELCOME_MESSAGES = [
+  'Welcome to ZERO ONE — We build brands that move people.',
+  'Welcome to ZERO ONE — Creative built with intention.',
+  'Welcome to ZERO ONE — Ideas into impact.',
+];
 
 function navigate(href: string) {
   if (href.startsWith('/#')) {
@@ -42,8 +46,9 @@ export default function FloatingIsland() {
     coarse.addEventListener?.('change', update);
 
     const showTimer = window.setTimeout(() => {
+      setWelcomeIndex(Math.floor(Math.random() * WELCOME_MESSAGES.length));
       setWelcome(true);
-      window.setTimeout(() => setWelcome(false), 3100);
+      window.setTimeout(() => setWelcome(false), 4200);
     }, 650);
 
     return () => {
@@ -98,7 +103,7 @@ export default function FloatingIsland() {
             setWelcome(false);
           }}
         >
-          <span className="zero-one-island__mark">ONE</span>
+          <span className="zero-one-island__mark">ZERO ONE</span>
           <span className="zero-one-island__status" aria-hidden="true" />
           <span className="zero-one-island__welcome" aria-live="polite">{WELCOME_MESSAGES[welcomeIndex]}</span>
           <span className="zero-one-island__menu-icon">{expanded ? <X size={14} /> : <Menu size={14} />}</span>
