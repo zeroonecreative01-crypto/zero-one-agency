@@ -18,281 +18,50 @@
     <link rel="icon" type="image/png" href="/ONE.png" />
     <title>ZERO ONE — Creative Marketing Agency</title>
     <style>
-      #zero-one-loader {
-        position: fixed;
-        inset: 0;
-        z-index: 99999;
-        display: grid;
-        place-items: center;
-        background: #111111;
-        opacity: 1;
-        visibility: visible;
-        transition: opacity 700ms cubic-bezier(.77,0,.18,1), visibility 700ms;
-      }
-      #zero-one-loader.is-hidden {
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-      }
-      .zero-one-loader__inner {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 28px;
-      }
-      .zero-one-loader__logo {
-        width: clamp(110px, 16vw, 180px);
-        height: auto;
-        display: block;
-        object-fit: contain;
-        animation: zero-one-logo-in 1200ms cubic-bezier(.16,1,.3,1) both;
-      }
-      .zero-one-loader__line {
-        width: 0;
-        height: 1px;
-        background: #F14A0B;
-        animation: zero-one-line-in 1000ms 450ms cubic-bezier(.16,1,.3,1) forwards;
-      }
-      .zero-one-loader__label {
-        margin-top: -14px;
-        color: rgba(247,245,240,.45);
-        font: 600 9px/1 system-ui, sans-serif;
-        letter-spacing: .34em;
-        text-transform: uppercase;
-        opacity: 0;
-        animation: zero-one-label-in 700ms 650ms ease forwards;
-      }
-      @keyframes zero-one-logo-in {
-        from { opacity: 0; transform: translateY(18px) scale(.88); filter: blur(10px); }
-        to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-      }
-      @keyframes zero-one-line-in {
-        from { width: 0; opacity: 0; }
-        to { width: clamp(70px, 10vw, 120px); opacity: 1; }
-      }
-      @keyframes zero-one-label-in {
-        from { opacity: 0; transform: translateY(6px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        #zero-one-loader,
-        .zero-one-loader__logo,
-        .zero-one-loader__line,
-        .zero-one-loader__label { animation: none; transition: none; }
-        .zero-one-loader__logo { opacity: 1; }
-        .zero-one-loader__line { width: clamp(70px, 10vw, 120px); opacity: 1; }
-        .zero-one-loader__label { opacity: 1; }
-      }
-
-      /* ZERO ONE — pricing */
-      .zero-one-pricing {
-        position: relative;
-        overflow: hidden;
-        padding: 120px 24px 140px;
-        background: #111111;
-        color: #f7f5f0;
-      }
-      .zero-one-pricing::before,
-      .zero-one-pricing::after {
-        content: '';
-        position: absolute;
-        width: 520px;
-        height: 520px;
-        border-radius: 999px;
-        filter: blur(110px);
-        pointer-events: none;
-      }
-      .zero-one-pricing::before { top: -260px; left: -180px; background: rgba(241,74,11,.12); }
-      .zero-one-pricing::after { right: -220px; bottom: -300px; background: rgba(255,194,92,.08); }
-      .zero-one-pricing__inner { position: relative; z-index: 1; max-width: 1440px; margin: 0 auto; }
-      .zero-one-pricing__intro { max-width: 760px; margin-bottom: 56px; }
-      .zero-one-pricing__eyebrow { display:flex; align-items:center; gap:14px; margin-bottom:20px; color:#F14A0B; font:600 10px/1 system-ui,sans-serif; letter-spacing:.28em; text-transform:uppercase; }
-      .zero-one-pricing__eyebrow span { width:40px; height:1px; background:#F14A0B; opacity:.7; }
-      .zero-one-pricing h2 { margin:0; font:700 clamp(48px,7vw,92px)/.9 system-ui,sans-serif; letter-spacing:-.065em; text-transform:uppercase; }
-      .zero-one-pricing__intro p { max-width:620px; margin:26px 0 0; color:rgba(247,245,240,.56); font:400 16px/1.7 system-ui,sans-serif; }
-      .zero-one-pricing__grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; align-items:stretch; }
-      .zero-one-package { position:relative; display:flex; flex-direction:column; min-height:100%; overflow:hidden; border:1px solid rgba(255,255,255,.15); border-radius:30px; padding:30px; backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px); box-shadow:0 30px 80px rgba(0,0,0,.25); transition:transform .35s ease,border-color .35s ease; }
-      .zero-one-package:hover { transform:translateY(-8px); border-color:rgba(255,255,255,.3); }
-      .zero-one-package--starter { background:linear-gradient(145deg,rgba(225,231,235,.20),rgba(255,255,255,.055)); }
-      .zero-one-package--growth { background:linear-gradient(145deg,rgba(241,74,11,.27),rgba(255,255,255,.055)); border-color:rgba(241,74,11,.45); }
-      .zero-one-package--premium { background:linear-gradient(145deg,rgba(214,181,111,.24),rgba(255,255,255,.055)); border-color:rgba(214,181,111,.36); }
-      .zero-one-package__glow { position:absolute; width:260px; height:260px; border-radius:999px; filter:blur(75px); right:-150px; top:-150px; opacity:.45; pointer-events:none; }
-      .zero-one-package--starter .zero-one-package__glow { background:#c9d1d8; }
-      .zero-one-package--growth .zero-one-package__glow { background:#F14A0B; }
-      .zero-one-package--premium .zero-one-package__glow { background:#d6b56f; }
-      .zero-one-package__top { position:relative; z-index:1; display:flex; justify-content:space-between; gap:16px; align-items:flex-start; }
-      .zero-one-package__name { font:700 28px/1 system-ui,sans-serif; letter-spacing:-.04em; text-transform:uppercase; }
-      .zero-one-package__tag { display:inline-flex; padding:8px 11px; border:1px solid rgba(255,255,255,.18); border-radius:999px; color:rgba(247,245,240,.7); font:600 8px/1 system-ui,sans-serif; letter-spacing:.18em; text-transform:uppercase; }
-      .zero-one-package__price { position:relative; z-index:1; display:flex; align-items:flex-end; gap:8px; margin:28px 0 30px; }
-      .zero-one-package__price strong { font:700 clamp(48px,5vw,70px)/.85 system-ui,sans-serif; letter-spacing:-.07em; }
-      .zero-one-package__price span { padding-bottom:7px; color:rgba(247,245,240,.5); font:600 11px/1 system-ui,sans-serif; text-transform:uppercase; letter-spacing:.1em; }
-      .zero-one-package__rule { height:1px; background:rgba(255,255,255,.13); margin-bottom:24px; }
-      .zero-one-package__group { position:relative; z-index:1; margin-bottom:22px; }
-      .zero-one-package__group h3 { margin:0 0 11px; color:rgba(247,245,240,.45); font:600 9px/1.2 system-ui,sans-serif; letter-spacing:.22em; text-transform:uppercase; }
-      .zero-one-package__list { display:grid; gap:9px; margin:0; padding:0; list-style:none; }
-      .zero-one-package__list li { display:flex; gap:9px; color:rgba(247,245,240,.82); font:400 12px/1.45 system-ui,sans-serif; }
-      .zero-one-package__list li::before { content:'+'; flex:0 0 auto; color:#F14A0B; font-weight:700; }
-      .zero-one-package--premium .zero-one-package__list li::before { color:#d6b56f; }
-      .zero-one-package__cta { position:relative; z-index:1; display:flex; align-items:center; justify-content:center; width:100%; margin-top:auto; padding:15px 18px; border:1px solid rgba(255,255,255,.18); border-radius:999px; background:rgba(255,255,255,.07); color:#f7f5f0; font:600 10px/1 system-ui,sans-serif; letter-spacing:.18em; text-transform:uppercase; text-decoration:none; transition:background .25s ease,transform .25s ease; }
-      .zero-one-package__cta:hover { background:#F14A0B; color:#111111; transform:translateY(-2px); }
-      .zero-one-package--premium .zero-one-package__cta:hover { background:#d6b56f; }
-      .zero-one-package__popular { position:absolute; top:18px; right:18px; padding:8px 10px; border-radius:999px; background:#F14A0B; color:#111111; font:700 8px/1 system-ui,sans-serif; letter-spacing:.16em; text-transform:uppercase; }
-      .zero-one-nav-extra { display:inline-flex; align-items:center; gap:16px; margin-left:18px; padding-left:18px; border-left:1px solid rgba(247,245,240,.15); }
-      .zero-one-nav-extra a { color:rgba(247,245,240,.72); text-decoration:none; font:500 10px/1 system-ui,sans-serif; letter-spacing:.14em; text-transform:uppercase; transition:color .2s ease; white-space:nowrap; }
-      .zero-one-nav-extra a:hover { color:#F14A0B; }
-      @media (max-width: 1023px) {
-        .zero-one-pricing { padding:92px 18px 110px; }
-        .zero-one-pricing__grid { grid-template-columns:1fr; max-width:700px; margin:0 auto; }
-        .zero-one-package { min-height:0; }
-        .zero-one-nav-extra { margin-left:12px; padding-left:12px; gap:10px; }
-      }
-      @media (max-width: 767px) {
-        .zero-one-pricing h2 { font-size:48px; }
-        .zero-one-package { padding:24px; border-radius:24px; }
-        .zero-one-nav-extra { display:none; }
-      }
+      #zero-one-loader{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:#111111;opacity:1;visibility:visible;transition:opacity 700ms cubic-bezier(.77,0,.18,1),visibility 700ms}
+      #zero-one-loader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
+      .zero-one-loader__inner{position:relative;display:flex;flex-direction:column;align-items:center;gap:28px}
+      .zero-one-loader__logo{width:clamp(110px,16vw,180px);height:auto;display:block;object-fit:contain;animation:zero-one-logo-in 1200ms cubic-bezier(.16,1,.3,1) both}
+      .zero-one-loader__line{width:0;height:1px;background:#F14A0B;animation:zero-one-line-in 1000ms 450ms cubic-bezier(.16,1,.3,1) forwards}
+      .zero-one-loader__label{margin-top:-14px;color:rgba(247,245,240,.45);font:600 9px/1 system-ui,sans-serif;letter-spacing:.34em;text-transform:uppercase;opacity:0;animation:zero-one-label-in 700ms 650ms ease forwards}
+      @keyframes zero-one-logo-in{from{opacity:0;transform:translateY(18px) scale(.88);filter:blur(10px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+      @keyframes zero-one-line-in{from{width:0;opacity:0}to{width:clamp(70px,10vw,120px);opacity:1}}
+      @keyframes zero-one-label-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+      @media (prefers-reduced-motion:reduce){#zero-one-loader,.zero-one-loader__logo,.zero-one-loader__line,.zero-one-loader__label{animation:none;transition:none}.zero-one-loader__logo{opacity:1}.zero-one-loader__line{width:clamp(70px,10vw,120px);opacity:1}.zero-one-loader__label{opacity:1}}
+      .zero-one-pricing{position:relative;overflow:hidden;padding:120px 24px 140px;background:#111111;color:#f7f5f0}
+      .zero-one-pricing::before,.zero-one-pricing::after{content:'';position:absolute;width:520px;height:520px;border-radius:999px;filter:blur(110px);pointer-events:none}
+      .zero-one-pricing::before{top:-260px;left:-180px;background:rgba(241,74,11,.12)}.zero-one-pricing::after{right:-220px;bottom:-300px;background:rgba(255,194,92,.08)}
+      .zero-one-pricing__inner{position:relative;z-index:1;max-width:1440px;margin:0 auto}.zero-one-pricing__intro{max-width:760px;margin-bottom:56px}
+      .zero-one-pricing__eyebrow{display:flex;align-items:center;gap:14px;margin-bottom:20px;color:#F14A0B;font:600 10px/1 system-ui,sans-serif;letter-spacing:.28em;text-transform:uppercase}.zero-one-pricing__eyebrow span{width:40px;height:1px;background:#F14A0B;opacity:.7}
+      .zero-one-pricing h2{margin:0;font:700 clamp(48px,7vw,92px)/.9 system-ui,sans-serif;letter-spacing:-.065em;text-transform:uppercase}.zero-one-pricing__intro p{max-width:620px;margin:26px 0 0;color:rgba(247,245,240,.56);font:400 16px/1.7 system-ui,sans-serif}
+      .zero-one-pricing__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:stretch}.zero-one-package{position:relative;display:flex;flex-direction:column;min-height:100%;overflow:hidden;border:1px solid rgba(255,255,255,.15);border-radius:30px;padding:30px;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 30px 80px rgba(0,0,0,.25);transition:transform .35s ease,border-color .35s ease}.zero-one-package:hover{transform:translateY(-8px);border-color:rgba(255,255,255,.3)}
+      .zero-one-package--starter{background:linear-gradient(145deg,rgba(225,231,235,.20),rgba(255,255,255,.055))}.zero-one-package--growth{background:linear-gradient(145deg,rgba(241,74,11,.27),rgba(255,255,255,.055));border-color:rgba(241,74,11,.45)}.zero-one-package--premium{background:linear-gradient(145deg,rgba(214,181,111,.24),rgba(255,255,255,.055));border-color:rgba(214,181,111,.36)}
+      .zero-one-package__glow{position:absolute;width:260px;height:260px;border-radius:999px;filter:blur(75px);right:-150px;top:-150px;opacity:.45;pointer-events:none}.zero-one-package--starter .zero-one-package__glow{background:#c9d1d8}.zero-one-package--growth .zero-one-package__glow{background:#F14A0B}.zero-one-package--premium .zero-one-package__glow{background:#d6b56f}
+      .zero-one-package__top{position:relative;z-index:1;display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.zero-one-package__name{font:700 28px/1 system-ui,sans-serif;letter-spacing:-.04em;text-transform:uppercase}.zero-one-package__tag{display:inline-flex;padding:8px 11px;border:1px solid rgba(255,255,255,.18);border-radius:999px;color:rgba(247,245,240,.7);font:600 8px/1 system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase}
+      .zero-one-package__price{position:relative;z-index:1;display:flex;align-items:flex-end;gap:8px;margin:28px 0 30px}.zero-one-package__price strong{font:700 clamp(48px,5vw,70px)/.85 system-ui,sans-serif;letter-spacing:-.07em}.zero-one-package__price span{padding-bottom:7px;color:rgba(247,245,240,.5);font:600 11px/1 system-ui,sans-serif;text-transform:uppercase;letter-spacing:.1em}.zero-one-package__rule{height:1px;background:rgba(255,255,255,.13);margin-bottom:24px}.zero-one-package__group{position:relative;z-index:1;margin-bottom:22px}.zero-one-package__group h3{margin:0 0 11px;color:rgba(247,245,240,.45);font:600 9px/1.2 system-ui,sans-serif;letter-spacing:.22em;text-transform:uppercase}.zero-one-package__list{display:grid;gap:9px;margin:0;padding:0;list-style:none}.zero-one-package__list li{display:flex;gap:9px;color:rgba(247,245,240,.82);font:400 12px/1.45 system-ui,sans-serif}.zero-one-package__list li::before{content:'+';flex:0 0 auto;color:#F14A0B;font-weight:700}.zero-one-package--premium .zero-one-package__list li::before{color:#d6b56f}
+      .zero-one-package__cta{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:100%;margin-top:auto;padding:15px 18px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.07);color:#f7f5f0;font:600 10px/1 system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;transition:background .25s ease,transform .25s ease}.zero-one-package__cta:hover{background:#F14A0B;color:#111111;transform:translateY(-2px)}.zero-one-package--premium .zero-one-package__cta:hover{background:#d6b56f}.zero-one-package__popular{position:absolute;top:18px;right:18px;padding:8px 10px;border-radius:999px;background:#F14A0B;color:#111111;font:700 8px/1 system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase}
+      .zero-one-nav-extra{display:inline-flex;align-items:center;gap:16px;margin-left:18px;padding-left:18px;border-left:1px solid rgba(247,245,240,.15)}.zero-one-nav-extra a{color:rgba(247,245,240,.72);text-decoration:none;font:500 10px/1 system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;transition:color .2s ease;white-space:nowrap}.zero-one-nav-extra a:hover{color:#F14A0B}
+      @media (max-width:1023px){.zero-one-pricing{padding:92px 18px 110px}.zero-one-pricing__grid{grid-template-columns:1fr;max-width:700px;margin:0 auto}.zero-one-package{min-height:0}.zero-one-nav-extra{margin-left:12px;padding-left:12px;gap:10px}}
+      @media (max-width:767px){.zero-one-pricing h2{font-size:48px}.zero-one-package{padding:24px;border-radius:24px}.zero-one-nav-extra{display:none}}
     </style>
   </head>
   <body>
-    <div id="zero-one-loader" aria-label="Loading ZERO ONE" role="status">
-      <div class="zero-one-loader__inner">
-        <img class="zero-one-loader__logo" src="/ONE.png" alt="ZERO ONE" />
-        <span class="zero-one-loader__line" aria-hidden="true"></span>
-        <span class="zero-one-loader__label">Creative Marketing Agency</span>
-      </div>
-    </div>
+    <div id="zero-one-loader" aria-label="Loading ZERO ONE" role="status"><div class="zero-one-loader__inner"><img class="zero-one-loader__logo" src="/ONE.png" alt="ZERO ONE" /><span class="zero-one-loader__line" aria-hidden="true"></span><span class="zero-one-loader__label">Creative Marketing Agency</span></div></div>
     <div id="root"></div>
     <script>
-      (function () {
-        var loader = document.getElementById('zero-one-loader');
-        var hide = function () {
-          if (!loader) return;
-          loader.classList.add('is-hidden');
-          window.setTimeout(function () {
-            if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
-          }, 750);
-        };
-        if (document.readyState === 'complete') {
-          window.setTimeout(hide, 500);
-        } else {
-          window.addEventListener('load', function () {
-            window.setTimeout(hide, 500);
-          }, { once: true });
-        }
-      })();
-
-      (function () {
-        var EMAIL = 'zeroone.creative.01@gmail.com';
-        var WHATSAPP = 'https://wa.me/201556764804?text=';
-        var pricingId = 'zero-one-pricing';
-
-        var packages = [
-          {
-            name: 'Starter', price: '230', tone: 'starter',
-            groups: [
-              ['Content Production', ['12 monthly designs', '12 story designs', '2 reels', 'Copywriting & captions', 'Creative direction', 'Monthly content plan']],
-              ['Social Management', ['Instagram & Facebook', 'Scheduling & publishing', 'Profile optimization', 'Trends & hashtags', 'Community management']],
-              ['Strategy & Support', ['Influencer analysis', 'Audience analysis', 'Account growth monitoring', 'Monthly performance report', 'Monthly strategy meeting', 'Dedicated account manager', 'Priority support', 'Seasonal & offer planning', 'Trend monitoring & use']]
-            ]
-          },
-          {
-            name: 'Growth', price: '420', tone: 'growth', popular: true,
-            groups: [
-              ['Content Production', ['20 monthly designs', '20 story designs', '5 reels', 'Copywriting & captions', 'Creative direction', 'Monthly content plan', 'Promotional content']],
-              ['Social Management', ['Instagram & Facebook', 'Snapchat, TikTok & X', 'Scheduling & publishing', 'Profile optimization', 'Trends & hashtags', 'Community management', 'Comments & messages']],
-              ['Strategy & Support', ['Influencer analysis', 'Audience analysis', 'Account growth monitoring', 'Monthly performance report', 'Monthly strategy meeting', 'Dedicated account manager', 'Priority support', 'Seasonal & offer planning', 'Trend monitoring & use']],
-              ['Advertising', ['1 campaign included', '126 KWD monthly ad budget']]
-            ]
-          },
-          {
-            name: 'Premium', price: '700', tone: 'premium',
-            groups: [
-              ['Content Production', ['30 monthly designs', '30 story designs', '8 reels', 'Copywriting & captions', 'Creative direction', 'Monthly content plan', 'Promotional content', 'Product-specific content', 'Platform-specific customization']],
-              ['Social Management', ['Instagram & Facebook', 'Snapchat, TikTok & X', 'Scheduling & publishing', 'Profile optimization', 'Trends & hashtags', 'Community management', 'Comments & messages']],
-              ['Website & UX', ['Website content management', 'Text, image & offer updates', 'Content & user experience review']],
-              ['Advertising', ['2 campaigns included', '210 KWD monthly ad budget', 'Campaign idea & strategy', 'Campaign visual identity', 'Ad designs & copy', 'Reels / video ads', 'Audience identification & segmentation', 'Targeting & optimization', 'Results analysis']],
-              ['Strategy & Support', ['Influencer analysis', 'Audience analysis', 'Account growth monitoring', 'Monthly performance report', 'Monthly strategy meeting', 'Dedicated account manager', 'Priority support', 'Seasonal & offer planning', 'Trend monitoring & use']]
-            ]
-          }
+      (function(){var loader=document.getElementById('zero-one-loader');var hide=function(){if(!loader)return;loader.classList.add('is-hidden');window.setTimeout(function(){if(loader&&loader.parentNode)loader.parentNode.removeChild(loader)},750)};if(document.readyState==='complete')window.setTimeout(hide,500);else window.addEventListener('load',function(){window.setTimeout(hide,500)},{once:true})})();
+      (function(){
+        var WHATSAPP='https://wa.me/201556764804?text=';var pricingId='zero-one-pricing';
+        var packages=[
+          {name:'Starter',price:'230',tone:'starter',groups:[['Content Production',['12 monthly designs','12 story designs','2 reels','Copywriting & captions','Creative direction','Monthly content plan']],['Social Management',['Instagram & Facebook','Scheduling & publishing','Profile optimization','Trends & hashtags','Community management']],['Strategy & Support',['Influencer analysis','Audience analysis','Account growth monitoring','Monthly performance report','Monthly strategy meeting','Dedicated account manager','Priority support','Seasonal & offer planning','Trend monitoring & use']]]},
+          {name:'Growth',price:'420',tone:'growth',popular:true,groups:[['Content Production',['20 monthly designs','20 story designs','5 reels','Copywriting & captions','Creative direction','Monthly content plan','Promotional content']],['Social Management',['Instagram & Facebook','Snapchat, TikTok & X','Scheduling & publishing','Profile optimization','Trends & hashtags','Community management','Comments & messages']],['Strategy & Support',['Influencer analysis','Audience analysis','Account growth monitoring','Monthly performance report','Monthly strategy meeting','Dedicated account manager','Priority support','Seasonal & offer planning','Trend monitoring & use']],['Advertising',['1 campaign included','126 KWD monthly ad budget']]]},
+          {name:'Premium',price:'700',tone:'premium',groups:[['Content Production',['30 monthly designs','30 story designs','8 reels','Copywriting & captions','Creative direction','Monthly content plan','Promotional content','Product-specific content','Platform-specific customization']],['Social Management',['Instagram & Facebook','Snapchat, TikTok & X','Scheduling & publishing','Profile optimization','Trends & hashtags','Community management','Comments & messages']],['Website & UX',['Website content management','Text, image & offer updates','Content & user experience review']],['Advertising',['2 campaigns included','210 KWD monthly ad budget','Campaign idea & strategy','Campaign visual identity','Ad designs & copy','Reels / video ads','Audience identification & segmentation','Targeting & optimization','Results analysis']],['Strategy & Support',['Influencer analysis','Audience analysis','Account growth monitoring','Monthly performance report','Monthly strategy meeting','Dedicated account manager','Priority support','Seasonal & offer planning','Trend monitoring & use']]]}
         ];
-
-        function esc(value) {
-          return String(value).replace(/[&<>\"']/g, function (char) {
-            return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '\"':'&quot;', "'":'&#39;' })[char];
-          });
-        }
-
-        function packageCard(pkg) {
-          var groups = pkg.groups.map(function (group) {
-            return '<div class="zero-one-package__group"><h3>' + esc(group[0]) + '</h3><ul class="zero-one-package__list">' + group[1].map(function (item) { return '<li>' + esc(item) + '</li>'; }).join('') + '</ul></div>';
-          }).join('');
-          var message = encodeURIComponent("Hi ZERO ONE, I'm interested in the " + pkg.name + " package. I'd like to discuss the next steps.");
-          return '<article class="zero-one-package zero-one-package--' + pkg.tone + '">' +
-            '<span class="zero-one-package__glow" aria-hidden="true"></span>' +
-            (pkg.popular ? '<span class="zero-one-package__popular">Most Popular</span>' : '') +
-            '<div class="zero-one-package__top"><span class="zero-one-package__name">' + esc(pkg.name) + '</span><span class="zero-one-package__tag">Monthly</span></div>' +
-            '<div class="zero-one-package__price"><strong>' + esc(pkg.price) + '</strong><span>KWD / month</span></div>' +
-            '<div class="zero-one-package__rule"></div>' + groups +
-            '<a class="zero-one-package__cta" href="' + WHATSAPP + message + '" target="_blank" rel="noopener noreferrer">Start with ' + esc(pkg.name) + '</a>' +
-            '</article>';
-        }
-
-        function mountPricing() {
-          if (window.location.pathname !== '/' && window.location.pathname !== '') {
-            var old = document.getElementById(pricingId);
-            if (old) old.remove();
-            return;
-          }
-          if (document.getElementById(pricingId)) return;
-          var footer = document.querySelector('footer');
-          if (!footer) return;
-          var section = document.createElement('section');
-          section.id = pricingId;
-          section.className = 'zero-one-pricing';
-          section.setAttribute('aria-label', 'ZERO ONE pricing packages');
-          section.innerHTML = '<div class="zero-one-pricing__inner"><div class="zero-one-pricing__intro"><div class="zero-one-pricing__eyebrow"><span></span> Investment <span></span></div><h2>Choose Your Level Of Growth.</h2><p>Three focused monthly retainers built to match the stage, ambition, and pace of your brand. All prices are in Kuwaiti Dinar.</p></div><div class="zero-one-pricing__grid">' + packages.map(packageCard).join('') + '</div></div>';
-          footer.parentNode.insertBefore(section, footer);
-        }
-
-        function wireNavigation() {
-          var links = Array.prototype.slice.call(document.querySelectorAll('a,button'));
-          var aboutLinks = links.filter(function (el) { return (el.textContent || '').trim().toLowerCase() === 'about'; });
-          aboutLinks.forEach(function (about) {
-            if (about.parentElement && about.parentElement.querySelector('.zero-one-nav-extra')) return;
-            var extra = document.createElement('span');
-            extra.className = 'zero-one-nav-extra';
-            var pricing = document.createElement('a');
-            pricing.href = '/#' + pricingId;
-            pricing.textContent = 'Pricing';
-            pricing.addEventListener('click', function (event) {
-              if (window.location.pathname === '/' || window.location.pathname === '') {
-                event.preventDefault();
-                mountPricing();
-                var target = document.getElementById(pricingId);
-                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }
-            });
-            var email = document.createElement('a');
-            email.href = 'mailto:' + EMAIL;
-            email.textContent = EMAIL;
-            extra.appendChild(pricing);
-            extra.appendChild(email);
-            about.parentElement.appendChild(extra);
-          });
-        }
-
-        function sync() {
-          mountPricing();
-          wireNavigation();
-        }
-
-        var observer = new MutationObserver(sync);
-        observer.observe(document.getElementById('root'), { childList: true, subtree: true });
-        window.addEventListener('popstate', sync);
-        setTimeout(sync, 0);
-        setTimeout(sync, 300);
-        setTimeout(sync, 1000);
+        function esc(value){return String(value).replace(/[&<>\"']/g,function(char){return({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'})[char]})}
+        function packageCard(pkg){var groups=pkg.groups.map(function(group){return '<div class="zero-one-package__group"><h3>'+esc(group[0])+'</h3><ul class="zero-one-package__list">'+group[1].map(function(item){return '<li>'+esc(item)+'</li>'}).join('')+'</ul></div>'}).join('');var message=encodeURIComponent("Hi ZERO ONE, I'm interested in the "+pkg.name+" package. I'd like to discuss the next steps.");return '<article class="zero-one-package zero-one-package--'+pkg.tone+'"><span class="zero-one-package__glow" aria-hidden="true"></span>'+(pkg.popular?'<span class="zero-one-package__popular">Most Popular</span>':'')+'<div class="zero-one-package__top"><span class="zero-one-package__name">'+esc(pkg.name)+'</span><span class="zero-one-package__tag">Monthly</span></div><div class="zero-one-package__price"><strong>'+esc(pkg.price)+'</strong><span>KWD / month</span></div><div class="zero-one-package__rule"></div>'+groups+'<a class="zero-one-package__cta" href="'+WHATSAPP+message+'" target="_blank" rel="noopener noreferrer">Start with '+esc(pkg.name)+'</a></article>'}
+        function mountPricing(){if(window.location.pathname!=='/'&&window.location.pathname!==''){var old=document.getElementById(pricingId);if(old)old.remove();return}if(document.getElementById(pricingId))return;var footer=document.querySelector('footer');if(!footer)return;var section=document.createElement('section');section.id=pricingId;section.className='zero-one-pricing';section.setAttribute('aria-label','ZERO ONE pricing packages');section.innerHTML='<div class="zero-one-pricing__inner"><div class="zero-one-pricing__intro"><div class="zero-one-pricing__eyebrow"><span></span> Investment <span></span></div><h2>Choose Your Level Of Growth.</h2><p>Three focused monthly retainers built to match the stage, ambition, and pace of your brand. All prices are in Kuwaiti Dinar.</p></div><div class="zero-one-pricing__grid">'+packages.map(packageCard).join('')+'</div></div>';footer.parentNode.insertBefore(section,footer)}
+        function wireNavigation(){var links=Array.prototype.slice.call(document.querySelectorAll('a,button'));var aboutLinks=links.filter(function(el){return(el.textContent||'').trim().toLowerCase()==='about'});aboutLinks.forEach(function(about){if(about.parentElement&&about.parentElement.querySelector('.zero-one-nav-extra'))return;var extra=document.createElement('span');extra.className='zero-one-nav-extra';var pricing=document.createElement('a');pricing.href='/#'+pricingId;pricing.textContent='Pricing';pricing.addEventListener('click',function(event){if(window.location.pathname==='/'||window.location.pathname===''){event.preventDefault();mountPricing();var target=document.getElementById(pricingId);if(target)target.scrollIntoView({behavior:'smooth',block:'start'})}});extra.appendChild(pricing);about.parentElement.appendChild(extra)})}
+        function sync(){mountPricing();wireNavigation()}var observer=new MutationObserver(sync);observer.observe(document.getElementById('root'),{childList:true,subtree:true});window.addEventListener('popstate',sync);setTimeout(sync,0);setTimeout(sync,300);setTimeout(sync,1000)
       })();
     </script>
     <script type="module" src="/src/main.tsx"></script>
