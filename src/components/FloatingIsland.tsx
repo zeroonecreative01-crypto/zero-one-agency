@@ -32,7 +32,7 @@ function navigate(href: string) {
 
 export default function FloatingIsland() {
   const [expanded, setExpanded] = useState(false);
-  const [message, setMessage] = useState<string>('ONE');
+  const [message, setMessage] = useState<string>('ZERO ONE');
   const [welcome, setWelcome] = useState(false);
   const [touchDevice, setTouchDevice] = useState(false);
   const hideTimer = useRef<number | null>(null);
@@ -47,9 +47,12 @@ export default function FloatingIsland() {
     coarse.addEventListener?.('change', update);
 
     const showTimer = window.setTimeout(() => {
-      setMessage('ONE');
+      setMessage(WELCOME_MESSAGES[0]);
       setWelcome(true);
-      messageTimer.current = window.setTimeout(() => setWelcome(false), 4200);
+      messageTimer.current = window.setTimeout(() => {
+        setWelcome(false);
+        setMessage('ZERO ONE');
+      }, 4200);
     }, 700);
 
     const onPricingFocus = (event: Event) => {
@@ -59,7 +62,10 @@ export default function FloatingIsland() {
       const tone = detail.tone ? `${detail.tone[0].toUpperCase()}${detail.tone.slice(1)}` : 'Package';
       setMessage(`${tone} — ${detail.name}`);
       setWelcome(true);
-      messageTimer.current = window.setTimeout(() => setWelcome(false), 1800);
+      messageTimer.current = window.setTimeout(() => {
+        setWelcome(false);
+        setMessage('ZERO ONE');
+      }, 1800);
     };
 
     window.addEventListener('zero-one:pricing-focus', onPricingFocus);
@@ -79,6 +85,7 @@ export default function FloatingIsland() {
       if (event.key === 'Escape') {
         setExpanded(false);
         setWelcome(false);
+        setMessage('ZERO ONE');
       }
     };
     window.addEventListener('keydown', onKey);
@@ -88,6 +95,7 @@ export default function FloatingIsland() {
   const expand = () => {
     if (hideTimer.current) window.clearTimeout(hideTimer.current);
     setWelcome(false);
+    setMessage('ZERO ONE');
     setExpanded(true);
   };
 
@@ -98,6 +106,7 @@ export default function FloatingIsland() {
 
   const handleNav = (href: string) => {
     setExpanded(false);
+    setMessage('ZERO ONE');
     navigate(href);
   };
 
@@ -116,9 +125,10 @@ export default function FloatingIsland() {
           onClick={() => {
             setExpanded((value) => !value);
             setWelcome(false);
+            if (expanded) setMessage('ZERO ONE');
           }}
         >
-          <span className="zero-one-island__mark">{welcome ? '' : message}</span>
+          <span className="zero-one-island__mark">{welcome ? '' : 'ZERO ONE'}</span>
           <span className="zero-one-island__status" aria-hidden="true" />
           <span className="zero-one-island__welcome" aria-live="polite">{message}</span>
           <span className="zero-one-island__menu-icon">{expanded ? <X size={14} /> : <Menu size={14} />}</span>
