@@ -2,44 +2,72 @@
 
 React + TypeScript + Vite + Tailwind CSS website for ZERO ONE.
 
-## Run locally
+## Local development
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Production build
+## Production verification
 
 ```bash
+npm run typecheck
 npm run build
 npm run preview
 ```
 
-## Included fixes
+## Production setup
 
-- Real browser URL routing with `pushState` / `popstate` for `/`, `/work`, `/services`, `/about`, and `/contact`.
-- ZERO ONE social links wired to the supplied accounts.
-- WhatsApp Business wired to `+20 155 676 4804`.
-- Contact form opens a pre-filled WhatsApp inquiry instead of simulating a fake API success.
-- Removed placeholder email, phone, office, and `#` social links.
-- Fixed the About-page SEO prop issue.
-- Added Vercel and Netlify SPA fallback configuration.
-- Added Open Graph metadata and theme metadata.
-- Included the supplied `ONE.png` logo.
-- Preserved reduced-motion handling and responsive layout.
+### Supabase authentication
 
-## Deployment
+The `/admin` route uses Supabase email/password authentication and checks `app_metadata.role === "admin"` before showing the dashboard.
+
+Set these variables in the deployment environment:
+
+```text
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_ANON_KEY=...
+```
+
+Do not commit `.env.local` or Supabase secret/service-role keys. The repository only contains `.env.example` with placeholders.
 
 ### Vercel
-Import the project and deploy. `vercel.json` handles direct visits to nested routes.
+
+The repository includes a Vercel configuration with:
+
+- Vite framework detection
+- `npm run build` build command
+- `dist` output directory
+- SPA fallback for direct visits to `/work`, `/services`, `/about`, `/contact`, and `/admin`
+- Basic production security headers
+
+Add the two Supabase `VITE_` variables to Vercel for Production (and Preview if you want authentication in preview deployments), then redeploy.
 
 ### Netlify
-Import the project and deploy. `netlify.toml` handles direct visits to nested routes.
 
-## Before launch
+`netlify.toml` contains the SPA fallback and security headers.
 
-Replace demo portfolio entries and Unsplash images with ZERO ONE's real case studies/assets. Replace placeholder statistics in `STATS` with verified numbers or remove the section. Add final legal/privacy copy when available.
+## Site behavior
 
-## Client logos
-Client logos are loaded automatically from `src/assets/clients/`. Add or remove image files in that folder (PNG/JPG/JPEG/WebP/SVG) and commit the changes; Vite discovers them automatically on the next build. The marquee uses two identical groups so the animation loops continuously without a visual endpoint.
+- Client-side navigation uses `pushState` / `popstate`.
+- Contact inquiries are prepared in WhatsApp rather than stored in a database.
+- The floating admin button opens `/admin`.
+- The public site remains usable if Supabase environment variables are not configured; only the admin route reports that authentication setup is required.
+- Reduced-motion preferences are respected.
+- Client logos are loaded automatically from `src/assets/clients/`.
+
+## Launch checklist
+
+- [ ] Add Supabase environment variables to the deployment.
+- [ ] Confirm the admin account has `app_metadata.role = "admin"`.
+- [ ] Set Supabase URL Configuration / Site URL to the production domain.
+- [ ] Redeploy after environment changes.
+- [ ] Test `/`, `/work`, `/services`, `/about`, `/contact`, and `/admin` directly in a fresh browser tab.
+- [ ] Test the contact form and confirm WhatsApp opens with the inquiry text.
+- [ ] Replace demo portfolio entries / external Unsplash images with final approved case-study assets before launch.
+- [ ] Add final Privacy Policy and Terms pages/copy before public launch.
+
+## CI
+
+GitHub Actions runs `npm run typecheck` and `npm run build` on pushes to `main` and pull requests targeting `main`.
