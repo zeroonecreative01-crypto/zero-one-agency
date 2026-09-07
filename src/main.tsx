@@ -3,12 +3,14 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import { AdminRoute, AuthProvider } from './auth/AuthProvider';
 import AdminAccessButton from './components/AdminAccessButton';
+import FloatingIsland from './components/FloatingIsland';
 import RemotePortfolioSync from './components/RemotePortfolioSync';
 import RemotePricingSync from './components/RemotePricingSync';
 import './lib/leadsCapture';
 import './styles.css';
 import './site-polish.css';
 import './pricing-polish.css';
+import './components/FloatingIsland.css';
 
 function Root() {
   const [path, setPath] = useState(() => window.location.pathname.replace(/\/+$/, '') || '/');
@@ -24,6 +26,7 @@ function Root() {
   return (
     <>
       <App />
+      <FloatingIsland />
       <RemotePortfolioSync />
       <RemotePricingSync />
       <AdminAccessButton />
