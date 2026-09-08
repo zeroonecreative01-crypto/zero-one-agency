@@ -16,6 +16,8 @@ const WELCOME_MESSAGES = [
   'Welcome to ZERO ONE — creative built with intention.',
 ];
 
+type IslandMessage = { title: string; delta?: number; total?: number; tone?: string };
+
 function navigate(href: string) {
   if (href.startsWith('/#')) {
     const hash = href.slice(2);
@@ -34,6 +36,7 @@ function navigate(href: string) {
 export default function FloatingIsland() {
   const [expanded, setExpanded] = useState(false);
   const [message, setMessage] = useState<string>('ZERO ONE');
+  const [packageUpdate, setPackageUpdate] = useState<IslandMessage | null>(null);
   const [welcome, setWelcome] = useState(false);
   const [touchDevice, setTouchDevice] = useState(false);
   const hideTimer = useRef<number | null>(null);
@@ -57,19 +60,33 @@ export default function FloatingIsland() {
       const detail = (event as CustomEvent<{ name?: string; tone?: string }>).detail;
       if (!detail?.name) return;
       if (messageTimer.current) window.clearTimeout(messageTimer.current);
-      const tone = detail.tone ? `${detail.tone[0].toUpperCase()}${detail.tone.slice(1)}` : 'Package';
-      setMessage(`${tone} — ${detail.name}`);
+      setPackageUpdate(null);
+      setMessage(`${detail.tone ? `${detail.tone} — ` : ''}${detail.name}`);
       setWelcome(true);
       messageTimer.current = window.setTimeout(() => setWelcome(false), 1800);
     };
 
+    const onPackageUpdate = (event: Event) => {
+      const detail = (event as CustomEvent<IslandMessage>).detail;
+      if (!detail?.title) return;
+      if (messageTimer.current) window.clearTimeout(messageTimer.current);
+      setPackageUpdate(detail);
+      setWelcome(true);
+      messageTimer.current = window.setTimeout(() => {
+        setWelcome(false);
+        setPackageUpdate(null);
+      }, 2400);
+    };
+
     window.addEventListener('zero-one:pricing-focus', onPricingFocus);
+    window.addEventListener('zero-one:package-update', onPackageUpdate);
 
     return () => {
       document.body.classList.remove('zero-one-island-ready');
       window.clearTimeout(showTimer);
       coarse.removeEventListener?.('change', update);
       window.removeEventListener('zero-one:pricing-focus', onPricingFocus);
+      window.removeEventListener('zero-one:package-update', onPackageUpdate);
       if (hideTimer.current) window.clearTimeout(hideTimer.current);
       if (messageTimer.current) window.clearTimeout(messageTimer.current);
     };
@@ -112,7 +129,7 @@ export default function FloatingIsland() {
   return (
     <div className="zero-one-island-layer">
       <div
-        className={`zero-one-island ${expanded ? 'is-expanded' : ''} ${welcome ? 'is-welcome' : ''}`}
+        className={`zero-one-island ${expanded ? 'is-expanded' : ''} ${welcome ? 'is-welcome' : ''} ${packageUpdate ? 'is-package-update' : ''}`}
         onMouseEnter={!touchDevice ? expand : undefined}
         onMouseLeave={!touchDevice ? collapse : undefined}
       >
@@ -128,7 +145,19 @@ export default function FloatingIsland() {
         >
           <span className="zero-one-island__mark" onClick={handleHome}>ZERO ONE</span>
           <span className="zero-one-island__status" aria-hidden="true" />
-          <span className="zero-one-island__welcome" aria-live="polite">{message}</span>
+          <span className="zero-one-island__welcome" aria-live="polite">
+            {packageUpdate ? (
+              <span className="zero-one-island__package-message">
+                <span className="zero-one-island__package-change">
+                  {packageUpdate.tone} · {packageUpdate.title}
+                </span>
+                <span className="zero-one-island__package-total">
+                  {packageUpdate.delta !== undefined ? `${packageUpdate.delta >= 0 ? '+' : '−'}${Math.abs(packageUpdate.delta).toLocaleString()} KWD` : ''}
+                  {packageUpdate.total !== undefined ? `  ·  TOTAL ${packageUpdate.total.toLocaleString()} KWD` : ''}
+                </span>
+              </span>
+            ) : message}
+          </span>
           <span className="zero-one-island__menu-icon">{expanded ? <X size={14} /> : <Menu size={14} />}</span>
         </button>
 
