@@ -9,12 +9,15 @@ import RemotePricingSync from './components/RemotePricingSync';
 import CustomPackageBuilder from './components/CustomPackageBuilder';
 import { SupportCenter } from './components/SupportCenter';
 import SiteContactPatch from './components/SiteContactPatch';
+import ExperienceUpgrade from './components/ExperienceUpgrade';
+import PerformancePolish from './components/PerformancePolish';
 import './lib/leadsCapture';
 import './styles.css';
 import './site-polish.css';
 import './pricing-polish.css';
 import './components/FloatingIsland.css';
 import './components/FloatingIslandFix.css';
+import './components/ExperienceUpgrade.css';
 
 function Root() {
   const [path, setPath] = useState(() => window.location.pathname.replace(/\/+$/, '') || '/');
@@ -36,6 +39,8 @@ function Root() {
       <CustomPackageBuilder />
       <SupportCenter />
       <SiteContactPatch />
+      <ExperienceUpgrade />
+      <PerformancePolish />
       <AdminAccessButton />
     </>
   );
