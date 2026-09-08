@@ -38,7 +38,7 @@ body.zero-one-island-ready {
   backdrop-filter: blur(26px) saturate(140%);
   -webkit-backdrop-filter: blur(26px) saturate(140%);
   pointer-events: auto;
-  transition: width 620ms cubic-bezier(.22,1,.36,1), border-color 300ms ease, background-color 300ms ease, box-shadow 500ms ease;
+  transition: width 620ms cubic-bezier(.22,1,.36,1), height 360ms cubic-bezier(.22,1,.36,1), border-color 300ms ease, background-color 300ms ease, box-shadow 500ms ease;
 }
 
 .zero-one-island::before {
@@ -56,6 +56,11 @@ body.zero-one-island-ready {
   border-color: rgba(255,255,255,.15);
   background: rgba(9,9,9,.86);
   box-shadow: 0 24px 80px rgba(0,0,0,.40), inset 0 1px 0 rgba(255,255,255,.10);
+}
+
+.zero-one-island.is-package-update {
+  height: 58px;
+  border-radius: 22px;
 }
 
 .zero-one-island__shine {
@@ -118,6 +123,33 @@ body.zero-one-island-ready {
 .zero-one-island.is-welcome .zero-one-island__status { opacity: 0; transform: scale(.7); }
 .zero-one-island.is-welcome .zero-one-island__welcome { opacity: 1; transform: translateY(0) scale(1); }
 .zero-one-island.is-welcome .zero-one-island__menu-icon { opacity: 0; }
+
+.zero-one-island__package-message {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  height: 58px;
+  line-height: 1;
+  letter-spacing: .09em;
+}
+
+.zero-one-island__package-change {
+  overflow: hidden;
+  color: rgba(247,245,240,.96);
+  font-size: 9px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+}
+
+.zero-one-island__package-total {
+  color: rgba(241,74,11,.95);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
 
 .zero-one-island__menu-icon {
   position: absolute;
@@ -188,11 +220,15 @@ body.zero-one-island-ready {
     --expanded-w: min(620px, calc(100vw - 18px));
     height: 42px;
   }
+  .zero-one-island.is-package-update { height: 56px; }
   .zero-one-island__core { width: var(--island-w); padding: 0 13px; }
   .zero-one-island__nav { left: 126px; right: 7px; overflow-x: auto; scrollbar-width: none; justify-content: flex-start; }
   .zero-one-island__nav::-webkit-scrollbar { display: none; }
   .zero-one-island__nav-item { min-height: 28px; padding: 0 8px; font-size: 8px; }
   .zero-one-island__welcome { left: 40px; right: 31px; font-size: 8px; }
+  .zero-one-island__package-message { height: 56px; gap: 4px; }
+  .zero-one-island__package-change { font-size: 8px; }
+  .zero-one-island__package-total { font-size: 7px; }
   body.zero-one-island-ready #root main { padding-top: 64px; }
 }
 
@@ -201,6 +237,8 @@ body.zero-one-island-ready {
     --expanded-w: calc(100vw - 14px);
   }
   .zero-one-island__nav-item { padding: 0 7px; font-size: 7.5px; letter-spacing: .08em; }
+  .zero-one-island__package-change { font-size: 7.5px; }
+  .zero-one-island__package-total { font-size: 6.5px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
