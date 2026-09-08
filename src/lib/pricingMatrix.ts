@@ -1,3 +1,5 @@
+import './marketPricing.css';
+
 export type MarketCode = 'KW' | 'SA' | 'AE' | 'EG';
 
 export type Market = {
