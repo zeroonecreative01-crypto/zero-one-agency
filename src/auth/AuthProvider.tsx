@@ -67,21 +67,22 @@ export function AdminRoute() {
   const [supportToast, setSupportToast] = useState(false);
 
   useEffect(() => {
-    if (!supabase || !user || user.app_metadata?.role !== 'admin') { setSupportUnread(0); setSupportToast(false); return; }
+    const adminSupabase = supabase;
+    if (!adminSupabase || !user || user.app_metadata?.role !== 'admin') { setSupportUnread(0); setSupportToast(false); return; }
     let mounted = true;
     const loadUnread = async () => {
-      const { count } = await supabase.from('support_messages').select('id', { count: 'exact', head: true }).eq('sender_type', 'client').is('read_at', null);
+      const { count } = await adminSupabase.from('support_messages').select('id', { count: 'exact', head: true }).eq('sender_type', 'client').is('read_at', null);
       if (mounted) setSupportUnread(count ?? 0);
     };
     void loadUnread();
-    const channel = supabase.channel('support-admin-unread').on('postgres_changes', { event: '*', schema: 'public', table: 'support_messages' }, (payload) => {
+    const channel = adminSupabase.channel('support-admin-unread').on('postgres_changes', { event: '*', schema: 'public', table: 'support_messages' }, (payload) => {
       if (payload.eventType === 'INSERT' && (payload.new as { sender_type?: string })?.sender_type === 'client') {
         setSupportToast(true);
         window.setTimeout(() => setSupportToast(false), 4500);
       }
       void loadUnread();
     }).subscribe();
-    return () => { mounted = false; void supabase.removeChannel(channel); };
+    return () => { mounted = false; void adminSupabase.removeChannel(channel); };
   }, [user]);
 
   if (loading) return <AuthShell><div className="min-h-screen flex items-center justify-center text-sm uppercase tracking-[0.2em] text-[#F7F5F0]/50">Checking session...</div></AuthShell>;
