@@ -7,6 +7,7 @@ import FloatingIsland from './components/FloatingIsland';
 import RemotePortfolioSync from './components/RemotePortfolioSync';
 import RemotePricingSync from './components/RemotePricingSync';
 import CustomPackageBuilder from './components/CustomPackageBuilder';
+import { SupportCenter } from './components/SupportCenter';
 import './lib/leadsCapture';
 import './styles.css';
 import './site-polish.css';
@@ -32,6 +33,7 @@ function Root() {
       <RemotePortfolioSync />
       <RemotePricingSync />
       <CustomPackageBuilder />
+      <SupportCenter />
       <AdminAccessButton />
     </>
   );
