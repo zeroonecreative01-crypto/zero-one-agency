@@ -22,7 +22,7 @@ function esc(value: unknown) {
 }
 
 function localPackagePrice(pkg: PricingPackage, market: MarketCode) {
-  return PACKAGE_PRICES[pkg.name]?.[market] ?? Number(pkg.price) || 0;
+  return PACKAGE_PRICES[pkg.name]?.[market] ?? (Number(pkg.price) || 0);
 }
 
 function cardMarkup(pkg: PricingPackage, market: MarketCode) {
