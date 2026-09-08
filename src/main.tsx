@@ -8,6 +8,7 @@ import RemotePortfolioSync from './components/RemotePortfolioSync';
 import RemotePricingSync from './components/RemotePricingSync';
 import CustomPackageBuilder from './components/CustomPackageBuilder';
 import { SupportCenter } from './components/SupportCenter';
+import SiteContactPatch from './components/SiteContactPatch';
 import './lib/leadsCapture';
 import './styles.css';
 import './site-polish.css';
@@ -34,6 +35,7 @@ function Root() {
       <RemotePricingSync />
       <CustomPackageBuilder />
       <SupportCenter />
+      <SiteContactPatch />
       <AdminAccessButton />
     </>
   );
