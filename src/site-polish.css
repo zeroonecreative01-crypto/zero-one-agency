@@ -257,3 +257,79 @@ footer a:hover { color: var(--zo-orange) !important; }
     transition-duration: .01ms !important;
   }
 }
+
+/* Live Support — compact floating control with a brief text reveal. */
+button[aria-label="Open ZERO ONE support"] {
+  box-sizing: border-box;
+  width: 44px !important;
+  height: 44px;
+  min-width: 44px;
+  padding: 6px !important;
+  gap: 0 !important;
+  justify-content: flex-start;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 0;
+  letter-spacing: .14em;
+  animation: zero-one-support-reveal 7s cubic-bezier(.22,1,.36,1) infinite;
+}
+
+button[aria-label="Open ZERO ONE support"] > span {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+}
+
+button[aria-label="Open ZERO ONE support"] > span svg {
+  width: 14px;
+  height: 14px;
+}
+
+button[aria-label="Open ZERO ONE support"]:hover {
+  width: 142px !important;
+  font-size: 9px;
+  gap: 9px !important;
+  animation-play-state: paused;
+}
+
+@keyframes zero-one-support-reveal {
+  0%, 58% {
+    width: 44px;
+    padding-left: 6px;
+    padding-right: 6px;
+    font-size: 0;
+    gap: 0;
+  }
+  64%, 82% {
+    width: 142px;
+    padding-left: 7px;
+    padding-right: 14px;
+    font-size: 9px;
+    gap: 9px;
+  }
+  88%, 100% {
+    width: 44px;
+    padding-left: 6px;
+    padding-right: 6px;
+    font-size: 0;
+    gap: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  button[aria-label="Open ZERO ONE support"] {
+    bottom: 16px !important;
+    right: 16px !important;
+  }
+  button[aria-label="Open ZERO ONE support"]:hover {
+    width: 136px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button[aria-label="Open ZERO ONE support"] {
+    animation: none;
+    width: 44px !important;
+    font-size: 0;
+  }
+}
