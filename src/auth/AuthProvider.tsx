@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
-import { Briefcase, CreditCard, LayoutDashboard, LogOut, Users } from 'lucide-react';
+import { Briefcase, CreditCard, Headset, LayoutDashboard, LogOut, Users } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import LeadsPanel from '../admin/LeadsPanel';
 import PortfolioPanel from '../admin/PortfolioPanel';
 import PricingPanel from '../admin/PricingPanel';
+import { SupportPanel } from '../components/SupportCenter';
 
 interface AuthContextValue {
   session: Session | null;
@@ -18,12 +19,13 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-type AdminSection = 'overview' | 'leads' | 'portfolio' | 'pricing';
+type AdminSection = 'overview' | 'leads' | 'portfolio' | 'pricing' | 'support';
 type AdminNavItem = { id: AdminSection; label: string; icon: LucideIcon };
 
 const ADMIN_NAV: AdminNavItem[] = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
   { id: 'leads', label: 'Leads', icon: Users },
+  { id: 'support', label: 'Support', icon: Headset },
   { id: 'portfolio', label: 'Portfolio', icon: Briefcase },
   { id: 'pricing', label: 'Pricing', icon: CreditCard },
 ];
@@ -87,13 +89,14 @@ function AuthShell({ children }: { children: React.ReactNode }) {
 function AdminOverview({ user, onNavigate }: { user: User; onNavigate: (section: AdminSection) => void }) {
   const cards = [
     { id: 'leads' as const, label: 'Leads', title: 'Manage inquiries.', copy: 'Review, qualify, and update incoming project opportunities.', icon: Users },
+    { id: 'support' as const, label: 'Support', title: 'Reply to clients.', copy: 'Handle live conversations, client details, status, and priority from one inbox.', icon: Headset },
     { id: 'portfolio' as const, label: 'Portfolio', title: 'Manage work.', copy: 'Add, edit, feature, and reorder projects shown on the public site.', icon: Briefcase },
     { id: 'pricing' as const, label: 'Pricing', title: 'Manage packages.', copy: 'Edit package prices, feature groups, included services, and display order.', icon: CreditCard },
   ];
 
   return (
     <section className="mt-10">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {cards.map(({ id, label, title, copy, icon: Icon }) => (
           <button
             key={id}
@@ -104,8 +107,8 @@ function AdminOverview({ user, onNavigate }: { user: User; onNavigate: (section:
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#F14A0B]">{label}</span>
               <Icon size={22} className="text-[#F7F5F0]/35 transition-colors group-hover:text-[#F14A0B]" />
             </div>
-            <h2 className="text-3xl font-bold tracking-tight">{title}</h2>
-            <p className="mt-3 max-w-lg text-sm leading-6 text-[#F7F5F0]/50">{copy}</p>
+            <h2 className="text-2xl font-bold tracking-tight">{title}</h2>
+            <p className="mt-3 text-sm leading-6 text-[#F7F5F0]/50">{copy}</p>
             <span className="mt-8 inline-flex rounded-full border border-[#F7F5F0]/15 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[#F7F5F0]/70 transition-colors group-hover:border-[#F14A0B]/50 group-hover:text-[#F14A0B]">Open {label}</span>
           </button>
         ))}
@@ -151,7 +154,7 @@ export function AdminRoute() {
   const isAdmin = user.app_metadata?.role === 'admin';
   if (!isAdmin) return <AuthShell><div className="min-h-screen flex items-center justify-center px-6"><div className="w-full max-w-lg text-center border border-[#F7F5F0]/10 p-8 md:p-12"><p className="text-[#F14A0B] text-xs font-bold uppercase tracking-[0.2em] mb-4">403 / Forbidden</p><h1 className="text-3xl font-bold mb-4">Admin access required.</h1><p className="text-[#F7F5F0]/60 mb-8">Your account is authenticated, but it does not have the admin role.</p><button onClick={() => signOut()} className="rounded-full border border-[#F7F5F0]/20 px-6 py-3 text-sm font-semibold hover:bg-[#F7F5F0] hover:text-[#111111] transition-colors">Sign out</button></div></div></AuthShell>;
 
-  const sectionTitle = section === 'overview' ? 'Dashboard.' : section === 'leads' ? 'Leads.' : section === 'portfolio' ? 'Portfolio.' : 'Pricing.';
+  const sectionTitle = section === 'overview' ? 'Dashboard.' : section === 'leads' ? 'Leads.' : section === 'portfolio' ? 'Portfolio.' : section === 'pricing' ? 'Pricing.' : 'Support.';
 
   return (
     <AuthShell>
@@ -185,6 +188,7 @@ export function AdminRoute() {
 
           {section === 'overview' && <AdminOverview user={user} onNavigate={setSection} />}
           {section === 'leads' && <LeadsPanel />}
+          {section === 'support' && <SupportPanel />}
           {section === 'portfolio' && <PortfolioPanel />}
           {section === 'pricing' && <PricingPanel />}
         </div>
