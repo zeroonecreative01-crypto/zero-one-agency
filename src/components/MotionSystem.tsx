@@ -11,55 +11,50 @@ const SELECTORS = [
   'footer',
 ].join(',');
 
-function prepareMotion() {
-  document.body.classList.add('zo-motion-ready');
-
-  const elements = Array.from(document.querySelectorAll<HTMLElement>(SELECTORS));
-  elements.forEach((element, index) => {
-    if (element.dataset.zoMotionPrepared === 'true') return;
-    element.dataset.zoMotionPrepared = 'true';
-    element.classList.add('zo-reveal');
-
-    const parent = element.parentElement;
-    if (parent?.classList.contains('zo-case-grid') || parent?.classList.contains('zo-proof__inner')) {
-      element.style.setProperty('--zo-reveal-delay', `${Math.min(index % 6, 5) * 70}ms`);
-    }
-  });
-
-  const headings = Array.from(document.querySelectorAll<HTMLElement>('main h1, main h2, main h3'));
-  headings.forEach((heading) => {
-    if (heading.dataset.zoMotionPrepared === 'true') return;
-    heading.dataset.zoMotionPrepared = 'true';
-    heading.classList.add('zo-text-reveal');
-  });
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        (entry.target as HTMLElement).classList.add('is-visible');
-        observer.unobserve(entry.target);
-      });
-    },
-    { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
-  );
-
-  document.querySelectorAll<HTMLElement>('.zo-reveal, .zo-text-reveal').forEach((element) => {
-    if (!element.classList.contains('is-visible')) observer.observe(element);
-  });
-
-  return observer;
-}
-
 export default function MotionSystem() {
   useEffect(() => {
-    const observer = prepareMotion();
-    const mutationObserver = new MutationObserver(() => {
-      const nextObserver = prepareMotion();
-      nextObserver.disconnect();
-    });
+    document.body.classList.add('zo-motion-ready');
 
-    mutationObserver.observe(document.getElementById('root')!, { childList: true, subtree: true });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          (entry.target as HTMLElement).classList.add('is-visible');
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+    );
+
+    const prepare = () => {
+      const elements = Array.from(document.querySelectorAll<HTMLElement>(SELECTORS));
+      elements.forEach((element, index) => {
+        if (element.dataset.zoMotionPrepared === 'true') return;
+        element.dataset.zoMotionPrepared = 'true';
+        element.classList.add('zo-reveal');
+
+        const parent = element.parentElement;
+        if (parent?.classList.contains('zo-case-grid') || parent?.classList.contains('zo-proof__inner')) {
+          element.style.setProperty('--zo-reveal-delay', `${Math.min(index % 6, 5) * 70}ms`);
+        }
+      });
+
+      document.querySelectorAll<HTMLElement>('main h1, main h2, main h3').forEach((heading) => {
+        if (heading.dataset.zoMotionPrepared === 'true') return;
+        heading.dataset.zoMotionPrepared = 'true';
+        heading.classList.add('zo-text-reveal');
+      });
+
+      document.querySelectorAll<HTMLElement>('.zo-reveal, .zo-text-reveal').forEach((element) => {
+        if (!element.classList.contains('is-visible')) observer.observe(element);
+      });
+    };
+
+    prepare();
+
+    const mutationObserver = new MutationObserver(() => prepare());
+    const root = document.getElementById('root');
+    if (root) mutationObserver.observe(root, { childList: true, subtree: true });
 
     return () => {
       observer.disconnect();
