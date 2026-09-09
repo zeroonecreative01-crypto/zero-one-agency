@@ -1,0 +1,24 @@
+/* Statement section: keep every foreground element white on the black background. */
+main > div:first-child > section:nth-of-type(4) h1,
+main > div:first-child > section:nth-of-type(4) h2,
+main > div:first-child > section:nth-of-type(4) h3,
+main > div:first-child > section:nth-of-type(4) h4,
+main > div:first-child > section:nth-of-type(4) p,
+main > div:first-child > section:nth-of-type(4) span,
+main > div:first-child > section:nth-of-type(4) a,
+main > div:first-child > section:nth-of-type(4) button,
+main > div:first-child > section:nth-of-type(4) li,
+main > div:first-child > section:nth-of-type(4) svg {
+  color: #F7F5F0 !important;
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+main > div:first-child > section:nth-of-type(4)::before {
+  color: #F7F5F0 !important;
+}
+
+main > div:first-child > section:nth-of-type(4) .bg-\[\#F14A0B\],
+main > div:first-child > section:nth-of-type(4) [class*="bg-[#F14A0B]"] {
+  background-color: #F7F5F0 !important;
+}
