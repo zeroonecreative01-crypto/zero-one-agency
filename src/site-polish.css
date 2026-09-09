@@ -124,7 +124,7 @@ main > div:first-child > section:nth-of-type(4)::before {
   letter-spacing: .28em;
   opacity: .22;
 }
-main > div:first-child > section:nth-of-type(4) h2 { letter-spacing: -.065em; }
+main > div:first-child > section:nth-of-type(4) h2 { letter-spacing: -.065em; color: var(--zo-paper); }
 
 main > div:not(:first-child) > div:first-child,
 main > div:not(:first-child) > section:first-child {
