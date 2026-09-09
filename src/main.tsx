@@ -16,6 +16,7 @@ import './lib/leadsCapture';
 import './styles.css';
 import './site-polish.css';
 import './pricing-polish.css';
+import './statement-white.css';
 import './components/FloatingIsland.css';
 import './components/FloatingIslandFix.css';
 import './components/SupportFloatingFix.css';
