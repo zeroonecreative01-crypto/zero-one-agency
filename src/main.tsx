@@ -17,6 +17,7 @@ import './site-polish.css';
 import './pricing-polish.css';
 import './components/FloatingIsland.css';
 import './components/FloatingIslandFix.css';
+import './components/SupportFloatingFix.css';
 import './components/ExperienceUpgrade.css';
 
 function Root() {
