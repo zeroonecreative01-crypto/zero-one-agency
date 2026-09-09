@@ -39,7 +39,7 @@ function Root() {
       <FloatingIsland />
       <RemotePortfolioSync />
       <RemotePricingSync />
-      <CustomPackageBuilder />
+      {path === '/' && <CustomPackageBuilder />}
       <SupportCenter />
       <SiteContactPatch />
       <ExperienceUpgrade />
