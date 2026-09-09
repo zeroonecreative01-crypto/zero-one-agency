@@ -11,6 +11,7 @@ import { SupportCenter } from './components/SupportCenter';
 import SiteContactPatch from './components/SiteContactPatch';
 import ExperienceUpgrade from './components/ExperienceUpgrade';
 import PerformancePolish from './components/PerformancePolish';
+import MotionSystem from './components/MotionSystem';
 import './lib/leadsCapture';
 import './styles.css';
 import './site-polish.css';
@@ -19,6 +20,7 @@ import './components/FloatingIsland.css';
 import './components/FloatingIslandFix.css';
 import './components/SupportFloatingFix.css';
 import './components/ExperienceUpgrade.css';
+import './components/MotionSystem.css';
 
 function Root() {
   const [path, setPath] = useState(() => window.location.pathname.replace(/\/+$/, '') || '/');
@@ -42,6 +44,7 @@ function Root() {
       <SiteContactPatch />
       <ExperienceUpgrade />
       <PerformancePolish />
+      <MotionSystem />
       <AdminAccessButton />
     </>
   );
