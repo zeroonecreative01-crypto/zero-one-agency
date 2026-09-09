@@ -19,18 +19,19 @@ function applyOverrides(items: Override[]) {
 export default function SiteContentSync() {
   useEffect(() => {
     if (window.location.pathname === '/admin') return;
-    let active = true;
+    let active = true; let applying = false; let timer = 0;
     const load = async () => {
-      if (!supabase) return;
+      if (!supabase || applying) return;
       const { data } = await supabase.from('site_content').select('content').eq('id','default').single();
       if (!active) return;
       const overrides = ((data?.content as { overrides?: Override[] } | null)?.overrides ?? []).filter((x) => x?.target && x?.value);
-      applyOverrides(overrides);
+      if (!overrides.length) return;
+      applying = true; applyOverrides(overrides); window.setTimeout(() => { applying = false; }, 50);
     };
     void load();
-    const observer = new MutationObserver(() => { void load(); });
+    const observer = new MutationObserver(() => { if (!applying) { window.clearTimeout(timer); timer = window.setTimeout(() => void load(), 120); } });
     observer.observe(document.body, { childList: true, subtree: true });
-    return () => { active = false; observer.disconnect(); };
+    return () => { active = false; observer.disconnect(); window.clearTimeout(timer); };
   }, []);
   return null;
 }
