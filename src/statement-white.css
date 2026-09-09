@@ -1,0 +1,7 @@
+/* Statement headline: keep the opening line white while the second line stays orange. */
+main > div:first-child > section:nth-of-type(4) h2 {
+  color: #F7F5F0 !important;
+}
+main > div:first-child > section:nth-of-type(4) h2 span {
+  color: #F14A0B !important;
+}
