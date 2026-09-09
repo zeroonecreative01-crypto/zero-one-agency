@@ -26,7 +26,6 @@ main > div > div { background-color: transparent; }
 img { max-width: 100%; }
 a, button, p, h1, h2, h3, h4, span { overflow-wrap: anywhere; }
 
-/* Fixed navigation: dark, quiet, and less reflective. */
 header {
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -37,7 +36,6 @@ header {
 header a, header button { transition: color .25s ease, opacity .25s ease, background-color .25s ease, border-color .25s ease, transform .25s ease; }
 header a:hover { color: var(--zo-orange) !important; }
 
-/* Home hero — calmer contrast and more breathing room. */
 main > div:first-child > section:first-of-type {
   position: relative;
   isolation: isolate;
@@ -84,7 +82,6 @@ main > div:first-child > section:first-of-type h1 span:first-child::after {
 }
 main > div:first-child > section:first-of-type:hover h1 span:first-child::after { transform: scaleX(1); }
 
-/* Client strip. */
 .client-marquee-section {
   border-top: 1px solid var(--zo-line);
   border-bottom: 1px solid var(--zo-line);
@@ -95,7 +92,6 @@ main > div:first-child > section:first-of-type:hover h1 span:first-child::after 
 .client-marquee__item { opacity: .52; transition: opacity .3s ease, transform .3s ease; }
 .client-marquee__item:hover { opacity: .92; transform: translateY(-2px); }
 
-/* Work section — less glow, cleaner framing. */
 main > div:first-child > section:nth-of-type(3) { position: relative; }
 main > div:first-child > section:nth-of-type(3) > div:nth-child(1) h2 { letter-spacing: -.055em; }
 main > div:first-child > section:nth-of-type(3) .group > div:first-child {
@@ -113,7 +109,6 @@ main > div:first-child > section:nth-of-type(3) .group .w-10 { flex: 0 0 auto; }
 main > div:first-child > section:nth-of-type(3) .group p { transition: color .25s ease; }
 main > div:first-child > section:nth-of-type(3) .group:hover p { color: rgba(247,245,240,.70); }
 
-/* Statement section. */
 main > div:first-child > section:nth-of-type(4) {
   position: relative;
   overflow: hidden;
@@ -131,7 +126,6 @@ main > div:first-child > section:nth-of-type(4)::before {
 }
 main > div:first-child > section:nth-of-type(4) h2 { letter-spacing: -.065em; }
 
-/* Inner page rhythm. */
 main > div:not(:first-child) > div:first-child,
 main > div:not(:first-child) > section:first-child {
   max-width: 1440px;
@@ -140,11 +134,9 @@ main > div:not(:first-child) > section:first-child {
 }
 main > div:not(:first-child) { background: var(--zo-black) !important; }
 
-/* Service rows. */
 main > div:not(:first-child) .group:hover { background: rgba(247,245,240,.025); }
 main > div:not(:first-child) .group { transition: background-color .3s ease, padding .3s ease; }
 
-/* Pricing anchor and cards. */
 .zero-one-pricing {
   scroll-margin-top: 96px;
   background: var(--zo-black) !important;
@@ -161,7 +153,6 @@ main > div:not(:first-child) .group { transition: background-color .3s ease, pad
 .zero-one-package__cta { transition: transform .25s ease, box-shadow .25s ease; }
 .zero-one-package__cta:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0,0,0,.22); }
 
-/* Footer closure. */
 footer {
   border-top: 1px solid rgba(247,245,240,.08);
   background: var(--zo-black) !important;
@@ -169,7 +160,6 @@ footer {
 footer a { transition: color .25s ease, opacity .25s ease; }
 footer a:hover { color: var(--zo-orange) !important; }
 
-/* Accessibility / overflow. */
 :focus-visible { outline: 2px solid var(--zo-orange); outline-offset: 4px; }
 
 @media (max-width: 1023px) {
@@ -182,7 +172,6 @@ footer a:hover { color: var(--zo-orange) !important; }
   .zero-one-pricing { scroll-margin-top: 76px; }
   footer { overflow: hidden; }
 
-  /* Mobile navigation / spacing. */
   main > div:first-child > section:first-of-type {
     min-height: 88svh;
     padding-top: 7rem;
@@ -198,12 +187,10 @@ footer a:hover { color: var(--zo-orange) !important; }
   }
   main > div:first-child > section:first-of-type h1 span:first-child::after { height: 1px; bottom: -.06em; }
 
-  /* Keep inner-page headings clear of the floating island. */
   body.zero-one-island-ready #root main > div:not(:first-child) {
     padding-top: 52px;
   }
 
-  /* More breathing room and cleaner text measure. */
   main > div:first-child > section:nth-of-type(3) {
     padding-top: 4.5rem;
     padding-bottom: 4.75rem;
@@ -331,5 +318,52 @@ button[aria-label="Open ZERO ONE support"]:hover {
     animation: none;
     width: 44px !important;
     font-size: 0;
+  }
+}
+
+/* Final floating order: Live Support directly above Admin. */
+button[aria-label="Open ZERO ONE support"] {
+  right: 20px !important;
+  bottom: 76px !important;
+  z-index: 10000 !important;
+}
+
+button[aria-label="Open ZERO ONE support"]::after {
+  content: "LIVE SUPPORT";
+  position: absolute;
+  right: 52px;
+  top: 50%;
+  padding: 7px 10px;
+  border: 1px solid rgba(247,245,240,.12);
+  border-radius: 999px;
+  background: rgba(17,17,17,.94);
+  color: #f7f5f0;
+  font: 700 8px/1 system-ui, sans-serif;
+  letter-spacing: .16em;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(7px, -50%) scale(.96);
+  box-shadow: 0 10px 30px rgba(0,0,0,.28);
+  animation: zero-one-support-label 6s ease-in-out infinite;
+}
+
+button[aria-label="Open ZERO ONE support"]:hover::after,
+button[aria-label="Open ZERO ONE support"]:focus-visible::after {
+  opacity: 1;
+  transform: translate(0, -50%) scale(1);
+  animation: none;
+}
+
+@keyframes zero-one-support-label {
+  0%, 58%, 100% { opacity: 0; transform: translate(7px, -50%) scale(.96); }
+  64%, 82% { opacity: 1; transform: translate(0, -50%) scale(1); }
+  88% { opacity: 0; transform: translate(7px, -50%) scale(.96); }
+}
+
+@media (max-width: 767px) {
+  button[aria-label="Open ZERO ONE support"] {
+    right: 16px !important;
+    bottom: 72px !important;
   }
 }
