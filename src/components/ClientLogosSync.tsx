@@ -13,6 +13,7 @@ export default function ClientLogosSync() {
   useEffect(() => {
     let mounted = true;
     const render = async () => {
+      if (!supabase) return;
       const section = document.querySelector<HTMLElement>('.client-marquee-section');
       if (!section) return;
       const { data } = await supabase.from('client_logos').select('id,name,image_url,website_url,active,sort_order').eq('active', true).order('sort_order', { ascending: true });
