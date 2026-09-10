@@ -7,6 +7,7 @@ import AdminAccessButton from './components/AdminAccessButton';
 import FloatingIsland from './components/FloatingIsland';
 import RemotePortfolioSync from './components/RemotePortfolioSync';
 import RemotePricingSync from './components/RemotePricingSync';
+import ClientLogosSync from './components/ClientLogosSync';
 import CustomPackageBuilder from './components/CustomPackageBuilder';
 import { SupportCenter } from './components/SupportCenter';
 import SiteContactPatch from './components/SiteContactPatch';
@@ -30,7 +31,7 @@ function Root() {
   useEffect(() => { const handleNavigation = () => setPath(window.location.pathname.replace(/\/+$/, '') || '/'); window.addEventListener('popstate', handleNavigation); return () => window.removeEventListener('popstate', handleNavigation); }, []);
   if (path === '/admin') return <AdminRoute />;
   if (path === '/admin/content') return <AdminContentRoute />;
-  return <><App /><FloatingIsland /><RemotePortfolioSync /><RemotePricingSync />{path === '/' && <CustomPackageBuilder />}<SupportCenter /><SiteContactPatch /><ExperienceUpgrade /><PerformancePolish /><MotionSystem /><SiteContentSync /><AdminAccessButton /></>;
+  return <><App /><FloatingIsland /><RemotePortfolioSync /><RemotePricingSync /><ClientLogosSync />{path === '/' && <CustomPackageBuilder />}<SupportCenter /><SiteContactPatch /><ExperienceUpgrade /><PerformancePolish /><MotionSystem /><SiteContentSync /><AdminAccessButton /></>;
 }
 
 createRoot(document.getElementById('root')!).render(<React.StrictMode><AuthProvider><Root /></AuthProvider></React.StrictMode>);
