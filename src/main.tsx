@@ -12,6 +12,7 @@ import CustomPackageBuilder from './components/CustomPackageBuilder';
 import { SupportCenter } from './components/SupportCenter';
 import SiteContactPatch from './components/SiteContactPatch';
 import ExperienceUpgrade from './components/ExperienceUpgrade';
+import ConversionSections from './components/ConversionSections';
 import PerformancePolish from './components/PerformancePolish';
 import MotionSystem from './components/MotionSystem';
 import SiteContentSync from './components/SiteContentSync';
@@ -25,6 +26,7 @@ import './components/FloatingIsland.css';
 import './components/FloatingIslandFix.css';
 import './components/SupportFloatingFix.css';
 import './components/ExperienceUpgrade.css';
+import './components/ConversionSections.css';
 import './components/MotionSystem.css';
 
 function Root() {
@@ -32,7 +34,7 @@ function Root() {
   useEffect(() => { const handleNavigation = () => setPath(window.location.pathname.replace(/\/+$/, '') || '/'); window.addEventListener('popstate', handleNavigation); return () => window.removeEventListener('popstate', handleNavigation); }, []);
   if (path === '/admin') return <AdminRoute />;
   if (path === '/admin/content') return <AdminContentRoute />;
-  return <><App /><FloatingIsland /><RemotePortfolioSync /><RemotePricingSync /><ClientLogosSync />{path === '/' && <CustomPackageBuilder />}<SupportCenter /><SiteContactPatch /><ExperienceUpgrade /><PerformancePolish /><MotionSystem /><SiteContentSync /><AdminAccessButton /></>;
+  return <><App /><FloatingIsland /><RemotePortfolioSync /><RemotePricingSync /><ClientLogosSync />{path === '/' && <CustomPackageBuilder />}<SupportCenter /><SiteContactPatch /><ExperienceUpgrade /><ConversionSections /><PerformancePolish /><MotionSystem /><SiteContentSync /><AdminAccessButton /></>;
 }
 
 createRoot(document.getElementById('root')!).render(<React.StrictMode><AuthProvider><Root /></AuthProvider></React.StrictMode>);
