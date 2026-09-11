@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
 type Override = { id: string; type: 'text' | 'link' | 'image'; target: string; value: string };
+const PREVIEW_KEY = 'zero-one:content-preview';
 
 function applyOverrides(items: Override[]) {
   if (!items.length) return;
@@ -16,9 +17,20 @@ function applyOverrides(items: Override[]) {
   document.querySelectorAll<HTMLImageElement>('img[src]').forEach((img) => { imageItems.forEach((item) => { if (img.src === item.target || img.getAttribute('src') === item.target) img.setAttribute('src', item.value); }); });
 }
 
+function readPreview(): Override[] | null {
+  if (new URLSearchParams(window.location.search).get('preview') !== '1') return null;
+  try {
+    const raw = localStorage.getItem(PREVIEW_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as { overrides?: Override[] };
+    return Array.isArray(parsed.overrides) ? parsed.overrides : [];
+  } catch { return []; }
+}
+
 export default function SiteContentSync() {
   useEffect(() => {
     if (window.location.pathname === '/admin' || window.location.pathname === '/admin/content') return;
+    const preview = readPreview();
     const client = supabase;
     if (!client) return;
     let active = true;
@@ -26,13 +38,18 @@ export default function SiteContentSync() {
     let timer = 0;
     const load = async () => {
       if (loaded) return;
+      if (preview !== null) {
+        loaded = true;
+        applyOverrides(preview);
+        return;
+      }
       const { data } = await client.from('site_content').select('content').eq('id', 'default').single();
       if (!active) return;
       loaded = true;
       const overrides = ((data?.content as { overrides?: Override[] } | null)?.overrides ?? []).filter((x) => x?.target && x?.value);
       applyOverrides(overrides);
     };
-    const handleUpdate = () => { loaded = false; window.clearTimeout(timer); timer = window.setTimeout(() => void load(), 80); };
+    const handleUpdate = () => { if (preview !== null) return; loaded = false; window.clearTimeout(timer); timer = window.setTimeout(() => void load(), 80); };
     void load();
     window.addEventListener('zero-one:content-updated', handleUpdate);
     return () => { active = false; window.removeEventListener('zero-one:content-updated', handleUpdate); window.clearTimeout(timer); };
