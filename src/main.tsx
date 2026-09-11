@@ -5,6 +5,7 @@ import SiteApp from './App';
 import AdminContentRoute from './admin/AdminContentRoute';
 import AdminDashboard from './admin/AdminDashboard';
 import { PrivacyPolicy, TermsOfService } from './LegalPages';
+import PricingPage from './components/PricingPage';
 import FloatingIsland from './components/FloatingIsland';
 import RemotePortfolioSync from './components/RemotePortfolioSync';
 import RemotePricingSync from './components/RemotePricingSync';
@@ -46,6 +47,7 @@ function Root() {
   if (path === '/admin/content') return <AdminContentRoute />;
   if (path === '/privacy-policy') return <PrivacyPolicy navigate={(next) => { window.history.pushState({}, '', next); setPath(next); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />;
   if (path === '/terms-of-service') return <TermsOfService navigate={(next) => { window.history.pushState({}, '', next); setPath(next); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />;
+  if (path === '/pricing') return <><PricingPage /><FloatingIsland /><SupportCenter /></>;
 
   const isHome = path === '/';
 
