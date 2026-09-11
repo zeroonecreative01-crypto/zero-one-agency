@@ -19,13 +19,14 @@ function applyOverrides(items: Override[]) {
 export default function SiteContentSync() {
   useEffect(() => {
     if (window.location.pathname === '/admin' || window.location.pathname === '/admin/content') return;
-    if (!supabase) return;
+    const client = supabase;
+    if (!client) return;
     let active = true;
     let loaded = false;
     let timer = 0;
     const load = async () => {
       if (loaded) return;
-      const { data } = await supabase.from('site_content').select('content').eq('id', 'default').single();
+      const { data } = await client.from('site_content').select('content').eq('id', 'default').single();
       if (!active) return;
       loaded = true;
       const overrides = ((data?.content as { overrides?: Override[] } | null)?.overrides ?? []).filter((x) => x?.target && x?.value);
