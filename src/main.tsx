@@ -28,6 +28,7 @@ import './components/SupportFloatingFix.css';
 import './components/ExperienceUpgrade.css';
 import './components/ConversionSections.css';
 import './components/MotionSystem.css';
+import './final-polish.css';
 
 function Root() {
   const [path, setPath] = useState(() => window.location.pathname.replace(/\/+$/, '') || '/');
