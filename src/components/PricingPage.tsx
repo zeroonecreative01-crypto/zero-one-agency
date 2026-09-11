@@ -60,6 +60,7 @@ export default function PricingPage() {
   const chooseMarket = (code: MarketCode) => {
     setMarket(code);
     setStoredMarket(code);
+    window.dispatchEvent(new CustomEvent('zero-one:market-change', { detail: { code } }));
   };
 
   return (
@@ -127,6 +128,17 @@ export default function PricingPage() {
             })}
           </div>
         )}
+      </section>
+
+      <section className="border-t border-[#F7F5F0]/10 bg-[#0b0b0b] px-6 py-20 md:px-12">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-10 max-w-2xl">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F14A0B]">Need something custom?</p>
+            <h2 className="mt-3 text-4xl font-bold tracking-tight md:text-6xl">Build it. Shape it. Make it yours.</h2>
+            <p className="mt-4 max-w-xl text-sm leading-6 text-[#F7F5F0]/45">Start with the mix that fits your brand, adjust the volume, and see a live estimate before you request the final package.</p>
+          </div>
+          <div id="zero-one-custom-package-mount" />
+        </div>
       </section>
 
       <section className="border-t border-[#F7F5F0]/10 px-6 py-20 text-center md:px-12">
