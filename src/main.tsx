@@ -4,6 +4,7 @@ import { AdminRoute, AuthProvider, useAuth } from './auth/AuthProvider';
 import SiteApp from './App';
 import AdminContentRoute from './admin/AdminContentRoute';
 import AdminDashboard from './admin/AdminDashboard';
+import { PrivacyPolicy, TermsOfService } from './LegalPages';
 import FloatingIsland from './components/FloatingIsland';
 import RemotePortfolioSync from './components/RemotePortfolioSync';
 import RemotePricingSync from './components/RemotePricingSync';
@@ -37,6 +38,8 @@ function Root() {
   if (path === '/admin') return <AdminRoute />;
   if (path === '/admin/dashboard') return <AdminDashboardRoute />;
   if (path === '/admin/content') return <AdminContentRoute />;
+  if (path === '/privacy-policy') return <PrivacyPolicy navigate={(next) => { window.history.pushState({}, '', next); setPath(next); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />;
+  if (path === '/terms-of-service') return <TermsOfService navigate={(next) => { window.history.pushState({}, '', next); setPath(next); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />;
   return <><SiteApp /><FloatingIsland /><RemotePortfolioSync /><RemotePricingSync /><ClientLogosSync />{path === '/' && <CustomPackageBuilder />}<SupportCenter /><SiteContactPatch /><ExperienceUpgrade /><ConversionSections /><PerformancePolish /><MotionSystem /><SiteContentSync /><HomepageStructureFix /></>;
 }
 
