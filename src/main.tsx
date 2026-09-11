@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import type { User } from '@supabase/supabase-js';
 import { AdminRoute, AuthProvider, useAuth } from './auth/AuthProvider';
+import SiteApp from './App';
 import AdminContentRoute from './admin/AdminContentRoute';
 import AdminDashboard from './admin/AdminDashboard';
 import FloatingIsland from './components/FloatingIsland';
@@ -36,7 +36,7 @@ function Root() {
   if (path === '/admin') return <AdminRoute />;
   if (path === '/admin/dashboard') return <AdminDashboardRoute />;
   if (path === '/admin/content') return <AdminContentRoute />;
-  return <><App /><FloatingIsland /><RemotePortfolioSync /><RemotePricingSync /><ClientLogosSync />{path === '/' && <CustomPackageBuilder />}<SupportCenter /><SiteContactPatch /><ExperienceUpgrade /><ConversionSections /><PerformancePolish /><MotionSystem /><SiteContentSync /></>;
+  return <><SiteApp /><FloatingIsland /><RemotePortfolioSync /><RemotePricingSync /><ClientLogosSync />{path === '/' && <CustomPackageBuilder />}<SupportCenter /><SiteContactPatch /><ExperienceUpgrade /><ConversionSections /><PerformancePolish /><MotionSystem /><SiteContentSync /></>;
 }
 
 function AdminDashboardRoute() {
@@ -47,7 +47,5 @@ function AdminDashboardRoute() {
 }
 
 function AdminDashboardShell({ children }: { children: React.ReactNode }) { return <div className="min-h-screen bg-[#111111] text-[#F7F5F0] px-6 py-8 md:px-12 lg:px-16"><div className="mx-auto max-w-7xl">{children}</div></div>; }
-
-function App() { return null; }
 
 createRoot(document.getElementById('root')!).render(<React.StrictMode><AuthProvider><Root /></AuthProvider></React.StrictMode>);
