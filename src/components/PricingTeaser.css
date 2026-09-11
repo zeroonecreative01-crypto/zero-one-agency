@@ -1,0 +1,15 @@
+#zero-one-pricing .zero-one-pricing__grid--teaser .zero-one-pricing-carousel__viewport { perspective: 1200px; }
+#zero-one-pricing .zero-one-pricing-carousel--teaser .zero-one-pricing-carousel__card { transition: transform .6s cubic-bezier(.2,.8,.2,1), opacity .35s ease; }
+#zero-one-pricing .zero-one-pricing__grid--teaser .zero-one-package { min-height: 330px; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
+#zero-one-pricing .zero-one-pricing__grid--teaser .zero-one-package__teaser-copy { margin-top: 34px; padding-top: 24px; border-top: 1px solid rgba(247,245,240,.1); display: flex; flex-direction: column; gap: 11px; }
+#zero-one-pricing .zero-one-pricing__grid--teaser .zero-one-package__teaser-copy span { font-size: 10px; text-transform: uppercase; letter-spacing: .16em; color: rgba(247,245,240,.38); }
+#zero-one-pricing .zero-one-pricing__grid--teaser .zero-one-package__teaser-copy strong { max-width: 580px; font-size: clamp(18px, 2vw, 25px); line-height: 1.25; font-weight: 500; color: rgba(247,245,240,.82); }
+#zero-one-pricing .zero-one-pricing__grid--teaser .zero-one-package__cta { margin-top: 30px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; }
+.zero-one-pricing__teaser-footer { margin-top: 18px; display: flex; align-items: center; justify-content: space-between; gap: 18px; border-top: 1px solid rgba(247,245,240,.08); padding-top: 18px; }
+.zero-one-pricing__teaser-footer span { font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: rgba(247,245,240,.32); }
+.zero-one-pricing__teaser-footer a { color: #F14A0B; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .14em; text-decoration: none; transition: opacity .2s ease; }
+.zero-one-pricing__teaser-footer a:hover { opacity: .72; }
+@media (max-width: 640px) {
+  #zero-one-pricing .zero-one-pricing__grid--teaser .zero-one-package { min-height: 350px; }
+  .zero-one-pricing__teaser-footer { align-items: flex-start; flex-direction: column; }
+}
