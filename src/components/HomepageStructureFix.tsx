@@ -1,14 +1,16 @@
 import { useEffect } from 'react';
 
 /**
- * Forces the final homepage information architecture after all legacy/enhancement
+ * Keeps the homepage information architecture stable after legacy/enhancement
  * components mount: enhancement sections first, About second-to-last, footer last.
+ * The route guard is checked on every mutation so this never moves homepage
+ * content onto internal pages after client-side navigation.
  */
 export default function HomepageStructureFix() {
   useEffect(() => {
-    if (window.location.pathname.replace(/\/+$/, '') !== '') return;
-
     const moveHomepageFooterAndAbout = () => {
+      if (window.location.pathname.replace(/\/+$/, '') !== '') return;
+
       const root = document.getElementById('root');
       const footer = document.querySelector<HTMLElement>('footer');
       const aboutHeading = Array.from(document.querySelectorAll('h1')).find(
@@ -18,12 +20,8 @@ export default function HomepageStructureFix() {
 
       if (!root || !footer || !about) return;
 
-      // The footer originally lives inside SiteApp, while enhancement sections
-      // are mounted as siblings. Move the footer to the root so it can truly be
-      // the final element after every homepage section.
       if (footer.parentElement !== root) root.appendChild(footer);
 
-      // Move About after all enhancement sections and immediately before footer.
       if (about.parentElement !== root || about.nextElementSibling !== footer) {
         root.insertBefore(about, footer);
       }
