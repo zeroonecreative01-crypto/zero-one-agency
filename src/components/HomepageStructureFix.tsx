@@ -1,23 +1,32 @@
 import { useEffect } from 'react';
 
 /**
- * Keeps the homepage information architecture intentional without changing
- * the existing visual components: About belongs late in the page, just before
- * the footer, while the old phone showcase is removed via final-polish.css.
+ * Final homepage information architecture:
+ * all homepage enhancement sections render first, then About, then the footer.
+ * This DOM-level ordering keeps legacy/injected homepage sections from appearing
+ * after About or after the footer.
  */
 export default function HomepageStructureFix() {
   useEffect(() => {
     if (window.location.pathname.replace(/\/+$/, '') !== '') return;
 
-    const moveAboutToBottom = () => {
-      const about = document.querySelector<HTMLElement>('#about');
-      const footer = document.querySelector('footer');
-      if (!about || !footer || about.parentElement === footer.parentElement) return;
-      footer.parentElement?.insertBefore(about, footer);
+    const moveHomepageFooterAndAbout = () => {
+      const root = document.getElementById('root');
+      const about = document.querySelector<HTMLElement>('#homepage-about');
+      const footer = document.querySelector<HTMLElement>('footer');
+      if (!root || !about || !footer) return;
+
+      // Put the footer after every homepage enhancement component.
+      if (footer.parentElement !== root) root.appendChild(footer);
+
+      // About is the final content section immediately before the footer.
+      if (about.parentElement !== root || about.nextElementSibling !== footer) {
+        root.insertBefore(about, footer);
+      }
     };
 
-    moveAboutToBottom();
-    const observer = new MutationObserver(moveAboutToBottom);
+    moveHomepageFooterAndAbout();
+    const observer = new MutationObserver(moveHomepageFooterAndAbout);
     observer.observe(document.body, { childList: true, subtree: true });
 
     return () => observer.disconnect();
