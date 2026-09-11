@@ -1,0 +1,22 @@
+:root{--zo-black:#000;--zo-black-soft:#050505;--zo-paper:#f7f5f0;--zo-orange:#f14a0b}
+html,body{background:#000!important;color:var(--zo-paper)}
+header{background:rgba(0,0,0,.92)!important}
+#zero-one-loader{background:#000!important}
+.zero-one-pricing{background:#000!important}
+.client-marquee-section{background:#050505!important}
+.zo-proof,.zo-trust,.zo-selected,.zo-cases,.zo-process,.zo-testimonials{background:#000!important}
+.zo-cta,.zo-final-cta{background:#f7f5f0!important;color:#000!important}
+.zo-cta__btn,.zo-final-cta__button{background:#000!important;color:#f7f5f0!important}
+.client-marquee__item img{max-width:125px!important;max-height:42px!important;width:auto!important;height:auto!important;object-fit:contain!important}
+.client-marquee__item>a,.client-marquee__item>div{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+
+/* Stronger, cleaner contrast on the true-black system. */
+body{font-synthesis:none}
+.zo-proof__stat strong,.zo-trust h2,.zo-selected h2,.zo-cases h2,.zo-process h2,.zo-testimonials h2{color:#fff}
+
+/* Conversion sections */
+.zo-process__item,.zo-testimonial{will-change:transform}
+.zo-process__item:focus-within,.zo-testimonial:focus-within{border-color:rgba(241,74,11,.5)}
+
+/* Mobile tap targets and spacing */
+@media(max-width:767px){.client-marquee__item img{max-width:105px!important;max-height:34px!important}.zo-process__item{min-height:220px}.zo-testimonial>p{font-size:20px}.zo-final-cta__button{min-height:52px}}
