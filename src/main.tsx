@@ -18,6 +18,7 @@ import PerformancePolish from './components/PerformancePolish';
 import MotionSystem from './components/MotionSystem';
 import SiteContentSync from './components/SiteContentSync';
 import HomepageStructureFix from './components/HomepageStructureFix';
+import LegalFooterLinks from './components/LegalFooterLinks';
 import './lib/leadsCapture';
 import './styles.css';
 import './site-polish.css';
@@ -40,7 +41,7 @@ function Root() {
   if (path === '/admin/content') return <AdminContentRoute />;
   if (path === '/privacy-policy') return <PrivacyPolicy navigate={(next) => { window.history.pushState({}, '', next); setPath(next); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />;
   if (path === '/terms-of-service') return <TermsOfService navigate={(next) => { window.history.pushState({}, '', next); setPath(next); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />;
-  return <><SiteApp /><FloatingIsland /><RemotePortfolioSync /><RemotePricingSync /><ClientLogosSync />{path === '/' && <CustomPackageBuilder />}<SupportCenter /><SiteContactPatch /><ExperienceUpgrade /><ConversionSections /><PerformancePolish /><MotionSystem /><SiteContentSync /><HomepageStructureFix /></>;
+  return <><SiteApp /><FloatingIsland /><RemotePortfolioSync /><RemotePricingSync /><ClientLogosSync />{path === '/' && <CustomPackageBuilder />}<SupportCenter /><SiteContactPatch /><ExperienceUpgrade /><ConversionSections /><PerformancePolish /><MotionSystem /><SiteContentSync /><HomepageStructureFix /><LegalFooterLinks /></>;
 }
 
 function AdminDashboardRoute() {
