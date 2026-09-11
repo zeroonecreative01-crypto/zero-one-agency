@@ -16,6 +16,7 @@ import ConversionSections from './components/ConversionSections';
 import PerformancePolish from './components/PerformancePolish';
 import MotionSystem from './components/MotionSystem';
 import SiteContentSync from './components/SiteContentSync';
+import HomepageStructureFix from './components/HomepageStructureFix';
 import './lib/leadsCapture';
 import './styles.css';
 import './site-polish.css';
@@ -36,7 +37,7 @@ function Root() {
   if (path === '/admin') return <AdminRoute />;
   if (path === '/admin/dashboard') return <AdminDashboardRoute />;
   if (path === '/admin/content') return <AdminContentRoute />;
-  return <><SiteApp /><FloatingIsland /><RemotePortfolioSync /><RemotePricingSync /><ClientLogosSync />{path === '/' && <CustomPackageBuilder />}<SupportCenter /><SiteContactPatch /><ExperienceUpgrade /><ConversionSections /><PerformancePolish /><MotionSystem /><SiteContentSync /></>;
+  return <><SiteApp /><FloatingIsland /><RemotePortfolioSync /><RemotePricingSync /><ClientLogosSync />{path === '/' && <CustomPackageBuilder />}<SupportCenter /><SiteContactPatch /><ExperienceUpgrade /><ConversionSections /><PerformancePolish /><MotionSystem /><SiteContentSync /><HomepageStructureFix /></>;
 }
 
 function AdminDashboardRoute() {
