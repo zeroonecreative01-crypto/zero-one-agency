@@ -17,6 +17,7 @@ import ConversionSections from './components/ConversionSections';
 import PerformancePolish from './components/PerformancePolish';
 import MotionSystem from './components/MotionSystem';
 import SiteContentSync from './components/SiteContentSync';
+import HomepageStructureFix from './components/HomepageStructureFix';
 import LegalFooterLinks from './components/LegalFooterLinks';
 import './lib/leadsCapture';
 import './styles.css';
@@ -61,6 +62,7 @@ function Root() {
       <ConversionSections />
       <PerformancePolish />
       <MotionSystem />
+      <HomepageStructureFix />
     </>}
     <SupportCenter />
     <SiteContentSync />
