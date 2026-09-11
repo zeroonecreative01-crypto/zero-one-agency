@@ -21,29 +21,27 @@ export default function PerformancePolish() {
       name: SITE_NAME,
       description: DESCRIPTION,
       email: 'zeroone.creative.01@gmail.com',
-      sameAs: [
-        'https://www.instagram.com/zeroone.ai.creative/',
-        'https://www.linkedin.com/in/zeroonemarkating/',
-        'https://www.facebook.com/zeroone.ai.creative',
-        'https://www.tiktok.com/@zeroone.creative',
-        'https://x.com/zerooneaicrea',
-      ],
+      sameAs: ['https://www.instagram.com/zeroone.ai.creative/','https://www.linkedin.com/in/zeroonemarkating/','https://www.facebook.com/zeroone.ai.creative','https://www.tiktok.com/@zeroone.creative','https://x.com/zerooneaicrea'],
     });
 
     const markImages = () => {
       const images = Array.from(document.images);
       images.forEach((image, index) => {
-        if (index > 1 && !image.loading) image.loading = 'lazy';
+        if (index > 1 && image.loading === 'eager') image.loading = 'lazy';
         if (!image.decoding) image.decoding = 'async';
         image.setAttribute('fetchpriority', index === 0 ? 'high' : 'auto');
       });
     };
-
     markImages();
-    const observer = new MutationObserver(markImages);
-    observer.observe(document.body, { childList: true, subtree: true });
-    return () => observer.disconnect();
-  }, []);
 
+    let timer = 0;
+    const observer = new MutationObserver((mutations) => {
+      if (!mutations.some((mutation) => Array.from(mutation.addedNodes).some((node) => node.nodeType === Node.ELEMENT_NODE))) return;
+      window.clearTimeout(timer);
+      timer = window.setTimeout(markImages, 120);
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => { observer.disconnect(); window.clearTimeout(timer); };
+  }, []);
   return null;
 }
