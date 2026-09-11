@@ -20,3 +20,9 @@ body{font-synthesis:none}
 
 /* Mobile tap targets and spacing */
 @media(max-width:767px){.client-marquee__item img{max-width:105px!important;max-height:34px!important}.zo-process__item{min-height:220px}.zo-testimonial>p{font-size:20px}.zo-final-cta__button{min-height:52px}}
+
+/* Homepage: retire the phone mockup. It was visually heavy and weak on mobile. */
+section[aria-label="ZERO ONE digital experience showcase"]{display:none!important}
+
+/* Keep the About block as a late-page section, immediately before the footer. */
+#about{order:999}
