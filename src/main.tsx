@@ -11,6 +11,7 @@ import RemotePortfolioSync from './components/RemotePortfolioSync';
 import RemotePricingSync from './components/RemotePricingSync';
 import ClientLogosSync from './components/ClientLogosSync';
 import CustomPackageBuilder from './components/CustomPackageBuilder';
+import CustomBuilderTeaser from './components/CustomBuilderTeaser';
 import { SupportCenter } from './components/SupportCenter';
 import SiteContactPatch from './components/SiteContactPatch';
 import ExperienceUpgrade from './components/ExperienceUpgrade';
@@ -33,6 +34,7 @@ import './components/SupportFloatingFix.css';
 import './components/ExperienceUpgrade.css';
 import './components/ConversionSections.css';
 import './components/MotionSystem.css';
+import './components/CustomBuilderTeaser.css';
 import './final-polish.css';
 
 function Root() {
@@ -48,7 +50,7 @@ function Root() {
   if (path === '/admin/content') return <AdminContentRoute />;
   if (path === '/privacy-policy') return <PrivacyPolicy navigate={(next) => { window.history.pushState({}, '', next); setPath(next); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />;
   if (path === '/terms-of-service') return <TermsOfService navigate={(next) => { window.history.pushState({}, '', next); setPath(next); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />;
-  if (path === '/pricing') return <><PricingPage /><FloatingIsland /><SupportCenter /></>;
+  if (path === '/pricing') return <><PricingPage /><CustomPackageBuilder /><FloatingIsland /><SupportCenter /></>;
 
   const isHome = path === '/';
 
@@ -59,7 +61,7 @@ function Root() {
       <RemotePortfolioSync />
       <RemotePricingSync />
       <ClientLogosSync />
-      <CustomPackageBuilder />
+      <CustomBuilderTeaser />
       <SiteContactPatch />
       <ExperienceUpgrade />
       <ConversionSections />
