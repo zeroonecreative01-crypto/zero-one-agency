@@ -1,10 +1,8 @@
 import { useEffect } from 'react';
 
 /**
- * Final homepage information architecture:
- * all homepage enhancement sections render first, then About, then the footer.
- * This DOM-level ordering keeps legacy/injected homepage sections from appearing
- * after About or after the footer.
+ * Forces the final homepage information architecture after all legacy/enhancement
+ * components mount: enhancement sections first, About second-to-last, footer last.
  */
 export default function HomepageStructureFix() {
   useEffect(() => {
@@ -12,14 +10,20 @@ export default function HomepageStructureFix() {
 
     const moveHomepageFooterAndAbout = () => {
       const root = document.getElementById('root');
-      const about = document.querySelector<HTMLElement>('#homepage-about');
       const footer = document.querySelector<HTMLElement>('footer');
-      if (!root || !about || !footer) return;
+      const aboutHeading = Array.from(document.querySelectorAll('h1')).find(
+        (heading) => heading.textContent?.trim() === 'About Us.'
+      );
+      const about = aboutHeading?.closest<HTMLElement>('.w-full');
 
-      // Put the footer after every homepage enhancement component.
+      if (!root || !footer || !about) return;
+
+      // The footer originally lives inside SiteApp, while enhancement sections
+      // are mounted as siblings. Move the footer to the root so it can truly be
+      // the final element after every homepage section.
       if (footer.parentElement !== root) root.appendChild(footer);
 
-      // About is the final content section immediately before the footer.
+      // Move About after all enhancement sections and immediately before footer.
       if (about.parentElement !== root || about.nextElementSibling !== footer) {
         root.insertBefore(about, footer);
       }
