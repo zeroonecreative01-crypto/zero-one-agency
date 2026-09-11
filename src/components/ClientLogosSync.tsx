@@ -16,21 +16,23 @@ export default function ClientLogosSync() {
       if (!supabase) return;
       const section = document.querySelector<HTMLElement>('.client-marquee-section');
       if (!section) return;
-      const { data } = await supabase.from('client_logos').select('id,name,image_url,website_url,active,sort_order').eq('active', true).order('sort_order', { ascending: true });
-      if (!mounted || !data?.length) return;
+      const { data, error } = await supabase.from('client_logos').select('id,name,image_url,website_url,active,sort_order').eq('active', true).order('sort_order', { ascending: true });
+      if (!mounted || error) return;
       const groups = section.querySelectorAll<HTMLElement>('.client-marquee__group');
       if (!groups.length) return;
+      const logos = data ?? [];
       const buildGroup = () => {
         const group = document.createDocumentFragment();
-        data.forEach((logo) => {
+        logos.forEach((logo) => {
           const item = document.createElement('div');
           item.className = 'client-marquee__item';
           const content = document.createElement(logo.website_url ? 'a' : 'div');
-          if (logo.website_url) { content.setAttribute('href', logo.website_url); content.setAttribute('target', '_blank'); content.setAttribute('rel', 'noreferrer'); }
+          if (logo.website_url) { content.setAttribute('href', logo.website_url); content.setAttribute('target', '_blank'); content.setAttribute('rel', 'noreferrer'); content.className = 'client-marquee__link'; }
           const img = document.createElement('img');
           img.src = resolveImage(logo.image_url);
           img.alt = logo.name || 'Client logo';
           img.loading = 'lazy';
+          img.decoding = 'async';
           content.appendChild(img);
           item.appendChild(content);
           group.appendChild(item);
@@ -38,7 +40,9 @@ export default function ClientLogosSync() {
         return group;
       };
       groups.forEach(group => { group.replaceChildren(buildGroup()); });
-      section.style.display = '';
+      section.style.display = logos.length ? '' : 'none';
+      const count = section.querySelector<HTMLElement>('.client-marquee__count');
+      if (count) count.textContent = `${String(logos.length).padStart(2, '0')} Brands`;
     };
     const handleUpdate = () => { void render(); };
     void render();
