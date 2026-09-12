@@ -7,7 +7,6 @@ import AdminDashboard from './admin/AdminDashboard';
 import { PrivacyPolicy, TermsOfService } from './LegalPages';
 import PricingPage from './components/PricingPage';
 import FloatingIsland from './components/FloatingIsland';
-import ClientLogosSync from './components/ClientLogosSync';
 import { SupportCenter } from './components/SupportCenter';
 import ExperienceUpgrade from './components/ExperienceUpgrade';
 import ConversionSections from './components/ConversionSections';
@@ -56,16 +55,7 @@ function Root() {
   if (path === '/work') return <><PortfolioPage navigate={navigate} /><SupportCenter /><LegalFooterLinks /></>;
   if (path.startsWith('/work/')) return <><CaseStudyPage slug={path.slice('/work/'.length)} navigate={navigate} /><SupportCenter /><LegalFooterLinks /></>;
 
-  return <>
-    <SiteApp />
-    <FloatingIsland />
-    <ClientLogosSync />
-    <ExperienceUpgrade />
-    <ConversionSections />
-    <SupportCenter />
-    <SiteContentSync />
-    <LegalFooterLinks />
-  </>;
+  return <><SiteApp /><FloatingIsland /><ExperienceUpgrade /><ConversionSections /><SupportCenter /><SiteContentSync /><LegalFooterLinks /></>;
 }
 
 function AdminDashboardRoute() {
