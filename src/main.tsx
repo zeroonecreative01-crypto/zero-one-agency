@@ -8,7 +8,6 @@ import { PrivacyPolicy, TermsOfService } from './LegalPages';
 import PricingPage from './components/PricingPage';
 import FloatingIsland from './components/FloatingIsland';
 import ClientLogosSync from './components/ClientLogosSync';
-import CustomBuilderTeaser from './components/CustomBuilderTeaser';
 import { SupportCenter } from './components/SupportCenter';
 import ExperienceUpgrade from './components/ExperienceUpgrade';
 import ConversionSections from './components/ConversionSections';
@@ -27,7 +26,6 @@ import './components/FloatingIslandFix.css';
 import './components/SupportFloatingFix.css';
 import './components/ExperienceUpgrade.css';
 import './components/ConversionSections.css';
-import './components/CustomBuilderTeaser.css';
 import './final-polish.css';
 import './pricing-page-reference.css';
 
@@ -62,7 +60,6 @@ function Root() {
     <SiteApp />
     <FloatingIsland />
     <ClientLogosSync />
-    <CustomBuilderTeaser />
     <ExperienceUpgrade />
     <ConversionSections />
     <SupportCenter />
