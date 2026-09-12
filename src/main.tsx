@@ -20,7 +20,6 @@ import PortfolioPage from './components/PortfolioPage';
 import './lib/leadsCapture';
 import './styles.css';
 import './site-polish.css';
-import './pricing-polish.css';
 import './statement-white.css';
 import './client-logo-fix.css';
 import './components/FloatingIsland.css';
