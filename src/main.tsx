@@ -28,8 +28,8 @@ import './components/SupportFloatingFix.css';
 import './components/ExperienceUpgrade.css';
 import './components/ConversionSections.css';
 import './components/CustomBuilderTeaser.css';
-import './pricing-page-reference.css';
 import './final-polish.css';
+import './pricing-page-reference.css';
 
 const normalizePath = (value: string) => value.replace(/\/+$/, '') || '/';
 
