@@ -140,8 +140,8 @@ export default function PricingPage() {
         <div className="mx-auto max-w-7xl">
           <div className="mb-10 max-w-2xl">
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F14A0B]">Custom Studio</p>
-            <h2 className="mt-3 text-5xl font-bold tracking-[-0.05em] md:text-7xl">فصّل باقتك<br /><span className="text-[#F14A0B]">على مزاجك.</span></h2>
-            <p className="mt-5 max-w-xl text-sm leading-6 text-[#F7F5F0]/45">مش لازم تختار باقة جاهزة. اختار المحتوى والفيديو والتصميم والدعم اللي يناسب البراند بتاعك، وشوف التقدير الشهري بيتغير معاك.</p>
+            <h2 className="mt-3 text-5xl font-bold tracking-[-0.05em] md:text-7xl">Build Your Package<br /><span className="text-[#F14A0B]">Your Way.</span></h2>
+            <p className="mt-5 max-w-xl text-sm leading-6 text-[#F7F5F0]/45">You don't have to choose a ready-made package. Pick the content, video, design, and support your brand actually needs, and see your estimated monthly investment change with your selections.</p>
           </div>
           <div id="zero-one-custom-package-mount" />
         </div>
