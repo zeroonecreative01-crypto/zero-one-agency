@@ -1,9 +1,4 @@
-/* Prevent the legacy pricing helper from injecting a duplicate Pricing item into the Floating Island. */
-.zero-one-island .zero-one-nav-extra {
-  display: none !important;
-}
-
-/* Scroll showcase — make the device read as a real premium phone, not a flat CSS card. */
+/* Premium phone showcase refinement for the homepage digital experience section. */
 section[aria-label="ZERO ONE digital experience showcase"] .relative.h-\[510px\].w-\[258px\] {
   background:
     linear-gradient(135deg, #2b2b2b 0%, #0a0a0a 18%, #171717 52%, #050505 82%, #292929 100%) !important;
@@ -54,7 +49,6 @@ section[aria-label="ZERO ONE digital experience showcase"] .relative.h-\[510px\]
     inset 0 -14px 24px rgba(0,0,0,.10) !important;
 }
 
-/* Subtle glass highlight along the display edge. */
 section[aria-label="ZERO ONE digital experience showcase"] .relative.h-\[510px\].w-\[258px\] > .relative.h-full.w-full::after {
   content: "";
   position: absolute;
@@ -65,11 +59,6 @@ section[aria-label="ZERO ONE digital experience showcase"] .relative.h-\[510px\]
 }
 
 @media (max-width: 767px) {
-  section[aria-label="ZERO ONE digital experience showcase"] .relative.h-\[510px\].w-\[258px\] {
-    border-radius: 43px !important;
-  }
-
-  section[aria-label="ZERO ONE digital experience showcase"] .relative.h-\[510px\].w-\[258px\] > .relative.h-full.w-full {
-    border-radius: 34px !important;
-  }
+  section[aria-label="ZERO ONE digital experience showcase"] .relative.h-\[510px\].w-\[258px\] { border-radius: 43px !important; }
+  section[aria-label="ZERO ONE digital experience showcase"] .relative.h-\[510px\].w-\[258px\] > .relative.h-full.w-full { border-radius: 34px !important; }
 }
