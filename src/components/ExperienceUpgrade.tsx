@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Check } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import { formatMarketPrice, getStoredMarket, type MarketCode } from '../lib/pricingMatrix';
 
@@ -28,6 +28,13 @@ type HomePackage = {
   market_prices?: Partial<Record<MarketCode, number>>;
 };
 
+const FALLBACK_PACKAGES: HomePackage[] = [
+  { id: 'starter', name: 'Starter', price: '450', currency: 'KWD', billing_label: 'LEAN RETAINER', tone: 'starter', popular: false, groups: [{ title: 'Core', items: ['Content direction', 'Monthly creative'] }] },
+  { id: 'growth', name: 'Growth', price: '850', currency: 'KWD', billing_label: 'GROWTH RETAINER', tone: 'growth', popular: true, groups: [{ title: 'Core', items: ['Strategy + content', 'Social creative'] }] },
+  { id: 'premium', name: 'Premium', price: '1500', currency: 'KWD', billing_label: 'FULL CREATIVE PARTNER', tone: 'premium', popular: false, groups: [{ title: 'Core', items: ['Full creative system', 'Campaign + digital'] }] },
+];
+
+const toneLabel = (tone: HomePackage['tone']) => tone === 'premium' ? 'Premium' : tone === 'growth' ? 'Growth' : 'Starter';
 const slugify = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 function navigate(path: string) {
@@ -37,9 +44,9 @@ function navigate(path: string) {
 }
 
 function HomePackages() {
-  const [packages, setPackages] = useState<HomePackage[]>([]);
+  const [packages, setPackages] = useState<HomePackage[]>(FALLBACK_PACKAGES);
   const [market] = useState<MarketCode>(() => getStoredMarket());
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeId, setActiveId] = useState<string>('growth');
 
   useEffect(() => {
     const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
@@ -50,25 +57,24 @@ function HomePackages() {
     })
       .then(async (response) => { if (!response.ok) throw new Error('Pricing request failed'); return response.json() as Promise<HomePackage[]>; })
       .then((items) => {
-        const next = Array.isArray(items) ? items.slice(0, 3) : [];
+        if (!Array.isArray(items) || !items.length) return;
+        const next = items.slice(0, 3);
         setPackages(next);
-        setActiveId(next.find((item) => item.popular)?.id ?? next[0]?.id ?? null);
+        setActiveId(next.find((item) => item.popular)?.id ?? next[0]?.id ?? '');
       })
-      .catch(() => setPackages([]));
+      .catch(() => undefined);
   }, []);
 
   const selectPackage = (pkg: HomePackage) => {
     setActiveId(pkg.id);
-    window.dispatchEvent(new CustomEvent('zero-one:pricing-focus', { detail: { name: pkg.name, tone: pkg.tone === 'premium' ? 'Premium' : pkg.tone === 'growth' ? 'Growth' : 'Starter' } }));
+    window.dispatchEvent(new CustomEvent('zero-one:pricing-focus', { detail: { name: pkg.name, tone: toneLabel(pkg.tone) } }));
   };
-
-  if (!packages.length) return null;
 
   return <section className="zo-packages" id="zero-one-home-packages" aria-label="ZERO ONE packages">
     <div className="zo-packages__inner">
-      <div className="zo-kicker"><span /> PACKAGES</div>
+      <div className="zo-packages__bar"><div className="zo-kicker"><span /> PACKAGES</div><span className="zo-packages__bar-note">Choose a level. The island follows.</span></div>
       <div className="zo-packages__head">
-        <div><h2>A clear level<br /><em>for every stage.</em></h2><p>Three focused retainers. Start lean, grow with intent, or go all in.</p></div>
+        <div><h2>Pick your<br /><em>pace.</em></h2><p>Focused retainers for brands that want sharper creative, consistent output and room to scale.</p></div>
         <button onClick={() => navigate('/pricing')} className="zo-outline-btn">See full packages <ArrowUpRight size={15} /></button>
       </div>
       <div className="zo-package-grid">
@@ -81,12 +87,12 @@ function HomePackages() {
             <span className="zo-package__top"><span>{pkg.billing_label || 'MONTHLY RETAINER'}</span>{pkg.popular ? <b><i /> Recommended</b> : null}</span>
             <span className="zo-package__name">{pkg.name}</span>
             <span className="zo-package__price">{price > 0 ? formatMarketPrice(price, market) : 'Custom'}<small>{price > 0 ? ` / ${pkg.currency || market.toUpperCase()} / MO` : ' / MONTH'}</small></span>
-            <span className="zo-package__features">{highlights.map((item, itemIndex) => <span key={`${pkg.id}-${itemIndex}`}><i />{item}</span>)}</span>
-            <span className="zo-package__action">{active ? 'Selected' : 'Explore'} <ArrowRight size={14} /></span>
+            <span className="zo-package__features">{highlights.map((item, itemIndex) => <span key={`${pkg.id}-${itemIndex}`}><Check size={11} />{item}</span>)}</span>
+            <span className="zo-package__action">{active ? 'Selected package' : 'Select package'} <ArrowRight size={14} /></span>
           </button>;
         })}
       </div>
-      <div className="zo-packages__hint"><span>Tap a package</span><i /> The island above will react.</div>
+      <div className="zo-packages__footer"><span>01 / 03</span><span className="zo-packages__footer-line" /><span>Interactive preview</span></div>
     </div>
   </section>;
 }
