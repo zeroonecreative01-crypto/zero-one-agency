@@ -1,4 +1,4 @@
-/* ZERO ONE — final visual redesign layer */
+/* ZERO ONE — shared visual foundation */
 .zero-one-nav-extra a[href^="mailto:"] { display: none !important; }
 
 :root {
@@ -133,25 +133,8 @@ main > div:not(:first-child) > section:first-child {
   margin-right: auto;
 }
 main > div:not(:first-child) { background: var(--zo-black) !important; }
-
 main > div:not(:first-child) .group:hover { background: rgba(247,245,240,.025); }
 main > div:not(:first-child) .group { transition: background-color .3s ease, padding .3s ease; }
-
-.zero-one-pricing {
-  scroll-margin-top: 96px;
-  background: var(--zo-black) !important;
-}
-.zero-one-pricing__intro p { max-width: 58ch; }
-.zero-one-package {
-  position: relative;
-  overflow: hidden;
-  border-color: rgba(247,245,240,.12) !important;
-  box-shadow: 0 24px 80px rgba(0,0,0,.24);
-  transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
-}
-.zero-one-package:hover { transform: translateY(-6px); border-color: rgba(241,74,11,.34) !important; box-shadow: 0 34px 100px rgba(0,0,0,.32); }
-.zero-one-package__cta { transition: transform .25s ease, box-shadow .25s ease; }
-.zero-one-package__cta:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0,0,0,.22); }
 
 footer {
   border-top: 1px solid rgba(247,245,240,.08);
@@ -169,7 +152,6 @@ footer a:hover { color: var(--zo-orange) !important; }
 @media (max-width: 767px) {
   html { font-size: 15px; }
   body { min-width: 0; }
-  .zero-one-pricing { scroll-margin-top: 76px; }
   footer { overflow: hidden; }
 
   main > div:first-child > section:first-of-type {
@@ -187,9 +169,7 @@ footer a:hover { color: var(--zo-orange) !important; }
   }
   main > div:first-child > section:first-of-type h1 span:first-child::after { height: 1px; bottom: -.06em; }
 
-  body.zero-one-island-ready #root main > div:not(:first-child) {
-    padding-top: 52px;
-  }
+  body.zero-one-island-ready #root main > div:not(:first-child) { padding-top: 52px; }
 
   main > div:first-child > section:nth-of-type(3) {
     padding-top: 4.5rem;
@@ -212,23 +192,6 @@ footer a:hover { color: var(--zo-orange) !important; }
   .client-marquee__item { width: 118px; height: 68px; }
   .client-marquee__track { animation-duration: 34s; }
 
-  .zero-one-pricing { padding: 76px 16px 92px !important; }
-  .zero-one-pricing__intro { margin-bottom: 34px; }
-  .zero-one-pricing h2 { font-size: clamp(2.9rem, 13vw, 4.8rem); line-height: .92; }
-  .zero-one-pricing__intro p { font-size: 14px; line-height: 1.65; }
-  .zero-one-pricing__grid { gap: 14px; }
-  .zero-one-package {
-    padding: 22px !important;
-    border-radius: 22px !important;
-    box-shadow: 0 18px 48px rgba(0,0,0,.22);
-  }
-  .zero-one-package:hover { transform: none; box-shadow: 0 18px 48px rgba(0,0,0,.22); }
-  .zero-one-package__name { font-size: 24px !important; }
-  .zero-one-package__price strong { font-size: 54px !important; }
-  .zero-one-package__list { gap: 7px; }
-  .zero-one-package__list li { font-size: 12px; line-height: 1.4; }
-  .zero-one-package__group { margin-bottom: 18px; }
-
   .zero-one-nav-extra { display: none; }
 }
 
@@ -242,128 +205,5 @@ footer a:hover { color: var(--zo-orange) !important; }
     animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
-  }
-}
-
-/* Live Support — compact floating control with a brief text reveal. */
-button[aria-label="Open ZERO ONE support"] {
-  box-sizing: border-box;
-  width: 44px !important;
-  height: 44px;
-  min-width: 44px;
-  padding: 6px !important;
-  gap: 0 !important;
-  justify-content: flex-start;
-  overflow: hidden;
-  white-space: nowrap;
-  font-size: 0;
-  letter-spacing: .14em;
-  animation: zero-one-support-reveal 7s cubic-bezier(.22,1,.36,1) infinite;
-}
-
-button[aria-label="Open ZERO ONE support"] > span {
-  flex: 0 0 32px;
-  width: 32px;
-  height: 32px;
-}
-
-button[aria-label="Open ZERO ONE support"] > span svg {
-  width: 14px;
-  height: 14px;
-}
-
-button[aria-label="Open ZERO ONE support"]:hover {
-  width: 142px !important;
-  font-size: 9px;
-  gap: 9px !important;
-  animation-play-state: paused;
-}
-
-@keyframes zero-one-support-reveal {
-  0%, 58% {
-    width: 44px;
-    padding-left: 6px;
-    padding-right: 6px;
-    font-size: 0;
-    gap: 0;
-  }
-  64%, 82% {
-    width: 142px;
-    padding-left: 7px;
-    padding-right: 14px;
-    font-size: 9px;
-    gap: 9px;
-  }
-  88%, 100% {
-    width: 44px;
-    padding-left: 6px;
-    padding-right: 6px;
-    font-size: 0;
-    gap: 0;
-  }
-}
-
-@media (max-width: 767px) {
-  button[aria-label="Open ZERO ONE support"] {
-    bottom: 16px !important;
-    right: 16px !important;
-  }
-  button[aria-label="Open ZERO ONE support"]:hover {
-    width: 136px !important;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  button[aria-label="Open ZERO ONE support"] {
-    animation: none;
-    width: 44px !important;
-    font-size: 0;
-  }
-}
-
-/* Final floating order: Live Support directly above Admin. */
-button[aria-label="Open ZERO ONE support"] {
-  right: 20px !important;
-  bottom: 76px !important;
-  z-index: 10000 !important;
-}
-
-button[aria-label="Open ZERO ONE support"]::after {
-  content: "LIVE SUPPORT";
-  position: absolute;
-  right: 52px;
-  top: 50%;
-  padding: 7px 10px;
-  border: 1px solid rgba(247,245,240,.12);
-  border-radius: 999px;
-  background: rgba(17,17,17,.94);
-  color: #f7f5f0;
-  font: 700 8px/1 system-ui, sans-serif;
-  letter-spacing: .16em;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transform: translate(7px, -50%) scale(.96);
-  box-shadow: 0 10px 30px rgba(0,0,0,.28);
-  animation: zero-one-support-label 6s ease-in-out infinite;
-}
-
-button[aria-label="Open ZERO ONE support"]:hover::after,
-button[aria-label="Open ZERO ONE support"]:focus-visible::after {
-  opacity: 1;
-  transform: translate(0, -50%) scale(1);
-  animation: none;
-}
-
-@keyframes zero-one-support-label {
-  0%, 58%, 100% { opacity: 0; transform: translate(7px, -50%) scale(.96); }
-  64%, 82% { opacity: 1; transform: translate(0, -50%) scale(1); }
-  88% { opacity: 0; transform: translate(7px, -50%) scale(.96); }
-}
-
-@media (max-width: 767px) {
-  button[aria-label="Open ZERO ONE support"] {
-    right: 16px !important;
-    bottom: 72px !important;
   }
 }
