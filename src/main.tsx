@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { createRoot } from 'react-dom/client';
 import { AdminRoute, AuthProvider, useAuth } from './auth/AuthProvider';
 import SiteApp from './App';
 import AdminContentRoute from './admin/AdminContentRoute';
@@ -8,13 +7,12 @@ import { PrivacyPolicy, TermsOfService } from './LegalPages';
 import PricingPage from './components/PricingPage';
 import FloatingIsland from './components/FloatingIsland';
 import { SupportCenter } from './components/SupportCenter';
-import ExperienceUpgrade from './components/ExperienceUpgrade';
-import ConversionSections from './components/ConversionSections';
 import SiteContentSync from './components/SiteContentSync';
 import LegalFooterLinks from './components/LegalFooterLinks';
 import EmployeeTaskBoard from './admin/EmployeeTaskBoard';
 import CaseStudyPage from './components/CaseStudyPage';
 import PortfolioPage from './components/PortfolioPage';
+import HomeRefresh from './components/HomeRefresh';
 import './lib/leadsCapture';
 import './styles.css';
 import './site-polish.css';
@@ -23,8 +21,7 @@ import './client-logo-fix.css';
 import './components/FloatingIsland.css';
 import './components/FloatingIslandFix.css';
 import './components/SupportFloatingFix.css';
-import './components/ExperienceUpgrade.css';
-import './components/ConversionSections.css';
+import './home-refresh.css';
 import './pricing-page-reference.css';
 
 const normalizePath = (value: string) => value.replace(/\/+$/, '') || '/';
@@ -54,7 +51,9 @@ function Root() {
   if (path === '/work') return <><PortfolioPage navigate={navigate} /><SupportCenter /><LegalFooterLinks /></>;
   if (path.startsWith('/work/')) return <><CaseStudyPage slug={path.slice('/work/'.length)} navigate={navigate} /><SupportCenter /><LegalFooterLinks /></>;
 
-  return <><SiteApp /><FloatingIsland /><ExperienceUpgrade /><ConversionSections /><SupportCenter /><SiteContentSync /><LegalFooterLinks /></>;
+  if (path === '/') return <><HomeRefresh /><FloatingIsland /><SupportCenter /><SiteContentSync /><LegalFooterLinks /></>;
+
+  return <><SiteApp /><FloatingIsland /><SupportCenter /><SiteContentSync /><LegalFooterLinks /></>;
 }
 
 function AdminDashboardRoute() {
@@ -66,4 +65,5 @@ function AdminDashboardRoute() {
 
 function AdminDashboardShell({ children }: { children: React.ReactNode }) { return <div className="min-h-screen bg-[#111111] text-[#F7F5F0] px-6 py-8 md:px-12 lg:px-16"><div className="mx-auto max-w-7xl">{children}</div></div>; }
 
+import { createRoot } from 'react-dom/client';
 createRoot(document.getElementById('root')!).render(<React.StrictMode><AuthProvider><Root /></AuthProvider></React.StrictMode>);
