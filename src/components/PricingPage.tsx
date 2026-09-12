@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { getMarket, getStoredMarket, MARKETS, formatMarketPrice, setStoredMarket, type MarketCode } from '../lib/pricingMatrix';
-import CustomPackageBuilder from './CustomPackageBuilder';
 
 type PricingGroup = { title: string; items: string[] };
 type PricingPackage = {
@@ -22,11 +21,6 @@ const WHATSAPP = 'https://wa.me/201556764804?text=';
 function localPrice(pkg: PricingPackage, market: MarketCode) {
   const configured = Number(pkg.market_prices?.[market]);
   return Number.isFinite(configured) && configured > 0 ? configured : Number(pkg.price) || 0;
-}
-
-function safeGroups(value: unknown): PricingGroup[] {
-  if (!Array.isArray(value)) return [];
-  return value.filter((group): group is PricingGroup => Boolean(group && typeof group === 'object' && typeof (group as PricingGroup).title === 'string' && Array.isArray((group as PricingGroup).items)));
 }
 
 export default function PricingPage() {
@@ -52,8 +46,7 @@ export default function PricingPage() {
         return response.json() as Promise<PricingPackage[]>;
       })
       .then((items) => {
-        const normalized = Array.isArray(items) ? items.map((item) => ({ ...item, groups: safeGroups(item.groups) })) : [];
-        setPackages(normalized.sort((a, b) => a.sort_order - b.sort_order));
+        setPackages(Array.isArray(items) ? items.sort((a, b) => a.sort_order - b.sort_order) : []);
         setActive(0);
       })
       .catch(() => setPackages([]))
@@ -143,9 +136,14 @@ export default function PricingPage() {
         )}
       </section>
 
-      <section className="zero-one-custom-option border-t border-[#F7F5F0]/10 bg-[#0b0b0b] px-6 py-14 md:px-12">
+      <section className="zero-one-custom-option border-t border-[#F7F5F0]/10 bg-[#0b0b0b] px-6 py-20 md:px-12">
         <div className="mx-auto max-w-7xl">
-          <CustomPackageBuilder />
+          <div className="mb-10 max-w-2xl">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F14A0B]">Custom Studio</p>
+            <h2 className="mt-3 text-5xl font-bold tracking-[-0.05em] md:text-7xl">فصّل باقتك<br /><span className="text-[#F14A0B]">على مزاجك.</span></h2>
+            <p className="mt-5 max-w-xl text-sm leading-6 text-[#F7F5F0]/45">مش لازم تختار باقة جاهزة. اختار المحتوى والفيديو والتصميم والدعم اللي يناسب البراند بتاعك، وشوف التقدير الشهري بيتغير معاك.</p>
+          </div>
+          <div id="zero-one-custom-package-mount" />
         </div>
       </section>
 
