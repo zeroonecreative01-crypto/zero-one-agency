@@ -23,12 +23,27 @@ function localPrice(pkg: PricingPackage, market: MarketCode) {
   return Number.isFinite(configured) && configured > 0 ? configured : Number(pkg.price) || 0;
 }
 
+function normalizePackage(item: PricingPackage): PricingPackage {
+  return {
+    ...item,
+    groups: Array.isArray(item.groups)
+      ? item.groups
+          .filter((group) => group && typeof group.title === 'string')
+          .map((group) => ({
+            title: group.title,
+            items: Array.isArray(group.items) ? group.items.filter((value) => typeof value === 'string') : [],
+          }))
+          .filter((group) => group.title && group.items.length)
+      : [],
+    market_prices: item.market_prices && typeof item.market_prices === 'object' ? item.market_prices : {},
+    sort_order: Number(item.sort_order) || 0,
+  };
+}
+
 export default function PricingPage() {
   const [packages, setPackages] = useState<PricingPackage[]>([]);
   const [loading, setLoading] = useState(true);
   const [market, setMarket] = useState<MarketCode>(() => getStoredMarket());
-  const [active, setActive] = useState(0);
-  const [direction, setDirection] = useState<'next' | 'prev'>('next');
 
   useEffect(() => {
     document.title = 'Packages — ZERO ONE';
@@ -38,6 +53,7 @@ export default function PricingPage() {
       setLoading(false);
       return;
     }
+
     fetch(`${url}/rest/v1/pricing_packages?select=id,name,price,currency,billing_label,tone,popular,groups,market_prices,sort_order&order=sort_order.asc,created_at.desc`, {
       headers: { apikey: key, Authorization: `Bearer ${key}` },
     })
@@ -46,8 +62,10 @@ export default function PricingPage() {
         return response.json() as Promise<PricingPackage[]>;
       })
       .then((items) => {
-        setPackages(Array.isArray(items) ? items.sort((a, b) => a.sort_order - b.sort_order) : []);
-        setActive(0);
+        const next = Array.isArray(items)
+          ? items.map(normalizePackage).sort((a, b) => a.sort_order - b.sort_order)
+          : [];
+        setPackages(next);
       })
       .catch(() => setPackages([]))
       .finally(() => setLoading(false));
@@ -58,17 +76,8 @@ export default function PricingPage() {
   const chooseMarket = (code: MarketCode) => {
     setMarket(code);
     setStoredMarket(code);
-    setActive(0);
     window.dispatchEvent(new CustomEvent('zero-one:market-change', { detail: { code } }));
   };
-
-  const move = (next: number) => {
-    if (!packages.length) return;
-    setDirection(next > active ? 'next' : 'prev');
-    setActive((next + packages.length) % packages.length);
-  };
-
-  const current = packages[active];
 
   return (
     <main id="zero-one-pricing" className="zero-one-pricing-page zero-one-pricing min-h-screen bg-[#090909] text-[#F7F5F0]">
@@ -101,37 +110,45 @@ export default function PricingPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-6 pb-24 md:px-12 lg:px-16">
-        {loading ? <div className="border border-[#F7F5F0]/10 p-10 text-sm text-[#F7F5F0]/45">Loading packages...</div> : !current ? <div className="border border-[#F7F5F0]/10 p-10 text-sm text-[#F7F5F0]/45">Packages are currently being updated. Contact ZERO ONE for the latest options.</div> : (
-          <div className="zero-one-pricing-carousel">
-            <button type="button" className="zero-one-pricing-carousel__arrow" onClick={() => move(active - 1)} aria-label="Previous package">‹</button>
-            <div className="zero-one-pricing-carousel__viewport">
-              <article key={`${current.id}-${market}`} data-direction={direction} className={`zero-one-pricing-carousel__card zero-one-package zero-one-package--${current.tone}`}>
-                <div className="zero-one-package__signal"><span className="zero-one-package__signal-dot" /> {current.popular ? 'Recommended' : `${String(active + 1).padStart(2, '0')} / INVESTMENT`}</div>
-                {current.popular && <span className="zero-one-package__popular">Most Popular</span>}
+        {loading ? (
+          <div className="border border-[#F7F5F0]/10 p-10 text-sm text-[#F7F5F0]/45">Loading packages...</div>
+        ) : packages.length === 0 ? (
+          <div className="border border-[#F7F5F0]/10 p-10 text-sm text-[#F7F5F0]/45">Packages are currently being updated. Contact ZERO ONE for the latest options.</div>
+        ) : (
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-6">
+            {packages.map((pkg, index) => (
+              <article key={`${pkg.id}-${market}`} className={`zero-one-package zero-one-package--${pkg.tone} flex h-full min-h-[640px] flex-col`}>
+                <div className="zero-one-package__signal"><span className="zero-one-package__signal-dot" /> {pkg.popular ? 'Recommended' : `${String(index + 1).padStart(2, '0')} / INVESTMENT`}</div>
+                {pkg.popular && <span className="zero-one-package__popular">Most Popular</span>}
+
                 <div className="zero-one-package__top">
-                  <div><h2 className="zero-one-package__name">{current.name}</h2><span className="zero-one-package__tag inline-flex rounded-full border">{current.billing_label}</span></div>
+                  <div>
+                    <h2 className="zero-one-package__name">{pkg.name}</h2>
+                    <span className="zero-one-package__tag inline-flex rounded-full border">{pkg.billing_label}</span>
+                  </div>
                 </div>
-                <div className="zero-one-package__price"><strong>{formatMarketPrice(localPrice(current, market), market)}</strong><span>{selectedMarket.currency} / MONTH</span></div>
-                <div className="zero-one-package__content">
-                  {current.groups.map((group) => (
-                    <div key={group.title} className="zero-one-package__group">
+
+                <div className="zero-one-package__price">
+                  <strong>{formatMarketPrice(localPrice(pkg, market), market)}</strong>
+                  <span>{selectedMarket.currency} / MONTH</span>
+                </div>
+
+                <div className="zero-one-package__content flex-1">
+                  {pkg.groups.map((group) => (
+                    <div key={`${pkg.id}-${group.title}`} className="zero-one-package__group">
                       <h3>{group.title}</h3>
                       <ul className="zero-one-package__list">
-                        {group.items.map((item) => <li key={item} className="flex gap-2"><Check size={14} />{item}</li>)}
+                        {group.items.map((item, itemIndex) => <li key={`${pkg.id}-${group.title}-${itemIndex}`} className="flex gap-2"><Check size={14} />{item}</li>)}
                       </ul>
                     </div>
                   ))}
                 </div>
-                <a href={`${WHATSAPP}${encodeURIComponent(`Hi ZERO ONE, I'm interested in the ${current.name} package in ${selectedMarket.country}. I'd like to discuss the next steps.`)}`} target="_blank" rel="noopener noreferrer" className="zero-one-package__cta flex items-center justify-between">START WITH {current.name}<ArrowRight size={17} /></a>
+
+                <a href={`${WHATSAPP}${encodeURIComponent(`Hi ZERO ONE, I'm interested in the ${pkg.name} package in ${selectedMarket.country}. I'd like to discuss the next steps.`)}`} target="_blank" rel="noopener noreferrer" className="zero-one-package__cta flex items-center justify-between">
+                  START WITH {pkg.name}<ArrowRight size={17} />
+                </a>
               </article>
-            </div>
-            <button type="button" className="zero-one-pricing-carousel__arrow" onClick={() => move(active + 1)} aria-label="Next package">›</button>
-            <div className="zero-one-pricing-carousel__footer col-start-2">
-              <div className="zero-one-pricing-carousel__dots" aria-label="Choose package">
-                {packages.map((pkg, index) => <button key={pkg.id} type="button" className={`zero-one-pricing-carousel__dot ${index === active ? 'is-active' : ''}`} onClick={() => move(index)} aria-label={`Show ${pkg.name}`}><span>{String(index + 1).padStart(2, '0')}</span></button>)}
-              </div>
-              <span className="zero-one-pricing-carousel__counter"><strong>{String(active + 1).padStart(2, '0')}</strong> / {String(packages.length).padStart(2, '0')}</span>
-            </div>
+            ))}
           </div>
         )}
       </section>
