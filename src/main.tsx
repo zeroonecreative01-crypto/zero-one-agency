@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createRoot } from 'react-dom/client';
 import { AdminRoute, AuthProvider, useAuth } from './auth/AuthProvider';
 import SiteApp from './App';
 import AdminContentRoute from './admin/AdminContentRoute';
@@ -50,7 +51,6 @@ function Root() {
   if (path === '/pricing') return <><PricingPage /><FloatingIsland /><SupportCenter /></>;
   if (path === '/work') return <><PortfolioPage navigate={navigate} /><SupportCenter /><LegalFooterLinks /></>;
   if (path.startsWith('/work/')) return <><CaseStudyPage slug={path.slice('/work/'.length)} navigate={navigate} /><SupportCenter /><LegalFooterLinks /></>;
-
   if (path === '/') return <><HomeRefresh /><FloatingIsland /><SupportCenter /><SiteContentSync /><LegalFooterLinks /></>;
 
   return <><SiteApp /><FloatingIsland /><SupportCenter /><SiteContentSync /><LegalFooterLinks /></>;
@@ -65,5 +65,4 @@ function AdminDashboardRoute() {
 
 function AdminDashboardShell({ children }: { children: React.ReactNode }) { return <div className="min-h-screen bg-[#111111] text-[#F7F5F0] px-6 py-8 md:px-12 lg:px-16"><div className="mx-auto max-w-7xl">{children}</div></div>; }
 
-import { createRoot } from 'react-dom/client';
 createRoot(document.getElementById('root')!).render(<React.StrictMode><AuthProvider><Root /></AuthProvider></React.StrictMode>);
