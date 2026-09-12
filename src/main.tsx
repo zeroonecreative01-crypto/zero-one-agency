@@ -8,7 +8,6 @@ import { PrivacyPolicy, TermsOfService } from './LegalPages';
 import PricingPage from './components/PricingPage';
 import FloatingIsland from './components/FloatingIsland';
 import RemotePortfolioSync from './components/RemotePortfolioSync';
-import RemotePricingSync from './components/RemotePricingSync';
 import ClientLogosSync from './components/ClientLogosSync';
 import CustomPackageBuilder from './components/CustomPackageBuilder';
 import CustomBuilderTeaser from './components/CustomBuilderTeaser';
@@ -16,12 +15,12 @@ import { SupportCenter } from './components/SupportCenter';
 import SiteContactPatch from './components/SiteContactPatch';
 import ExperienceUpgrade from './components/ExperienceUpgrade';
 import ConversionSections from './components/ConversionSections';
-import PerformancePolish from './components/PerformancePolish';
 import MotionSystem from './components/MotionSystem';
 import SiteContentSync from './components/SiteContentSync';
 import HomepageStructureFix from './components/HomepageStructureFix';
 import LegalFooterLinks from './components/LegalFooterLinks';
 import EmployeeTaskBoard from './admin/EmployeeTaskBoard';
+import CaseStudyPage from './components/CaseStudyPage';
 import './lib/leadsCapture';
 import './styles.css';
 import './site-polish.css';
@@ -38,36 +37,48 @@ import './components/CustomBuilderTeaser.css';
 import './pricing-page-reference.css';
 import './final-polish.css';
 
+const normalizePath = (value: string) => value.replace(/\/+$/, '') || '/';
+
 function Root() {
-  const [path, setPath] = useState(() => window.location.pathname.replace(/\/+$/, '') || '/');
+  const [path, setPath] = useState(() => normalizePath(window.location.pathname));
   useEffect(() => {
-    const handleNavigation = () => setPath(window.location.pathname.replace(/\/+$/, '') || '/');
+    const handleNavigation = () => setPath(normalizePath(window.location.pathname));
     window.addEventListener('popstate', handleNavigation);
     return () => window.removeEventListener('popstate', handleNavigation);
   }, []);
+
+  const navigate = (next: string) => {
+    const normalized = normalizePath(next);
+    window.history.pushState({}, '', normalized);
+    setPath(normalized);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   if (path === '/admin') return <AdminRoute />;
   if (path === '/admin/dashboard') return <AdminDashboardRoute />;
   if (path === '/admin/content') return <AdminContentRoute />;
   if (path === '/team' || path === '/team/tasks') return <EmployeeTaskBoard />;
-  if (path === '/privacy-policy') return <PrivacyPolicy navigate={(next) => { window.history.pushState({}, '', next); setPath(next); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />;
-  if (path === '/terms-of-service') return <TermsOfService navigate={(next) => { window.history.pushState({}, '', next); setPath(next); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />;
+  if (path === '/privacy-policy') return <PrivacyPolicy navigate={navigate} />;
+  if (path === '/terms-of-service') return <TermsOfService navigate={navigate} />;
   if (path === '/pricing') return <><PricingPage /><CustomPackageBuilder /><FloatingIsland /><SupportCenter /></>;
 
+  if (path.startsWith('/work/')) {
+    return <><CaseStudyPage slug={path.slice('/work/'.length)} navigate={navigate} /><SupportCenter /><LegalFooterLinks /></>;
+  }
+
   const isHome = path === '/';
+  const isWork = path === '/work';
 
   return <>
     <SiteApp />
     <FloatingIsland />
+    {(isHome || isWork) && <RemotePortfolioSync />}
     {isHome && <>
-      <RemotePortfolioSync />
-      <RemotePricingSync />
       <ClientLogosSync />
       <CustomBuilderTeaser />
       <SiteContactPatch />
       <ExperienceUpgrade />
       <ConversionSections />
-      <PerformancePolish />
       <MotionSystem />
       <HomepageStructureFix />
     </>}
