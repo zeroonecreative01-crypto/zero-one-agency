@@ -1,2 +1,1 @@
-import './TeamTaskBoard.css';
-export { default } from './TeamTaskBoard';
+export { default } from './StableTeamWorkspace';
