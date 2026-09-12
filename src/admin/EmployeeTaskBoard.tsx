@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Check, Clock3, GripVertical, LogOut, MessageSquare, Plus, RotateCcw, Send, UserRound, X } from 'lucide-react';
+import { Check, Clock3, GripVertical, LogOut, MessageSquare, Pencil, Plus, RotateCcw, Save, Send, UserRound, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../auth/AuthProvider';
 import './EmployeeTaskBoard.css';
@@ -37,6 +37,9 @@ export default function EmployeeTaskBoard() {
   const [showCreate, setShowCreate] = useState(false);
   const [dragTask, setDragTask] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'mine'>('all');
+  const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
+  const [editingProfileName, setEditingProfileName] = useState('');
+  const [savingProfileId, setSavingProfileId] = useState<string | null>(null);
 
   const isAdmin = profile?.role === 'admin' || user?.app_metadata?.role === 'admin';
   const approved = isAdmin || profile?.access_enabled === true;
@@ -100,9 +103,16 @@ export default function EmployeeTaskBoard() {
     } else {
       if (name.trim().length < 2) { setAuthError('Please enter your full name.'); setSubmitting(false); return; }
       if (password.length < 6) { setAuthError('Password must be at least 6 characters.'); setSubmitting(false); return; }
-      const { data, error } = await supabase.auth.signUp({ email: email.trim(), password, options: { data: { name: name.trim() } } });
+      const { data, error } = await supabase.functions.invoke('employee-register', {
+        body: { name: name.trim(), email: email.trim(), password },
+      });
       if (error) setAuthError(error.message);
-      else setAuthMessage(data.session ? 'Account created. Wait for admin approval before accessing the board.' : 'Account created. Wait for admin approval, then sign in.');
+      else if (data?.error) setAuthError(data.error);
+      else {
+        setAuthMessage('Account created successfully. Wait for admin approval before signing in.');
+        setMode('login');
+        setPassword('');
+      }
     }
     setSubmitting(false);
   };
@@ -112,6 +122,30 @@ export default function EmployeeTaskBoard() {
     const { error } = await supabase.from('employee_profiles').update({ access_enabled: enabled }).eq('id', person.id);
     if (error) return;
     setProfiles((items) => items.map((item) => item.id === person.id ? { ...item, access_enabled: enabled } : item));
+  };
+
+  const beginRename = (person: Profile) => {
+    setEditingProfileId(person.id);
+    setEditingProfileName(person.name);
+  };
+
+  const cancelRename = () => {
+    setEditingProfileId(null);
+    setEditingProfileName('');
+  };
+
+  const renameEmployee = async (person: Profile) => {
+    if (!supabase || !isAdmin) return;
+    const nextName = editingProfileName.trim();
+    if (nextName.length < 2) return;
+    setSavingProfileId(person.id);
+    const { error } = await supabase.from('employee_profiles').update({ name: nextName }).eq('id', person.id);
+    if (!error) {
+      setProfiles((items) => items.map((item) => item.id === person.id ? { ...item, name: nextName } : item));
+      setTasks((items) => items.map((task) => task));
+      cancelRename();
+    }
+    setSavingProfileId(null);
   };
 
   const moveTask = async (taskId: string, status: TaskStatus) => {
@@ -180,11 +214,16 @@ export default function EmployeeTaskBoard() {
     </header>
 
     {isAdmin && <section className="employee-access-panel">
-      <div className="employee-access-panel__head"><div><div className="employee-board__eyebrow">ACCESS CONTROL</div><h2>Employee approvals</h2><p>Approve an account to give it access to the Team Board. You can revoke access at any time.</p></div><span>{pendingProfiles.length} pending</span></div>
+      <div className="employee-access-panel__head"><div><div className="employee-board__eyebrow">ACCESS CONTROL</div><h2>Employee approvals</h2><p>Approve an account, rename the employee, or revoke access at any time.</p></div><span>{pendingProfiles.length} pending</span></div>
       <div className="employee-access-panel__list">
         {profiles.length === 0 ? <div className="employee-access-panel__empty">No employee accounts yet.</div> : profiles.map((person) => <div className="employee-access-row" key={person.id}>
-          <div><strong>{person.name}</strong><small>{person.email || 'Email unavailable'}</small></div>
-          <button className={person.access_enabled ? 'employee-access-row__revoke' : 'employee-access-row__approve'} onClick={() => void setEmployeeAccess(person, !person.access_enabled)}>{person.access_enabled ? 'Revoke access' : 'Approve access'}</button>
+          <div className="employee-access-row__identity">
+            {editingProfileId === person.id ? <div className="employee-access-row__edit"><input value={editingProfileName} onChange={(event) => setEditingProfileName(event.target.value)} autoFocus /><button title="Save name" disabled={savingProfileId === person.id} onClick={() => void renameEmployee(person)}><Save size={14} /></button><button title="Cancel" onClick={cancelRename}><X size={14} /></button></div> : <><strong>{person.name}</strong><small>{person.email || 'Email unavailable'}</small></>}
+          </div>
+          <div className="employee-access-row__actions">
+            {editingProfileId !== person.id && <button className="employee-access-row__rename" onClick={() => beginRename(person)}><Pencil size={13} /> Rename</button>}
+            <button className={person.access_enabled ? 'employee-access-row__revoke' : 'employee-access-row__approve'} onClick={() => void setEmployeeAccess(person, !person.access_enabled)}>{person.access_enabled ? 'Revoke access' : 'Approve access'}</button>
+          </div>
         </div>)}
       </div>
     </section>}
