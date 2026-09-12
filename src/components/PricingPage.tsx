@@ -70,9 +70,7 @@ export default function PricingPage() {
     window.dispatchEvent(new CustomEvent('zero-one:market-change', { detail: { code } }));
   };
 
-  const selectPackage = (id: string) => {
-    setSelectedId((current) => current === id ? null : id);
-  };
+  const selectPackage = (id: string) => setSelectedId((current) => current === id ? null : id);
 
   const packageMessage = selectedPackage
     ? `${WHATSAPP}${encodeURIComponent(`Hi ZERO ONE, I'm interested in the ${selectedPackage.name} package in ${selectedMarket.country}. I'd like to discuss the next steps.`)}`
@@ -116,12 +114,23 @@ export default function PricingPage() {
             <div className="zero-one-package-grid">
               {packages.map((pkg, index) => {
                 const active = pkg.id === selectedPackage?.id;
+                const previewItems = pkg.groups.flatMap((group) => group.items).slice(0, 3);
                 return (
                   <button key={`${pkg.id}-${market}`} type="button" onClick={() => selectPackage(pkg.id)} aria-pressed={active} className={`zero-one-package-card ${active ? 'is-active' : ''}`}>
-                    <div className="zero-one-package-card__meta"><span>{String(index + 1).padStart(2, '0')}</span>{pkg.popular ? <b>Recommended</b> : <span>{pkg.billing_label}</span>}</div>
-                    <div className="zero-one-package-card__title-row"><h2>{pkg.name}</h2><span className="zero-one-package-card__arrow"><ArrowRight size={16} /></span></div>
+                    <span className="zero-one-package-card__ghost">{String(index + 1).padStart(2, '0')}</span>
+                    <div className="zero-one-package-card__meta">
+                      <span>{pkg.billing_label || 'MONTHLY RETAINER'}</span>
+                      {pkg.popular ? <b><i /> Recommended</b> : null}
+                    </div>
+                    <div className="zero-one-package-card__title-row">
+                      <div><span className="zero-one-package-card__eyebrow">LEVEL {String(index + 1).padStart(2, '0')}</span><h2>{pkg.name}</h2></div>
+                      <span className="zero-one-package-card__arrow"><ArrowRight size={16} /></span>
+                    </div>
                     <div className="zero-one-package-card__price"><strong>{formatMarketPrice(localPrice(pkg, market), market)}</strong><span>{selectedMarket.currency}<br />/ MONTH</span></div>
-                    <div className="zero-one-package-card__hint">{active ? 'Selected — view scope' : 'Select package'}</div>
+                    <ul className="zero-one-package-card__preview">
+                      {previewItems.map((item, itemIndex) => <li key={`${pkg.id}-preview-${itemIndex}`}><span />{item}</li>)}
+                    </ul>
+                    <div className="zero-one-package-card__footer"><span>{active ? 'Selected' : 'Explore scope'}</span><span>{pkg.groups.length} focus areas</span></div>
                   </button>
                 );
               })}
