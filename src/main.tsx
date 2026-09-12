@@ -8,7 +8,6 @@ import { PrivacyPolicy, TermsOfService } from './LegalPages';
 import PricingPage from './components/PricingPage';
 import FloatingIsland from './components/FloatingIsland';
 import ClientLogosSync from './components/ClientLogosSync';
-import CustomPackageBuilder from './components/CustomPackageBuilder';
 import CustomBuilderTeaser from './components/CustomBuilderTeaser';
 import { SupportCenter } from './components/SupportCenter';
 import ExperienceUpgrade from './components/ExperienceUpgrade';
@@ -56,7 +55,7 @@ function Root() {
   if (path === '/team' || path === '/team/tasks') return <EmployeeTaskBoard />;
   if (path === '/privacy-policy') return <PrivacyPolicy navigate={navigate} />;
   if (path === '/terms-of-service') return <TermsOfService navigate={navigate} />;
-  if (path === '/pricing') return <><PricingPage /><CustomPackageBuilder /><FloatingIsland /><SupportCenter /></>;
+  if (path === '/pricing') return <><PricingPage /><FloatingIsland /><SupportCenter /></>;
   if (path === '/work') return <><PortfolioPage navigate={navigate} /><SupportCenter /><LegalFooterLinks /></>;
   if (path.startsWith('/work/')) return <><CaseStudyPage slug={path.slice('/work/'.length)} navigate={navigate} /><SupportCenter /><LegalFooterLinks /></>;
 
