@@ -71,7 +71,7 @@ export default function PricingPage() {
   const current = packages[active];
 
   return (
-    <main className="zero-one-pricing-page zero-one-pricing min-h-screen bg-[#090909] text-[#F7F5F0]">
+    <main id="zero-one-pricing" className="zero-one-pricing-page zero-one-pricing min-h-screen bg-[#090909] text-[#F7F5F0]">
       <header className="mx-auto max-w-7xl px-6 pb-12 pt-8 md:px-12 lg:px-16">
         <div className="flex items-center justify-between border-b border-[#F7F5F0]/10 pb-6">
           <a href="/" className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-[#F7F5F0]/65 transition hover:text-[#F14A0B]"><ArrowLeft size={16} /> Back home</a>
@@ -139,13 +139,8 @@ export default function PricingPage() {
         )}
       </section>
 
-      <section className="zero-one-custom-option border-t border-[#F7F5F0]/10 bg-[#0b0b0b] px-6 py-20 md:px-12">
+      <section className="zero-one-custom-option border-t border-[#F7F5F0]/10 bg-[#0b0b0b] px-6 py-14 md:px-12">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-10 max-w-2xl">
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F14A0B]">Custom Studio</p>
-            <h2 className="mt-3 text-5xl font-bold tracking-[-0.05em] md:text-7xl">فصّل باقتك<br /><span className="text-[#F14A0B]">على مزاجك.</span></h2>
-            <p className="mt-5 max-w-xl text-sm leading-6 text-[#F7F5F0]/45">مش لازم تختار باقة جاهزة. اختار المحتوى والفيديو والتصميم والدعم اللي يناسب البراند بتاعك، وشوف التقدير الشهري بيتغير معاك.</p>
-          </div>
           <div id="zero-one-custom-package-mount" />
         </div>
       </section>
