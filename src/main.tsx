@@ -25,7 +25,6 @@ import './components/FloatingIslandFix.css';
 import './components/SupportFloatingFix.css';
 import './components/ExperienceUpgrade.css';
 import './components/ConversionSections.css';
-import './final-polish.css';
 import './pricing-page-reference.css';
 
 const normalizePath = (value: string) => value.replace(/\/+$/, '') || '/';
