@@ -16,6 +16,8 @@ const CASES = [
   { title: 'Kineo Architecture', category: 'Editorial Website', year: '2026', challenge: 'Translate architectural thinking into a digital experience with enough restraint to let the work lead.', approach: 'Designed an image-led editorial framework with strong hierarchy, pacing and responsive composition.', deliverables: ['Digital art direction', 'Editorial UX', 'Website design', 'Content structure'] },
 ];
 
+const slugify = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
 function navigate(path: string) {
   window.history.pushState({}, '', path);
   window.dispatchEvent(new PopStateEvent('popstate'));
@@ -28,15 +30,15 @@ function ProofBar() {
 
 function HomeUpgrade() {
   return <>
-    <ProofBar />
     <section className="zo-trust"><div className="zo-trust__inner"><div className="zo-kicker"><span /> WHY ZERO ONE</div><div className="zo-trust__grid"><h2>Creative thinking.<br /><em>Built for growth.</em></h2><div><p>We bring strategy, identity, content and digital experience into one connected creative system — so brands look sharper, move faster and stay consistent.</p><div className="zo-industries">{['Beauty', 'Real Estate', 'Automotive', 'Technology', 'Hospitality', 'Retail'].map((item) => <span key={item}>{item}</span>)}</div></div></div></div></section>
-    <section className="zo-selected"><div className="zo-selected__inner"><div className="zo-kicker"><span /> SELECTED CASE STUDIES</div><div className="zo-selected__head"><h2>Work with a <em>point of view.</em></h2><button onClick={() => navigate('/work')} className="zo-outline-btn">View all work <ArrowUpRight size={15} /></button></div><div className="zo-case-grid">{CASES.slice(0, 3).map((item) => <article className="zo-case-mini" key={item.title}><div className="zo-case-mini__meta"><span>{item.category}</span><span>{item.year}</span></div><h3>{item.title}</h3><p>{item.approach}</p><div className="zo-case-mini__line">Case study <ArrowRight size={13} /></div></article>)}</div></div></section>
+    <section className="zo-selected"><div className="zo-selected__inner"><div className="zo-kicker"><span /> SELECTED CASE STUDIES</div><div className="zo-selected__head"><h2>Work with a <em>point of view.</em></h2><button onClick={() => navigate('/work')} className="zo-outline-btn">View all work <ArrowUpRight size={15} /></button></div><div className="zo-case-grid">{CASES.slice(0, 3).map((item) => <article className="zo-case-mini" key={item.title} role="link" tabIndex={0} onClick={() => navigate(`/work/${slugify(item.title)}`)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') navigate(`/work/${slugify(item.title)}`); }}><div className="zo-case-mini__meta"><span>{item.category}</span><span>{item.year}</span></div><h3>{item.title}</h3><p>{item.approach}</p><div className="zo-case-mini__line">Case study <ArrowRight size={13} /></div></article>)}</div></div></section>
     <section className="zo-cta"><div className="zo-cta__inner"><div><div className="zo-kicker"><span /> START A PROJECT</div><h2>Have a brand<br /><em>worth building?</em></h2></div><button onClick={() => navigate('/contact')} className="zo-cta__btn">Let's talk <ArrowRight size={17} /></button></div></section>
+    <ProofBar />
   </>;
 }
 
 function WorkUpgrade() {
-  return <section className="zo-cases"><div className="zo-cases__inner"><div className="zo-kicker"><span /> CASE STUDIES</div><div className="zo-cases__intro"><h2>How we<br /><em>think.</em></h2><p>Selected work, framed around the challenge, the creative decision and the system behind the final output.</p></div><div className="zo-cases__list">{CASES.map((item, index) => <article className="zo-case" key={item.title}><div className="zo-case__index">0{index + 1}</div><div className="zo-case__main"><div className="zo-case__meta"><span>{item.category}</span><span>{item.year}</span></div><h3>{item.title}</h3><div className="zo-case__columns"><div><span>THE CHALLENGE</span><p>{item.challenge}</p></div><div><span>THE APPROACH</span><p>{item.approach}</p></div><div><span>DELIVERABLES</span><ul>{item.deliverables.map((deliverable) => <li key={deliverable}><Check size={12} />{deliverable}</li>)}</ul></div></div></div></article>)}</div></div></section>;
+  return <section className="zo-cases"><div className="zo-cases__inner"><div className="zo-kicker"><span /> CASE STUDIES</div><div className="zo-cases__intro"><h2>How we<br /><em>think.</em></h2><p>Selected work, framed around the challenge, the creative decision and the system behind the final output.</p></div><div className="zo-cases__list">{CASES.map((item, index) => <article className="zo-case" key={item.title} role="link" tabIndex={0} onClick={() => navigate(`/work/${slugify(item.title)}`)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') navigate(`/work/${slugify(item.title)}`); }}><div className="zo-case__index">0{index + 1}</div><div className="zo-case__main"><div className="zo-case__meta"><span>{item.category}</span><span>{item.year}</span></div><h3>{item.title}</h3><div className="zo-case__columns"><div><span>THE CHALLENGE</span><p>{item.challenge}</p></div><div><span>THE APPROACH</span><p>{item.approach}</p></div><div><span>DELIVERABLES</span><ul>{item.deliverables.map((deliverable) => <li key={deliverable}><Check size={12} />{deliverable}</li>)}</ul></div></div></div></article>)}</div></div></section>;
 }
 
 export default function ExperienceUpgrade() {
