@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, ChevronDown } from 'lucide-react';
 import { getMarket, getStoredMarket, MARKETS, formatMarketPrice, setStoredMarket, type MarketCode } from '../lib/pricingMatrix';
+import CustomPackageBuilder from './CustomPackageBuilder';
 
 type PricingGroup = { title: string; items: string[] };
 type PricingPackage = {
@@ -163,7 +164,7 @@ export default function PricingPage() {
             <h2 className="mt-3 text-5xl font-bold tracking-[-.055em] md:text-7xl">Build it around<br /><span className="text-white/35">what you actually need.</span></h2>
             <p className="mt-5 max-w-xl text-sm leading-7 text-white/40">Choose the content, video, design, digital and support your brand actually needs. Your monthly estimate updates as you build.</p>
           </div>
-          <div id="zero-one-custom-package-mount" />
+          <div id="zero-one-custom-package-mount"><CustomPackageBuilder /></div>
         </div>
       </section>
 
