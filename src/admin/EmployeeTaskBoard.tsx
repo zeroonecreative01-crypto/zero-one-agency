@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Check, ChevronDown, Clock3, GripVertical, LogOut, MessageSquare, Plus, RotateCcw, Send, UserRound, X } from 'lucide-react';
+import { Check, Clock3, GripVertical, LogOut, MessageSquare, Plus, RotateCcw, Send, UserRound, X } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../auth/AuthProvider';
@@ -21,9 +21,12 @@ const PRIORITIES: Priority[] = ['low', 'normal', 'high', 'urgent'];
 
 export default function EmployeeTaskBoard() {
   const { user, loading, configured, signIn, signOut } = useAuth();
+  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
+  const [authMessage, setAuthMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -43,7 +46,7 @@ export default function EmployeeTaskBoard() {
     setLoadingBoard(true);
     const profileResult = await supabase.from('employee_profiles').select('id,name,role').eq('id', activeUser.id).maybeSingle();
     const currentProfile = profileResult.data as Profile | null;
-    setProfile(currentProfile ?? { id: activeUser.id, name: activeUser.email?.split('@')[0] ?? 'Employee', role: activeUser.app_metadata?.role === 'admin' ? 'admin' : 'employee' });
+    setProfile(currentProfile ?? { id: activeUser.id, name: activeUser.user_metadata?.name || activeUser.email?.split('@')[0] || 'Employee', role: activeUser.app_metadata?.role === 'admin' ? 'admin' : 'employee' });
     const admin = currentProfile?.role === 'admin' || activeUser.app_metadata?.role === 'admin';
     if (admin) {
       const [{ data: people }, { data: allTasks }, { data: allComments }] = await Promise.all([
@@ -71,9 +74,39 @@ export default function EmployeeTaskBoard() {
   const visibleTasks = useMemo(() => filter === 'mine' && isAdmin && user ? tasks.filter((task) => task.assignee_id === user.id) : tasks, [filter, isAdmin, tasks, user]);
   const selectedComments = selectedTask ? comments.filter((comment) => comment.task_id === selectedTask.id) : [];
 
+  const submitAuth = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!supabase) return;
+    setSubmitting(true); setLoginError(''); setAuthMessage('');
+    if (mode === 'login') {
+      const result = await signIn(email.trim(), password);
+      if (result.error) setLoginError(result.error.message);
+    } else {
+      if (name.trim().length < 2) { setLoginError('Please enter your full name.'); setSubmitting(false); return; }
+      if (password.length < 6) { setLoginError('Password must be at least 6 characters.'); setSubmitting(false); return; }
+      const { data, error } = await supabase.auth.signUp({ email: email.trim(), password, options: { data: { name: name.trim() } } });
+      if (error) setLoginError(error.message);
+      else if (data.session) setAuthMessage('Account created. Welcome to the team.');
+      else setAuthMessage('Account created. Check your email to confirm your account, then sign in.');
+    }
+    setSubmitting(false);
+  };
+
   if (loading) return <BoardShell><div className="employee-board__loading">Checking session...</div></BoardShell>;
   if (!configured) return <BoardShell><div className="employee-board__empty"><span>SETUP REQUIRED</span><h1>Supabase is not configured.</h1><p>Add the production Supabase environment variables before using the employee board.</p></div></BoardShell>;
-  if (!user) return <BoardShell><form className="employee-login" onSubmit={async (event) => { event.preventDefault(); setSubmitting(true); setLoginError(''); const result = await signIn(email.trim(), password); setSubmitting(false); if (result.error) setLoginError(result.error.message); }}><div className="employee-login__mark">ZERO ONE / TEAM</div><h1>Team Board.</h1><p>Sign in with your employee account to see your assigned work.</p>{loginError && <div className="employee-login__error">{loginError}</div>}<label>Email<input type="email" required autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} /></label><label>Password<input type="password" required autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} /></label><button disabled={submitting}>{submitting ? 'Signing in...' : 'Sign in to the board'}</button><a href="/admin">Admin sign in</a></form></BoardShell>;
+  if (!user) return <BoardShell><form className="employee-login" onSubmit={submitAuth}>
+    <div className="employee-login__mark">ZERO ONE / TEAM</div>
+    <h1>{mode === 'login' ? 'Team Board.' : 'Join the team.'}</h1>
+    <p>{mode === 'login' ? 'Sign in with your employee account to see the work assigned to you.' : 'Create your employee account with your name. You will only see tasks assigned to you.'}</p>
+    {loginError && <div className="employee-login__error">{loginError}</div>}
+    {authMessage && <div className="employee-login__message">{authMessage}</div>}
+    {mode === 'register' && <label>Full name<input type="text" required autoComplete="name" value={name} onChange={(event) => setName(event.target.value)} placeholder="Your full name" /></label>}
+    <label>Email<input type="email" required autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@company.com" /></label>
+    <label>Password<input type="password" required minLength={6} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} value={password} onChange={(event) => setPassword(event.target.value)} placeholder="At least 6 characters" /></label>
+    <button disabled={submitting}>{submitting ? (mode === 'login' ? 'Signing in...' : 'Creating account...') : (mode === 'login' ? 'Sign in to the board' : 'Create employee account')}</button>
+    <button type="button" className="employee-login__switch" onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setLoginError(''); setAuthMessage(''); }}>{mode === 'login' ? 'New employee? Create an account' : 'Already have an account? Sign in'}</button>
+    <a href="/admin">Admin sign in</a>
+  </form></BoardShell>;
 
   const moveTask = async (taskId: string, status: TaskStatus) => {
     if (!supabase) return;
@@ -84,7 +117,7 @@ export default function EmployeeTaskBoard() {
   };
 
   const createTask = async (payload: { title: string; description: string; assignee_id: string; priority: Priority; due_date: string }) => {
-    if (!supabase || !payload.title.trim()) return;
+    if (!supabase || !isAdmin || !payload.title.trim() || !payload.assignee_id) return;
     const { data, error } = await supabase.from('employee_tasks').insert({ ...payload, status: 'client_requests', sort_order: Date.now() }).select('*').single();
     if (!error && data) { setTasks((items) => [...items, data as Task]); setShowCreate(false); }
   };
@@ -107,7 +140,7 @@ export default function EmployeeTaskBoard() {
 
   return <BoardShell>
     <header className="employee-board__header">
-      <div><div className="employee-board__eyebrow">ZERO ONE / TEAM WORKSPACE</div><h1>Task Board.</h1><p>{isAdmin ? 'Create, assign, review and approve the team\'s work.' : `Welcome, ${profile?.name || user.email}. Your assigned work lives here.`}</p></div>
+      <div><div className="employee-board__eyebrow">ZERO ONE / TEAM WORKSPACE</div><h1>Task Board.</h1><p>{isAdmin ? 'You control the cards. Create, assign, review and approve the team\'s work.' : `Welcome, ${profile?.name || user.email}. Your assigned work lives here.`}</p></div>
       <div className="employee-board__actions"><span className="employee-board__user"><UserRound size={15} /> {profile?.name || user.email}</span>{isAdmin && <button onClick={() => setShowCreate(true)} className="employee-board__primary"><Plus size={16} /> New Task</button>}<button onClick={() => void signOut()} className="employee-board__ghost"><LogOut size={15} /> Sign out</button></div>
     </header>
     <div className="employee-board__toolbar"><div className="employee-board__legend"><span><i className="dot dot--orange" /> {tasks.length} tasks</span><span><i className="dot dot--green" /> {tasks.filter((task) => task.status === 'review').length} in review</span></div>{isAdmin && <div className="employee-board__filter"><button className={filter === 'all' ? 'active' : ''} onClick={() => setFilter('all')}>All team</button><button className={filter === 'mine' ? 'active' : ''} onClick={() => setFilter('mine')}>My tasks</button></div>}</div>
@@ -119,7 +152,7 @@ export default function EmployeeTaskBoard() {
 
 function CreateTaskModal({ profiles, onClose, onCreate }: { profiles: Profile[]; onClose: () => void; onCreate: (payload: { title: string; description: string; assignee_id: string; priority: Priority; due_date: string }) => Promise<void> | void }) {
   const [title, setTitle] = useState(''); const [description, setDescription] = useState(''); const [assignee, setAssignee] = useState(profiles[0]?.id ?? ''); const [priority, setPriority] = useState<Priority>('normal'); const [dueDate, setDueDate] = useState('');
-  return <div className="employee-modal__backdrop" onMouseDown={(event) => { if (event.currentTarget === event.target) onClose(); }}><form className="employee-modal employee-create" onSubmit={(event) => { event.preventDefault(); if (assignee) void onCreate({ title, description, assignee_id: assignee, priority, due_date: dueDate }); }}><button type="button" className="employee-modal__close" onClick={onClose}><X size={18} /></button><div className="employee-modal__eyebrow">NEW TASK</div><h2>Create task.</h2><label>Task title<input autoFocus required value={title} onChange={(event) => setTitle(event.target.value)} placeholder="e.g. Design 3 Instagram posts" /></label><label>Description<textarea value={description} onChange={(event) => setDescription(event.target.value)} rows={4} placeholder="Brief, deliverables, links, notes..." /></label><div className="employee-create__grid"><label>Assign to<select value={assignee} onChange={(event) => setAssignee(event.target.value)}>{profiles.length === 0 ? <option value="">No employees yet</option> : profiles.map((person) => <option key={person.id} value={person.id}>{person.name}</option>)}</select></label><label>Priority<select value={priority} onChange={(event) => setPriority(event.target.value as Priority)}>{PRIORITIES.map((item) => <option key={item} value={item}>{item}</option>)}</select></label><label>Due date<input type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} /></label></div><button className="employee-create__submit" disabled={!assignee}><Plus size={16} /> Create task</button></form></div>;
+  return <div className="employee-modal__backdrop" onMouseDown={(event) => { if (event.currentTarget === event.target) onClose(); }}><form className="employee-modal employee-create" onSubmit={(event) => { event.preventDefault(); if (assignee) void onCreate({ title, description, assignee_id: assignee, priority, due_date: dueDate }); }}><button type="button" className="employee-modal__close" onClick={onClose}><X size={18} /></button><div className="employee-modal__eyebrow">NEW TASK</div><h2>Create task.</h2><p>Only the admin creates cards. Employees receive assigned cards and move them through the workflow.</p><label>Task title<input autoFocus required value={title} onChange={(event) => setTitle(event.target.value)} placeholder="e.g. Design 3 Instagram posts" /></label><label>Description<textarea value={description} onChange={(event) => setDescription(event.target.value)} rows={4} placeholder="Brief, deliverables, links, notes..." /></label><div className="employee-create__grid"><label>Assign to<select value={assignee} onChange={(event) => setAssignee(event.target.value)}>{profiles.length === 0 ? <option value="">No employees yet</option> : profiles.map((person) => <option key={person.id} value={person.id}>{person.name}</option>)}</select></label><label>Priority<select value={priority} onChange={(event) => setPriority(event.target.value as Priority)}>{PRIORITIES.map((item) => <option key={item} value={item}>{item}</option>)}</select></label><label>Due date<input type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} /></label></div><button className="employee-create__submit" disabled={!assignee}><Plus size={16} /> Create task</button></form></div>;
 }
 
 function BoardShell({ children }: { children: React.ReactNode }) { return <main className="employee-board-page">{children}</main>; }
