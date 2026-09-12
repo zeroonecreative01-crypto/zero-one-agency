@@ -7,7 +7,6 @@ import AdminDashboard from './admin/AdminDashboard';
 import { PrivacyPolicy, TermsOfService } from './LegalPages';
 import PricingPage from './components/PricingPage';
 import FloatingIsland from './components/FloatingIsland';
-import RemotePortfolioSync from './components/RemotePortfolioSync';
 import ClientLogosSync from './components/ClientLogosSync';
 import CustomPackageBuilder from './components/CustomPackageBuilder';
 import CustomBuilderTeaser from './components/CustomBuilderTeaser';
@@ -21,6 +20,7 @@ import HomepageStructureFix from './components/HomepageStructureFix';
 import LegalFooterLinks from './components/LegalFooterLinks';
 import EmployeeTaskBoard from './admin/EmployeeTaskBoard';
 import CaseStudyPage from './components/CaseStudyPage';
+import PortfolioPage from './components/PortfolioPage';
 import './lib/leadsCapture';
 import './styles.css';
 import './site-polish.css';
@@ -49,7 +49,7 @@ function Root() {
 
   const navigate = (next: string) => {
     const normalized = normalizePath(next);
-    window.history.pushState({}, '', normalized);
+    if (normalized !== window.location.pathname) window.history.pushState({}, '', normalized);
     setPath(normalized);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -61,27 +61,19 @@ function Root() {
   if (path === '/privacy-policy') return <PrivacyPolicy navigate={navigate} />;
   if (path === '/terms-of-service') return <TermsOfService navigate={navigate} />;
   if (path === '/pricing') return <><PricingPage /><CustomPackageBuilder /><FloatingIsland /><SupportCenter /></>;
-
-  if (path.startsWith('/work/')) {
-    return <><CaseStudyPage slug={path.slice('/work/'.length)} navigate={navigate} /><SupportCenter /><LegalFooterLinks /></>;
-  }
-
-  const isHome = path === '/';
-  const isWork = path === '/work';
+  if (path === '/work') return <><PortfolioPage navigate={navigate} /><SupportCenter /><LegalFooterLinks /></>;
+  if (path.startsWith('/work/')) return <><CaseStudyPage slug={path.slice('/work/'.length)} navigate={navigate} /><SupportCenter /><LegalFooterLinks /></>;
 
   return <>
     <SiteApp />
     <FloatingIsland />
-    {(isHome || isWork) && <RemotePortfolioSync />}
-    {isHome && <>
-      <ClientLogosSync />
-      <CustomBuilderTeaser />
-      <SiteContactPatch />
-      <ExperienceUpgrade />
-      <ConversionSections />
-      <MotionSystem />
-      <HomepageStructureFix />
-    </>}
+    <ClientLogosSync />
+    <CustomBuilderTeaser />
+    <SiteContactPatch />
+    <ExperienceUpgrade />
+    <ConversionSections />
+    <MotionSystem />
+    <HomepageStructureFix />
     <SupportCenter />
     <SiteContentSync />
     <LegalFooterLinks />
