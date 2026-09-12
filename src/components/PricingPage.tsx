@@ -16,12 +16,6 @@ type PricingPackage = {
   sort_order: number;
 };
 
-const toneLabel: Record<PricingPackage['tone'], string> = {
-  starter: 'Starter',
-  growth: 'Growth',
-  premium: 'Premium',
-};
-
 const WHATSAPP = 'https://wa.me/201556764804?text=';
 
 function localPrice(pkg: PricingPackage, market: MarketCode) {
@@ -33,6 +27,8 @@ export default function PricingPage() {
   const [packages, setPackages] = useState<PricingPackage[]>([]);
   const [loading, setLoading] = useState(true);
   const [market, setMarket] = useState<MarketCode>(() => getStoredMarket());
+  const [active, setActive] = useState(0);
+  const [direction, setDirection] = useState<'next' | 'prev'>('next');
 
   useEffect(() => {
     document.title = 'Packages — ZERO ONE';
@@ -42,7 +38,6 @@ export default function PricingPage() {
       setLoading(false);
       return;
     }
-
     fetch(`${url}/rest/v1/pricing_packages?select=id,name,price,currency,billing_label,tone,popular,groups,market_prices,sort_order&order=sort_order.asc,created_at.desc`, {
       headers: { apikey: key, Authorization: `Bearer ${key}` },
     })
@@ -50,7 +45,10 @@ export default function PricingPage() {
         if (!response.ok) throw new Error('Pricing request failed');
         return response.json() as Promise<PricingPackage[]>;
       })
-      .then(setPackages)
+      .then((items) => {
+        setPackages(items.sort((a, b) => a.sort_order - b.sort_order));
+        setActive(0);
+      })
       .catch(() => setPackages([]))
       .finally(() => setLoading(false));
   }, []);
@@ -60,26 +58,35 @@ export default function PricingPage() {
   const chooseMarket = (code: MarketCode) => {
     setMarket(code);
     setStoredMarket(code);
+    setActive(0);
     window.dispatchEvent(new CustomEvent('zero-one:market-change', { detail: { code } }));
   };
 
+  const move = (next: number) => {
+    if (!packages.length) return;
+    setDirection(next > active ? 'next' : 'prev');
+    setActive((next + packages.length) % packages.length);
+  };
+
+  const current = packages[active];
+
   return (
-    <main className="min-h-screen bg-[#111111] text-[#F7F5F0]">
-      <header className="mx-auto max-w-7xl px-6 pb-14 pt-8 md:px-12 lg:px-16">
+    <main className="zero-one-pricing min-h-screen bg-[#090909] text-[#F7F5F0]">
+      <header className="mx-auto max-w-7xl px-6 pb-12 pt-8 md:px-12 lg:px-16">
         <div className="flex items-center justify-between border-b border-[#F7F5F0]/10 pb-6">
           <a href="/" className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-[#F7F5F0]/65 transition hover:text-[#F14A0B]"><ArrowLeft size={16} /> Back home</a>
           <span className="text-xs font-bold uppercase tracking-[0.22em] text-[#F14A0B]">ZERO ONE / Packages</span>
         </div>
       </header>
 
-      <section className="mx-auto max-w-7xl px-6 pb-16 md:px-12 lg:px-16">
-        <div className="max-w-4xl">
-          <p className="mb-5 text-xs font-bold uppercase tracking-[0.24em] text-[#F14A0B]">Built around your next move</p>
-          <h1 className="text-6xl font-bold tracking-[-0.055em] md:text-8xl lg:text-[9rem] lg:leading-[0.86]">Choose your<br /><span className="text-[#F14A0B]">level.</span></h1>
-          <p className="mt-8 max-w-2xl text-base leading-7 text-[#F7F5F0]/55 md:text-lg">Clear packages. Serious creative. Everything you need to move from an idea to a brand people remember.</p>
+      <section className="mx-auto max-w-7xl px-6 pb-14 md:px-12 lg:px-16">
+        <div className="zero-one-pricing__intro">
+          <div className="zero-one-pricing__eyebrow flex items-center gap-3"><span className="inline-block h-px w-9" /> INVESTMENT <span className="inline-block h-px w-9" /></div>
+          <h1>Choose Your Level<br />Of Growth.</h1>
+          <p>Three focused monthly retainers built to match the stage, ambition, and pace of your brand. Choose the market that fits your business.</p>
         </div>
 
-        <div className="mt-14 border-y border-[#F7F5F0]/10 py-5">
+        <div className="border-y border-[#F7F5F0]/10 py-5">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#F7F5F0]/40">Choose your market</span>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -94,48 +101,50 @@ export default function PricingPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-6 pb-24 md:px-12 lg:px-16">
-        {loading ? (
-          <div className="border border-[#F7F5F0]/10 p-10 text-sm text-[#F7F5F0]/45">Loading packages...</div>
-        ) : packages.length === 0 ? (
-          <div className="border border-[#F7F5F0]/10 p-10 text-sm text-[#F7F5F0]/45">Packages are currently being updated. Contact ZERO ONE for the latest options.</div>
-        ) : (
-          <div className="grid gap-5 lg:grid-cols-3">
-            {[...packages].sort((a, b) => a.sort_order - b.sort_order).map((pkg) => {
-              const price = localPrice(pkg, market);
-              const message = encodeURIComponent(`Hi ZERO ONE, I'm interested in the ${pkg.name} package in ${selectedMarket.country}. I'd like to discuss the next steps.`);
-              return (
-                <article key={pkg.id} className={`group relative flex flex-col overflow-hidden border p-7 transition duration-500 hover:-translate-y-1 md:p-9 ${pkg.popular ? 'border-[#F14A0B]/70' : 'border-[#F7F5F0]/10 hover:border-[#F7F5F0]/25'}`}>
-                  <div className="absolute right-0 top-0 h-32 w-32 translate-x-10 -translate-y-10 rounded-full bg-[#F14A0B]/10 blur-3xl transition group-hover:bg-[#F14A0B]/20" />
-                  {pkg.popular && <span className="relative mb-7 inline-flex w-fit rounded-full bg-[#F14A0B] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-[#111111]">Most Popular</span>}
-                  {!pkg.popular && <span className="relative mb-7 text-[10px] font-bold uppercase tracking-[0.18em] text-[#F7F5F0]/35">{toneLabel[pkg.tone]}</span>}
-                  <div className="relative flex items-start justify-between gap-4 border-b border-[#F7F5F0]/10 pb-7">
-                    <div><h2 className="text-3xl font-bold tracking-tight">{pkg.name}</h2><p className="mt-2 text-xs uppercase tracking-[0.14em] text-[#F7F5F0]/35">{pkg.billing_label}</p></div>
-                    <div className="text-right"><strong className="block text-3xl font-bold tracking-tight">{formatMarketPrice(price, market)}</strong><span className="text-xs text-[#F7F5F0]/40">{selectedMarket.currency}</span></div>
-                  </div>
-                  <div className="relative flex-1 pt-7">
-                    {pkg.groups.map((group) => (
-                      <div key={group.title} className="mb-7 last:mb-0">
-                        <h3 className="mb-3 text-[10px] font-bold uppercase tracking-[0.18em] text-[#F14A0B]">{group.title}</h3>
-                        <ul className="space-y-2.5">
-                          {group.items.map((item) => <li key={item} className="flex gap-2.5 text-sm leading-5 text-[#F7F5F0]/62"><Check size={15} className="mt-0.5 shrink-0 text-[#F14A0B]" />{item}</li>)}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                  <a href={`${WHATSAPP}${message}`} target="_blank" rel="noopener noreferrer" className="relative mt-9 inline-flex items-center justify-between border border-[#F7F5F0]/15 px-5 py-4 text-sm font-bold transition hover:border-[#F14A0B] hover:bg-[#F14A0B] hover:text-[#111111]">Start with {pkg.name}<ArrowRight size={17} /></a>
-                </article>
-              );
-            })}
+        {loading ? <div className="border border-[#F7F5F0]/10 p-10 text-sm text-[#F7F5F0]/45">Loading packages...</div> : !current ? <div className="border border-[#F7F5F0]/10 p-10 text-sm text-[#F7F5F0]/45">Packages are currently being updated. Contact ZERO ONE for the latest options.</div> : (
+          <div className="zero-one-pricing-carousel">
+            <button type="button" className="zero-one-pricing-carousel__arrow" onClick={() => move(active - 1)} aria-label="Previous package">‹</button>
+            <div className="zero-one-pricing-carousel__viewport">
+              <article key={`${current.id}-${market}`} data-direction={direction} className={`zero-one-pricing-carousel__card zero-one-package zero-one-package--${current.tone}`}>
+                <div className="zero-one-package__signal"><span className="zero-one-package__signal-dot" /> {current.popular ? 'Recommended' : `${String(active + 1).padStart(2, '0')} / INVESTMENT`}</div>
+                {current.popular && <span className="zero-one-package__popular">Most Popular</span>}
+                <div className="zero-one-package__top flex items-start justify-between gap-4">
+                  <div><h2 className="zero-one-package__name">{current.name}</h2><span className="zero-one-package__tag inline-flex rounded-full border">{current.billing_label}</span></div>
+                  <div className="zero-one-package__price"><strong>{formatMarketPrice(localPrice(current, market), market)}</strong><span>{selectedMarket.currency} / MONTH</span></div>
+                </div>
+
+                <div className="pt-7">
+                  {current.groups.map((group) => (
+                    <div key={group.title} className="zero-one-package__group">
+                      <h3>{group.title}</h3>
+                      <ul className="zero-one-package__list">
+                        {group.items.map((item) => <li key={item} className="flex gap-2"><Check size={14} />{item}</li>)}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+
+                <a href={`${WHATSAPP}${encodeURIComponent(`Hi ZERO ONE, I'm interested in the ${current.name} package in ${selectedMarket.country}. I'd like to discuss the next steps.`)}`} target="_blank" rel="noopener noreferrer" className="zero-one-package__cta flex items-center justify-between">START WITH {current.name}<ArrowRight size={17} /></a>
+              </article>
+            </div>
+            <button type="button" className="zero-one-pricing-carousel__arrow" onClick={() => move(active + 1)} aria-label="Next package">›</button>
+
+            <div className="zero-one-pricing-carousel__footer col-start-2">
+              <div className="zero-one-pricing-carousel__dots" aria-label="Choose package">
+                {packages.map((pkg, index) => <button key={pkg.id} type="button" className={`zero-one-pricing-carousel__dot ${index === active ? 'is-active' : ''}`} onClick={() => move(index)} aria-label={`Show ${pkg.name}`}><span>{String(index + 1).padStart(2, '0')}</span></button>)}
+              </div>
+              <span className="zero-one-pricing-carousel__counter"><strong>{String(active + 1).padStart(2, '0')}</strong> / {String(packages.length).padStart(2, '0')}</span>
+            </div>
           </div>
         )}
       </section>
 
-      <section className="border-t border-[#F7F5F0]/10 bg-[#0b0b0b] px-6 py-20 md:px-12">
+      <section className="zero-one-custom-option border-t border-[#F7F5F0]/10 bg-[#0b0b0b] px-6 py-20 md:px-12">
         <div className="mx-auto max-w-7xl">
           <div className="mb-10 max-w-2xl">
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F14A0B]">Need something custom?</p>
-            <h2 className="mt-3 text-4xl font-bold tracking-tight md:text-6xl">Build it. Shape it. Make it yours.</h2>
-            <p className="mt-4 max-w-xl text-sm leading-6 text-[#F7F5F0]/45">Start with the mix that fits your brand, adjust the volume, and see a live estimate before you request the final package.</p>
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#F14A0B]">Custom Studio</p>
+            <h2 className="mt-3 text-5xl font-bold tracking-[-0.05em] md:text-7xl">فصّل باقتك<br /><span className="text-[#F14A0B]">على مزاجك.</span></h2>
+            <p className="mt-5 max-w-xl text-sm leading-6 text-[#F7F5F0]/45">مش لازم تختار باقة جاهزة. اختار المحتوى والفيديو والتصميم والدعم اللي يناسب البراند بتاعك، وشوف التقدير الشهري بيتغير معاك.</p>
           </div>
           <div id="zero-one-custom-package-mount" />
         </div>
