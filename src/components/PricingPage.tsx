@@ -71,7 +71,7 @@ export default function PricingPage() {
   const current = packages[active];
 
   return (
-    <main className="zero-one-pricing min-h-screen bg-[#090909] text-[#F7F5F0]">
+    <main className="zero-one-pricing-page zero-one-pricing min-h-screen bg-[#090909] text-[#F7F5F0]">
       <header className="mx-auto max-w-7xl px-6 pb-12 pt-8 md:px-12 lg:px-16">
         <div className="flex items-center justify-between border-b border-[#F7F5F0]/10 pb-6">
           <a href="/" className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-[#F7F5F0]/65 transition hover:text-[#F14A0B]"><ArrowLeft size={16} /> Back home</a>
@@ -108,12 +108,12 @@ export default function PricingPage() {
               <article key={`${current.id}-${market}`} data-direction={direction} className={`zero-one-pricing-carousel__card zero-one-package zero-one-package--${current.tone}`}>
                 <div className="zero-one-package__signal"><span className="zero-one-package__signal-dot" /> {current.popular ? 'Recommended' : `${String(active + 1).padStart(2, '0')} / INVESTMENT`}</div>
                 {current.popular && <span className="zero-one-package__popular">Most Popular</span>}
-                <div className="zero-one-package__top flex items-start justify-between gap-4">
+                <div className="zero-one-package__top">
                   <div><h2 className="zero-one-package__name">{current.name}</h2><span className="zero-one-package__tag inline-flex rounded-full border">{current.billing_label}</span></div>
-                  <div className="zero-one-package__price"><strong>{formatMarketPrice(localPrice(current, market), market)}</strong><span>{selectedMarket.currency} / MONTH</span></div>
                 </div>
+                <div className="zero-one-package__price"><strong>{formatMarketPrice(localPrice(current, market), market)}</strong><span>{selectedMarket.currency} / MONTH</span></div>
 
-                <div className="pt-7">
+                <div className="zero-one-package__content">
                   {current.groups.map((group) => (
                     <div key={group.title} className="zero-one-package__group">
                       <h3>{group.title}</h3>
