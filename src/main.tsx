@@ -11,12 +11,9 @@ import ClientLogosSync from './components/ClientLogosSync';
 import CustomPackageBuilder from './components/CustomPackageBuilder';
 import CustomBuilderTeaser from './components/CustomBuilderTeaser';
 import { SupportCenter } from './components/SupportCenter';
-import SiteContactPatch from './components/SiteContactPatch';
 import ExperienceUpgrade from './components/ExperienceUpgrade';
 import ConversionSections from './components/ConversionSections';
-import MotionSystem from './components/MotionSystem';
 import SiteContentSync from './components/SiteContentSync';
-import HomepageStructureFix from './components/HomepageStructureFix';
 import LegalFooterLinks from './components/LegalFooterLinks';
 import EmployeeTaskBoard from './admin/EmployeeTaskBoard';
 import CaseStudyPage from './components/CaseStudyPage';
@@ -32,7 +29,6 @@ import './components/FloatingIslandFix.css';
 import './components/SupportFloatingFix.css';
 import './components/ExperienceUpgrade.css';
 import './components/ConversionSections.css';
-import './components/MotionSystem.css';
 import './components/CustomBuilderTeaser.css';
 import './pricing-page-reference.css';
 import './final-polish.css';
@@ -69,11 +65,8 @@ function Root() {
     <FloatingIsland />
     <ClientLogosSync />
     <CustomBuilderTeaser />
-    <SiteContactPatch />
     <ExperienceUpgrade />
     <ConversionSections />
-    <MotionSystem />
-    <HomepageStructureFix />
     <SupportCenter />
     <SiteContentSync />
     <LegalFooterLinks />
