@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { getMarket, getStoredMarket, MARKETS, formatMarketPrice, setStoredMarket, type MarketCode } from '../lib/pricingMatrix';
+import CustomPackageBuilder from './CustomPackageBuilder';
 
 type PricingGroup = { title: string; items: string[] };
 type PricingPackage = {
@@ -21,6 +22,11 @@ const WHATSAPP = 'https://wa.me/201556764804?text=';
 function localPrice(pkg: PricingPackage, market: MarketCode) {
   const configured = Number(pkg.market_prices?.[market]);
   return Number.isFinite(configured) && configured > 0 ? configured : Number(pkg.price) || 0;
+}
+
+function safeGroups(value: unknown): PricingGroup[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((group): group is PricingGroup => Boolean(group && typeof group === 'object' && typeof (group as PricingGroup).title === 'string' && Array.isArray((group as PricingGroup).items)));
 }
 
 export default function PricingPage() {
@@ -46,7 +52,8 @@ export default function PricingPage() {
         return response.json() as Promise<PricingPackage[]>;
       })
       .then((items) => {
-        setPackages(items.sort((a, b) => a.sort_order - b.sort_order));
+        const normalized = Array.isArray(items) ? items.map((item) => ({ ...item, groups: safeGroups(item.groups) })) : [];
+        setPackages(normalized.sort((a, b) => a.sort_order - b.sort_order));
         setActive(0);
       })
       .catch(() => setPackages([]))
@@ -112,7 +119,6 @@ export default function PricingPage() {
                   <div><h2 className="zero-one-package__name">{current.name}</h2><span className="zero-one-package__tag inline-flex rounded-full border">{current.billing_label}</span></div>
                 </div>
                 <div className="zero-one-package__price"><strong>{formatMarketPrice(localPrice(current, market), market)}</strong><span>{selectedMarket.currency} / MONTH</span></div>
-
                 <div className="zero-one-package__content">
                   {current.groups.map((group) => (
                     <div key={group.title} className="zero-one-package__group">
@@ -123,12 +129,10 @@ export default function PricingPage() {
                     </div>
                   ))}
                 </div>
-
                 <a href={`${WHATSAPP}${encodeURIComponent(`Hi ZERO ONE, I'm interested in the ${current.name} package in ${selectedMarket.country}. I'd like to discuss the next steps.`)}`} target="_blank" rel="noopener noreferrer" className="zero-one-package__cta flex items-center justify-between">START WITH {current.name}<ArrowRight size={17} /></a>
               </article>
             </div>
             <button type="button" className="zero-one-pricing-carousel__arrow" onClick={() => move(active + 1)} aria-label="Next package">›</button>
-
             <div className="zero-one-pricing-carousel__footer col-start-2">
               <div className="zero-one-pricing-carousel__dots" aria-label="Choose package">
                 {packages.map((pkg, index) => <button key={pkg.id} type="button" className={`zero-one-pricing-carousel__dot ${index === active ? 'is-active' : ''}`} onClick={() => move(index)} aria-label={`Show ${pkg.name}`}><span>{String(index + 1).padStart(2, '0')}</span></button>)}
@@ -141,7 +145,7 @@ export default function PricingPage() {
 
       <section className="zero-one-custom-option border-t border-[#F7F5F0]/10 bg-[#0b0b0b] px-6 py-14 md:px-12">
         <div className="mx-auto max-w-7xl">
-          <div id="zero-one-custom-package-mount" />
+          <CustomPackageBuilder />
         </div>
       </section>
 
