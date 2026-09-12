@@ -10,6 +10,7 @@ import FloatingIsland from './components/FloatingIsland';
 import RemotePortfolioSync from './components/RemotePortfolioSync';
 import RemotePricingSync from './components/RemotePricingSync';
 import ClientLogosSync from './components/ClientLogosSync';
+import CustomPackageBuilder from './components/CustomPackageBuilder';
 import CustomBuilderTeaser from './components/CustomBuilderTeaser';
 import { SupportCenter } from './components/SupportCenter';
 import SiteContactPatch from './components/SiteContactPatch';
@@ -49,7 +50,7 @@ function Root() {
   if (path === '/admin/content') return <AdminContentRoute />;
   if (path === '/privacy-policy') return <PrivacyPolicy navigate={(next) => { window.history.pushState({}, '', next); setPath(next); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />;
   if (path === '/terms-of-service') return <TermsOfService navigate={(next) => { window.history.pushState({}, '', next); setPath(next); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />;
-  if (path === '/pricing') return <><PricingPage /><FloatingIsland /><SupportCenter /></>;
+  if (path === '/pricing') return <><PricingPage /><CustomPackageBuilder /><FloatingIsland /><SupportCenter /></>;
 
   const isHome = path === '/';
 
