@@ -21,6 +21,7 @@ import MotionSystem from './components/MotionSystem';
 import SiteContentSync from './components/SiteContentSync';
 import HomepageStructureFix from './components/HomepageStructureFix';
 import LegalFooterLinks from './components/LegalFooterLinks';
+import EmployeeTaskBoard from './admin/EmployeeTaskBoard';
 import './lib/leadsCapture';
 import './styles.css';
 import './site-polish.css';
@@ -48,6 +49,7 @@ function Root() {
   if (path === '/admin') return <AdminRoute />;
   if (path === '/admin/dashboard') return <AdminDashboardRoute />;
   if (path === '/admin/content') return <AdminContentRoute />;
+  if (path === '/team' || path === '/team/tasks') return <EmployeeTaskBoard />;
   if (path === '/privacy-policy') return <PrivacyPolicy navigate={(next) => { window.history.pushState({}, '', next); setPath(next); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />;
   if (path === '/terms-of-service') return <TermsOfService navigate={(next) => { window.history.pushState({}, '', next); setPath(next); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />;
   if (path === '/pricing') return <><PricingPage /><CustomPackageBuilder /><FloatingIsland /><SupportCenter /></>;
