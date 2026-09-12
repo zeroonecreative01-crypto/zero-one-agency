@@ -34,6 +34,7 @@ import './components/ExperienceUpgrade.css';
 import './components/ConversionSections.css';
 import './components/MotionSystem.css';
 import './components/CustomBuilderTeaser.css';
+import './pricing-page-reference.css';
 import './final-polish.css';
 
 function Root() {
